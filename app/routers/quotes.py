@@ -1,0 +1,230 @@
+"""Quotes router for Ted Lasso API."""
+
+import random
+from fastapi import APIRouter, HTTPException, Query
+from typing import Optional
+
+from app.data import QUOTES
+from app.models.quotes import Quote, QuoteCreate, QuoteUpdate, QuoteTheme, QuoteMoment
+
+router = APIRouter(prefix="/quotes", tags=["Quotes"])
+
+# In-memory storage (copy of seed data)
+_quotes_db: dict[str, dict] = dict(QUOTES)
+
+# Counter for generating IDs
+_quote_counter = len(_quotes_db) + 1
+
+
+@router.get(
+    "",
+    response_model=list[Quote],
+    summary="List all quotes",
+    description="Get a list of all memorable Ted Lasso quotes with optional filtering.",
+    responses={
+        200: {
+            "description": "List of quotes",
+        }
+    },
+)
+async def list_quotes(
+    character_id: Optional[str] = Query(None, description="Filter by character"),
+    theme: Optional[QuoteTheme] = Query(None, description="Filter by theme"),
+    moment_type: Optional[QuoteMoment] = Query(None, description="Filter by moment type"),
+    inspirational: Optional[bool] = Query(None, description="Filter inspirational quotes"),
+    funny: Optional[bool] = Query(None, description="Filter funny quotes"),
+) -> list[Quote]:
+    """List all quotes with optional filters."""
+    quotes = list(_quotes_db.values())
+
+    if character_id:
+        quotes = [q for q in quotes if q["character_id"] == character_id]
+
+    if theme:
+        quotes = [
+            q
+            for q in quotes
+            if q["theme"] == theme.value or theme.value in q.get("secondary_themes", [])
+        ]
+
+    if moment_type:
+        quotes = [q for q in quotes if q["moment_type"] == moment_type.value]
+
+    if inspirational is not None:
+        quotes = [q for q in quotes if q.get("is_inspirational") == inspirational]
+
+    if funny is not None:
+        quotes = [q for q in quotes if q.get("is_funny") == funny]
+
+    return [Quote(**q) for q in quotes]
+
+
+@router.get(
+    "/random",
+    response_model=Quote,
+    summary="Get a random quote",
+    description="Get a random Ted Lasso quote, optionally filtered.",
+)
+async def get_random_quote(
+    character_id: Optional[str] = Query(None, description="Filter by character"),
+    theme: Optional[QuoteTheme] = Query(None, description="Filter by theme"),
+    inspirational: Optional[bool] = Query(None, description="Filter inspirational quotes"),
+) -> Quote:
+    """Get a random quote."""
+    quotes = list(_quotes_db.values())
+
+    if character_id:
+        quotes = [q for q in quotes if q["character_id"] == character_id]
+
+    if theme:
+        quotes = [
+            q
+            for q in quotes
+            if q["theme"] == theme.value or theme.value in q.get("secondary_themes", [])
+        ]
+
+    if inspirational is not None:
+        quotes = [q for q in quotes if q.get("is_inspirational") == inspirational]
+
+    if not quotes:
+        raise HTTPException(
+            status_code=404,
+            detail="No quotes found matching your criteria. Try being more curious and less specific!",
+        )
+
+    return Quote(**random.choice(quotes))
+
+
+@router.get(
+    "/{quote_id}",
+    response_model=Quote,
+    summary="Get a quote by ID",
+    description="Retrieve a specific quote by its ID.",
+    responses={
+        200: {"description": "Quote details"},
+        404: {"description": "Quote not found"},
+    },
+)
+async def get_quote(quote_id: str) -> Quote:
+    """Get a specific quote by ID."""
+    if quote_id not in _quotes_db:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Quote '{quote_id}' not found. The wisdom you seek is elsewhere!",
+        )
+    return Quote(**_quotes_db[quote_id])
+
+
+@router.post(
+    "",
+    response_model=Quote,
+    status_code=201,
+    summary="Create a new quote",
+    description="Add a new memorable quote to the collection.",
+    responses={
+        201: {"description": "Quote created successfully"},
+    },
+)
+async def create_quote(quote: QuoteCreate) -> Quote:
+    """Create a new quote."""
+    global _quote_counter
+
+    quote_id = f"quote-{_quote_counter:03d}"
+    _quote_counter += 1
+
+    quote_data = {"id": quote_id, **quote.model_dump()}
+    _quotes_db[quote_id] = quote_data
+
+    return Quote(**quote_data)
+
+
+@router.patch(
+    "/{quote_id}",
+    response_model=Quote,
+    summary="Update a quote",
+    description="Update specific fields of an existing quote.",
+    responses={
+        200: {"description": "Quote updated successfully"},
+        404: {"description": "Quote not found"},
+    },
+)
+async def update_quote(quote_id: str, updates: QuoteUpdate) -> Quote:
+    """Update an existing quote."""
+    if quote_id not in _quotes_db:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Quote '{quote_id}' not found.",
+        )
+
+    quote_data = _quotes_db[quote_id]
+
+    # Apply updates
+    update_data = updates.model_dump(exclude_unset=True)
+    for key, value in update_data.items():
+        if value is not None:
+            quote_data[key] = value
+
+    return Quote(**quote_data)
+
+
+@router.delete(
+    "/{quote_id}",
+    status_code=204,
+    summary="Delete a quote",
+    description="Remove a quote from the collection.",
+    responses={
+        204: {"description": "Quote deleted successfully"},
+        404: {"description": "Quote not found"},
+    },
+)
+async def delete_quote(quote_id: str) -> None:
+    """Delete a quote."""
+    if quote_id not in _quotes_db:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Quote '{quote_id}' not found.",
+        )
+
+    del _quotes_db[quote_id]
+
+
+@router.get(
+    "/themes/{theme}",
+    response_model=list[Quote],
+    summary="Get quotes by theme",
+    description="Get all quotes related to a specific theme.",
+)
+async def get_quotes_by_theme(theme: QuoteTheme) -> list[Quote]:
+    """Get quotes by theme."""
+    quotes = [
+        q
+        for q in _quotes_db.values()
+        if q["theme"] == theme.value or theme.value in q.get("secondary_themes", [])
+    ]
+
+    if not quotes:
+        raise HTTPException(
+            status_code=404,
+            detail=f"No quotes found for theme '{theme.value}'. We'll add some soon!",
+        )
+
+    return [Quote(**q) for q in quotes]
+
+
+@router.get(
+    "/characters/{character_id}",
+    response_model=list[Quote],
+    summary="Get all quotes by a character",
+    description="Get all quotes from a specific character.",
+)
+async def get_character_quotes(character_id: str) -> list[Quote]:
+    """Get all quotes by a character."""
+    quotes = [q for q in _quotes_db.values() if q["character_id"] == character_id]
+
+    if not quotes:
+        raise HTTPException(
+            status_code=404,
+            detail=f"No quotes found for character '{character_id}'. Maybe they're the strong, silent type!",
+        )
+
+    return [Quote(**q) for q in quotes]
