@@ -74,6 +74,9 @@ Perfect for SDK demos showcasing various REST API features.
         "name": "MIT",
         "identifier": "MIT",
     },
+    servers=[
+        {"url": "https://believe.cjav.dev", "description": "Production"},
+    ],
     openapi_tags=[
         {
             "name": "Characters",
