@@ -11,6 +11,17 @@ A comprehensive API celebrating the wisdom, humor, and heart of Ted Lasso. Perfe
 - **Custom Easter Eggs**: Special HTTP status codes for fun
 - **OpenAPI Documentation**: Full Swagger/ReDoc support
 
+## Important: In-Memory Data Storage
+
+This API uses **in-memory storage only** — there is no database. This has important implications:
+
+- **Data is ephemeral**: All data created via POST, PATCH, or DELETE operations is stored in Python dictionaries and will be **lost when the server restarts**
+- **Seed data reloads on startup**: Each time the server starts, it loads fresh seed data from `app/data/seed_data.py`
+- **No persistence**: Changes you make during a session do not persist across restarts
+- **Designed for demos**: This API is intended for SDK demonstrations and testing, not production use cases requiring persistent data
+
+This design keeps the API simple and dependency-free, making it easy to run anywhere without database setup.
+
 ## Installation
 
 ### Prerequisites
