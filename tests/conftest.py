@@ -1,16 +1,23 @@
 """Pytest configuration and fixtures for Ted Lasso API tests."""
 
+import os
 import pytest
 from httpx import AsyncClient, ASGITransport
+
+# Set API key for testing before importing app
+os.environ["API_KEY"] = "test-api-key-believe"
 
 from app.main import app
 
 
 @pytest.fixture
 async def client():
-    """Create an async test client."""
+    """Create an async test client with API key authentication."""
     transport = ASGITransport(app=app)
-    async with AsyncClient(transport=transport, base_url="http://test") as ac:
+    headers = {"Authorization": "Bearer test-api-key-believe"}
+    async with AsyncClient(
+        transport=transport, base_url="http://test", headers=headers
+    ) as ac:
         yield ac
 
 
