@@ -8,7 +8,11 @@ async def test_list_quotes(client):
     """Test listing all quotes."""
     response = await client.get("/quotes")
     assert response.status_code == 200
-    data = response.json()
+    result = response.json()
+    # Check pagination structure
+    assert "data" in result
+    assert "total" in result
+    data = result["data"]
     assert isinstance(data, list)
     assert len(data) > 0
 
@@ -18,7 +22,7 @@ async def test_list_quotes_filter_by_character(client):
     """Test filtering quotes by character."""
     response = await client.get("/quotes?character_id=ted-lasso")
     assert response.status_code == 200
-    data = response.json()
+    data = response.json()["data"]
     assert all(q["character_id"] == "ted-lasso" for q in data)
 
 
@@ -27,7 +31,7 @@ async def test_list_quotes_filter_by_theme(client):
     """Test filtering quotes by theme."""
     response = await client.get("/quotes?theme=belief")
     assert response.status_code == 200
-    data = response.json()
+    data = response.json()["data"]
     # Check that theme matches primary or secondary
     for q in data:
         themes = [q["theme"]] + q.get("secondary_themes", [])
@@ -39,7 +43,7 @@ async def test_list_quotes_filter_by_moment_type(client):
     """Test filtering quotes by moment type."""
     response = await client.get("/quotes?moment_type=press_conference")
     assert response.status_code == 200
-    data = response.json()
+    data = response.json()["data"]
     assert all(q["moment_type"] == "press_conference" for q in data)
 
 
@@ -48,8 +52,18 @@ async def test_list_quotes_filter_inspirational(client):
     """Test filtering inspirational quotes."""
     response = await client.get("/quotes?inspirational=true")
     assert response.status_code == 200
-    data = response.json()
+    data = response.json()["data"]
     assert all(q["is_inspirational"] is True for q in data)
+
+
+@pytest.mark.asyncio
+async def test_list_quotes_pagination(client):
+    """Test pagination parameters."""
+    response = await client.get("/quotes?limit=5")
+    assert response.status_code == 200
+    result = response.json()
+    assert len(result["data"]) <= 5
+    assert result["limit"] == 5
 
 
 @pytest.mark.asyncio
@@ -115,7 +129,9 @@ async def test_get_quotes_by_theme(client):
     """Test getting quotes by theme."""
     response = await client.get("/quotes/themes/belief")
     assert response.status_code == 200
-    data = response.json()
+    result = response.json()
+    assert "data" in result
+    data = result["data"]
     assert isinstance(data, list)
     assert len(data) > 0
 
@@ -125,6 +141,8 @@ async def test_get_character_quotes(client):
     """Test getting all quotes by a character."""
     response = await client.get("/quotes/characters/ted-lasso")
     assert response.status_code == 200
-    data = response.json()
+    result = response.json()
+    assert "data" in result
+    data = result["data"]
     assert isinstance(data, list)
     assert all(q["character_id"] == "ted-lasso" for q in data)

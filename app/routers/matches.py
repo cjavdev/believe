@@ -1,11 +1,12 @@
 """Matches router for Ted Lasso API."""
 
 from datetime import datetime
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 from typing import Optional
 
 from app.data import MATCHES
 from app.models.matches import Match, MatchCreate, MatchUpdate, MatchResult, MatchType
+from app.pagination import PaginationParams, PaginatedResponse, paginate
 
 router = APIRouter(prefix="/matches", tags=["Matches"])
 
@@ -18,21 +19,22 @@ _match_counter = len(_matches_db) + 1
 
 @router.get(
     "",
-    response_model=list[Match],
+    response_model=PaginatedResponse[Match],
     summary="List all matches",
-    description="Get a list of all matches with optional filtering.",
+    description="Get a paginated list of all matches with optional filtering.",
     responses={
         200: {
-            "description": "List of matches",
+            "description": "Paginated list of matches",
         }
     },
 )
 async def list_matches(
+    pagination: PaginationParams = Depends(),
     team_id: Optional[str] = Query(None, description="Filter by team (home or away)"),
     result: Optional[MatchResult] = Query(None, description="Filter by result"),
     match_type: Optional[MatchType] = Query(None, description="Filter by match type"),
-) -> list[Match]:
-    """List all matches with optional filters."""
+) -> PaginatedResponse[Match]:
+    """List all matches with optional filters and pagination."""
     matches = list(_matches_db.values())
 
     if team_id:
@@ -48,7 +50,13 @@ async def list_matches(
     if match_type:
         matches = [m for m in matches if m["match_type"] == match_type.value]
 
-    return [Match(**m) for m in matches]
+    paginated, total = paginate(matches, pagination.skip, pagination.limit)
+    return PaginatedResponse(
+        data=[Match(**m) for m in paginated],
+        total=total,
+        skip=pagination.skip,
+        limit=pagination.limit,
+    )
 
 
 @router.get(

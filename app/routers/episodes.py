@@ -1,10 +1,11 @@
 """Episodes router for Ted Lasso API."""
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 from typing import Optional
 
 from app.data import EPISODES
 from app.models.episodes import Episode, EpisodeCreate, EpisodeUpdate
+from app.pagination import PaginationParams, PaginatedResponse, paginate
 
 router = APIRouter(prefix="/episodes", tags=["Episodes"])
 
@@ -19,22 +20,23 @@ def _generate_id(season: int, episode_number: int) -> str:
 
 @router.get(
     "",
-    response_model=list[Episode],
+    response_model=PaginatedResponse[Episode],
     summary="List all episodes",
-    description="Get a list of all Ted Lasso episodes with optional filtering by season.",
+    description="Get a paginated list of all Ted Lasso episodes with optional filtering by season.",
     responses={
         200: {
-            "description": "List of episodes",
+            "description": "Paginated list of episodes",
         }
     },
 )
 async def list_episodes(
+    pagination: PaginationParams = Depends(),
     season: Optional[int] = Query(None, ge=1, le=3, description="Filter by season"),
     character_focus: Optional[str] = Query(
         None, description="Filter by character focus (character ID)"
     ),
-) -> list[Episode]:
-    """List all episodes with optional filters."""
+) -> PaginatedResponse[Episode]:
+    """List all episodes with optional filters and pagination."""
     episodes = list(_episodes_db.values())
 
     if season:
@@ -48,7 +50,13 @@ async def list_episodes(
     # Sort by season and episode number
     episodes.sort(key=lambda e: (e["season"], e["episode_number"]))
 
-    return [Episode(**e) for e in episodes]
+    paginated, total = paginate(episodes, pagination.skip, pagination.limit)
+    return PaginatedResponse(
+        data=[Episode(**e) for e in paginated],
+        total=total,
+        skip=pagination.skip,
+        limit=pagination.limit,
+    )
 
 
 @router.get(
@@ -184,12 +192,15 @@ async def get_episode_wisdom(episode_id: str) -> dict:
 
 @router.get(
     "/seasons/{season_number}",
-    response_model=list[Episode],
+    response_model=PaginatedResponse[Episode],
     summary="Get all episodes from a season",
-    description="Get all episodes from a specific season.",
+    description="Get a paginated list of episodes from a specific season.",
 )
-async def get_season_episodes(season_number: int) -> list[Episode]:
-    """Get all episodes from a season."""
+async def get_season_episodes(
+    season_number: int,
+    pagination: PaginationParams = Depends(),
+) -> PaginatedResponse[Episode]:
+    """Get all episodes from a season with pagination."""
     if season_number < 1 or season_number > 3:
         raise HTTPException(
             status_code=404,
@@ -199,4 +210,10 @@ async def get_season_episodes(season_number: int) -> list[Episode]:
     episodes = [e for e in _episodes_db.values() if e["season"] == season_number]
     episodes.sort(key=lambda e: e["episode_number"])
 
-    return [Episode(**e) for e in episodes]
+    paginated, total = paginate(episodes, pagination.skip, pagination.limit)
+    return PaginatedResponse(
+        data=[Episode(**e) for e in paginated],
+        total=total,
+        skip=pagination.skip,
+        limit=pagination.limit,
+    )

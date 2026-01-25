@@ -8,7 +8,11 @@ async def test_list_episodes(client):
     """Test listing all episodes."""
     response = await client.get("/episodes")
     assert response.status_code == 200
-    data = response.json()
+    result = response.json()
+    # Check pagination structure
+    assert "data" in result
+    assert "total" in result
+    data = result["data"]
     assert isinstance(data, list)
     assert len(data) > 0
 
@@ -18,7 +22,7 @@ async def test_list_episodes_filter_by_season(client):
     """Test filtering episodes by season."""
     response = await client.get("/episodes?season=1")
     assert response.status_code == 200
-    data = response.json()
+    data = response.json()["data"]
     assert all(e["season"] == 1 for e in data)
 
 
@@ -27,8 +31,18 @@ async def test_list_episodes_filter_by_character(client):
     """Test filtering episodes by character focus."""
     response = await client.get("/episodes?character_focus=ted-lasso")
     assert response.status_code == 200
-    data = response.json()
+    data = response.json()["data"]
     assert all("ted-lasso" in e["character_focus"] for e in data)
+
+
+@pytest.mark.asyncio
+async def test_list_episodes_pagination(client):
+    """Test pagination parameters."""
+    response = await client.get("/episodes?limit=3")
+    assert response.status_code == 200
+    result = response.json()
+    assert len(result["data"]) <= 3
+    assert result["limit"] == 3
 
 
 @pytest.mark.asyncio
@@ -101,7 +115,9 @@ async def test_get_season_episodes(client):
     """Test getting all episodes from a season."""
     response = await client.get("/episodes/seasons/1")
     assert response.status_code == 200
-    data = response.json()
+    result = response.json()
+    assert "data" in result
+    data = result["data"]
     assert isinstance(data, list)
     assert all(e["season"] == 1 for e in data)
 

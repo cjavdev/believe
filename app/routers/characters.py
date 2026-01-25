@@ -1,10 +1,11 @@
 """Characters router for Ted Lasso API."""
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 from typing import Optional
 
 from app.data import CHARACTERS
 from app.models.characters import Character, CharacterCreate, CharacterUpdate, CharacterRole
+from app.pagination import PaginationParams, PaginatedResponse, paginate
 
 router = APIRouter(prefix="/characters", tags=["Characters"])
 
@@ -19,44 +20,22 @@ def _generate_id(name: str) -> str:
 
 @router.get(
     "",
-    response_model=list[Character],
+    response_model=PaginatedResponse[Character],
     summary="List all characters",
-    description="Get a list of all Ted Lasso characters with optional filtering.",
+    description="Get a paginated list of all Ted Lasso characters with optional filtering.",
     responses={
         200: {
-            "description": "List of characters",
-            "content": {
-                "application/json": {
-                    "example": [
-                        {
-                            "id": "ted-lasso",
-                            "name": "Ted Lasso",
-                            "role": "coach",
-                            "team_id": "afc-richmond",
-                            "background": "Former American football coach from Kansas",
-                            "personality_traits": ["optimistic", "kind"],
-                            "emotional_stats": {
-                                "optimism": 95,
-                                "vulnerability": 80,
-                                "empathy": 100,
-                                "resilience": 90,
-                                "curiosity": 99,
-                            },
-                            "signature_quotes": ["I believe in believe."],
-                            "growth_arcs": [],
-                        }
-                    ]
-                }
-            },
+            "description": "Paginated list of characters",
         }
     },
 )
 async def list_characters(
+    pagination: PaginationParams = Depends(),
     role: Optional[CharacterRole] = Query(None, description="Filter by role"),
     team_id: Optional[str] = Query(None, description="Filter by team ID"),
     min_optimism: Optional[int] = Query(None, ge=0, le=100, description="Minimum optimism score"),
-) -> list[Character]:
-    """List all characters with optional filters."""
+) -> PaginatedResponse[Character]:
+    """List all characters with optional filters and pagination."""
     characters = list(_characters_db.values())
 
     if role:
@@ -70,7 +49,13 @@ async def list_characters(
             c for c in characters if c["emotional_stats"]["optimism"] >= min_optimism
         ]
 
-    return [Character(**c) for c in characters]
+    paginated, total = paginate(characters, pagination.skip, pagination.limit)
+    return PaginatedResponse(
+        data=[Character(**c) for c in paginated],
+        total=total,
+        skip=pagination.skip,
+        limit=pagination.limit,
+    )
 
 
 @router.get(

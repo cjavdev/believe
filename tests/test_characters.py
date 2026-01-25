@@ -8,7 +8,16 @@ async def test_list_characters(client):
     """Test listing all characters."""
     response = await client.get("/characters")
     assert response.status_code == 200
-    data = response.json()
+    result = response.json()
+    # Check pagination structure
+    assert "data" in result
+    assert "total" in result
+    assert "skip" in result
+    assert "limit" in result
+    assert "has_more" in result
+    assert "page" in result
+    assert "pages" in result
+    data = result["data"]
     assert isinstance(data, list)
     assert len(data) > 0
     # Check Ted Lasso is in the list
@@ -21,7 +30,7 @@ async def test_list_characters_filter_by_role(client):
     """Test filtering characters by role."""
     response = await client.get("/characters?role=coach")
     assert response.status_code == 200
-    data = response.json()
+    data = response.json()["data"]
     assert all(c["role"] == "coach" for c in data)
 
 
@@ -30,7 +39,7 @@ async def test_list_characters_filter_by_team(client):
     """Test filtering characters by team."""
     response = await client.get("/characters?team_id=afc-richmond")
     assert response.status_code == 200
-    data = response.json()
+    data = response.json()["data"]
     assert all(c["team_id"] == "afc-richmond" for c in data)
 
 
@@ -39,8 +48,27 @@ async def test_list_characters_filter_by_optimism(client):
     """Test filtering characters by minimum optimism."""
     response = await client.get("/characters?min_optimism=80")
     assert response.status_code == 200
-    data = response.json()
+    data = response.json()["data"]
     assert all(c["emotional_stats"]["optimism"] >= 80 for c in data)
+
+
+@pytest.mark.asyncio
+async def test_list_characters_pagination(client):
+    """Test pagination parameters."""
+    # Test with custom limit
+    response = await client.get("/characters?limit=2")
+    assert response.status_code == 200
+    result = response.json()
+    assert len(result["data"]) <= 2
+    assert result["limit"] == 2
+    assert result["skip"] == 0
+
+    # Test with skip
+    response = await client.get("/characters?skip=1&limit=2")
+    assert response.status_code == 200
+    result = response.json()
+    assert result["skip"] == 1
+    assert result["limit"] == 2
 
 
 @pytest.mark.asyncio

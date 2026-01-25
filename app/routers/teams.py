@@ -1,10 +1,11 @@
 """Teams router for Ted Lasso API."""
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 from typing import Optional
 
 from app.data import TEAMS
 from app.models.teams import Team, TeamCreate, TeamUpdate, League
+from app.pagination import PaginationParams, PaginatedResponse, paginate
 
 router = APIRouter(prefix="/teams", tags=["Teams"])
 
@@ -19,43 +20,23 @@ def _generate_id(name: str) -> str:
 
 @router.get(
     "",
-    response_model=list[Team],
+    response_model=PaginatedResponse[Team],
     summary="List all teams",
-    description="Get a list of all teams with optional filtering by league or culture score.",
+    description="Get a paginated list of all teams with optional filtering by league or culture score.",
     responses={
         200: {
-            "description": "List of teams",
-            "content": {
-                "application/json": {
-                    "example": [
-                        {
-                            "id": "afc-richmond",
-                            "name": "AFC Richmond",
-                            "nickname": "The Greyhounds",
-                            "league": "Premier League",
-                            "stadium": "Nelson Road",
-                            "founded_year": 1897,
-                            "culture_score": 95,
-                            "values": {
-                                "primary_value": "Believe",
-                                "secondary_values": ["Family", "Resilience"],
-                                "team_motto": "Football is life!",
-                            },
-                            "rival_teams": ["west-ham"],
-                        }
-                    ]
-                }
-            },
+            "description": "Paginated list of teams",
         }
     },
 )
 async def list_teams(
+    pagination: PaginationParams = Depends(),
     league: Optional[League] = Query(None, description="Filter by league"),
     min_culture_score: Optional[int] = Query(
         None, ge=0, le=100, description="Minimum culture score"
     ),
-) -> list[Team]:
-    """List all teams with optional filters."""
+) -> PaginatedResponse[Team]:
+    """List all teams with optional filters and pagination."""
     teams = list(_teams_db.values())
 
     if league:
@@ -64,7 +45,13 @@ async def list_teams(
     if min_culture_score is not None:
         teams = [t for t in teams if t["culture_score"] >= min_culture_score]
 
-    return [Team(**t) for t in teams]
+    paginated, total = paginate(teams, pagination.skip, pagination.limit)
+    return PaginatedResponse(
+        data=[Team(**t) for t in paginated],
+        total=total,
+        skip=pagination.skip,
+        limit=pagination.limit,
+    )
 
 
 @router.get(
