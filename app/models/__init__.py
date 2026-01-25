@@ -7,7 +7,7 @@ from app.models.characters import (
     EmotionalStats,
     GrowthArc,
 )
-from app.models.teams import Team, TeamCreate, TeamUpdate, TeamValues
+from app.models.teams import Team, TeamCreate, TeamUpdate, TeamValues, GeoLocation
 from app.models.matches import Match, MatchCreate, MatchUpdate, TurningPoint
 from app.models.episodes import Episode, EpisodeCreate, EpisodeUpdate
 from app.models.quotes import Quote, QuoteCreate, QuoteUpdate, QuoteTheme
@@ -36,6 +36,7 @@ __all__ = [
     "TeamCreate",
     "TeamUpdate",
     "TeamValues",
+    "GeoLocation",
     "Match",
     "MatchCreate",
     "MatchUpdate",

@@ -65,6 +65,16 @@ Perfect for SDK demos showcasing various REST API features.
 - **GET /pep-talk/stream**: SSE streaming pep talk from Ted
 - **POST /matches/{id}/commentary/stream**: Live match commentary
 
+### Data Types Coverage
+
+All common API data types are integrated across our models:
+- **Characters**: date (birth), float (height), decimal (salary), email, URL (profile image)
+- **Teams**: float (attendance, win %), decimal (budget), URL (website), email, GeoLocation (lat/long)
+- **Episodes**: date (air date), float (viewer rating, viewers in millions)
+- **Matches**: datetime, float (possession, temperature), decimal (revenue)
+- **Quotes**: float (popularity score), int (shares)
+- **File uploads**: POST /teams/{id}/logo for image uploads
+
 ### Easter Eggs
 
 - **429**: "Too Much Negativity" - when you need to be more positive

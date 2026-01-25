@@ -1,5 +1,6 @@
 """Episode models for Ted Lasso API."""
 
+from datetime import date
 from typing import Optional
 
 from pydantic import BaseModel, Field
@@ -18,11 +19,24 @@ class EpisodeBase(BaseModel):
     )
     director: str = Field(description="Episode director")
     writer: str = Field(description="Episode writer(s)")
-    air_date: str = Field(
-        description="Original air date (YYYY-MM-DD)",
+    air_date: date = Field(
+        description="Original air date",
         json_schema_extra={"example": "2020-08-14"},
     )
     runtime_minutes: int = Field(ge=20, le=60, description="Episode runtime in minutes")
+    viewer_rating: Optional[float] = Field(
+        default=None,
+        ge=0.0,
+        le=10.0,
+        description="Viewer rating out of 10",
+        json_schema_extra={"example": 8.7},
+    )
+    us_viewers_millions: Optional[float] = Field(
+        default=None,
+        ge=0.0,
+        description="US viewership in millions",
+        json_schema_extra={"example": 1.25},
+    )
     synopsis: str = Field(
         description="Brief plot synopsis",
         json_schema_extra={
@@ -76,8 +90,10 @@ class EpisodeUpdate(BaseModel):
     title: Optional[str] = Field(default=None, min_length=1, max_length=200)
     director: Optional[str] = None
     writer: Optional[str] = None
-    air_date: Optional[str] = None
+    air_date: Optional[date] = None
     runtime_minutes: Optional[int] = Field(default=None, ge=20, le=60)
+    viewer_rating: Optional[float] = Field(default=None, ge=0.0, le=10.0)
+    us_viewers_millions: Optional[float] = Field(default=None, ge=0.0)
     synopsis: Optional[str] = None
     main_theme: Optional[str] = None
     ted_wisdom: Optional[str] = None
@@ -105,6 +121,8 @@ class Episode(EpisodeBase):
                 "writer": "Jason Sudeikis, Bill Lawrence, Brendan Hunt, Joe Kelly",
                 "air_date": "2020-08-14",
                 "runtime_minutes": 32,
+                "viewer_rating": 8.7,
+                "us_viewers_millions": 1.25,
                 "synopsis": "American football coach Ted Lasso is hired to manage AFC Richmond, a struggling English Premier League team.",
                 "main_theme": "Taking chances and believing in yourself",
                 "ted_wisdom": "Taking on a challenge is a lot like riding a horse. If you're comfortable while you're doing it, you're probably doing it wrong.",

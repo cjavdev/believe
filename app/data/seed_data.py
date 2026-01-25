@@ -1,6 +1,7 @@
 """Comprehensive seed data for Ted Lasso API."""
 
-from datetime import datetime
+from datetime import date, datetime
+from decimal import Decimal
 
 # === CHARACTERS ===
 CHARACTERS = {
@@ -9,6 +10,11 @@ CHARACTERS = {
         "name": "Ted Lasso",
         "role": "coach",
         "team_id": "afc-richmond",
+        "date_of_birth": "1970-09-22",
+        "email": "ted.lasso@afcrichmond.com",
+        "profile_image_url": "https://afcrichmond.com/images/staff/ted-lasso.jpg",
+        "salary_gbp": "150000.00",
+        "height_meters": 1.83,
         "background": "Former Division II American football coach from Wichita, Kansas. Hired by Rebecca Welton to coach AFC Richmond despite having no experience with association football. Known for his relentless optimism and folksy wisdom.",
         "personality_traits": [
             "optimistic",
@@ -64,6 +70,11 @@ CHARACTERS = {
         "name": "Willis Beard",
         "role": "coach",
         "team_id": "afc-richmond",
+        "date_of_birth": "1972-03-15",
+        "email": "coach.beard@afcrichmond.com",
+        "profile_image_url": "https://afcrichmond.com/images/staff/coach-beard.jpg",
+        "salary_gbp": "95000.00",
+        "height_meters": 1.91,
         "background": "Ted's longtime assistant coach and best friend. A man of few words but deep thoughts. Former college roommate of Ted who followed him to England.",
         "personality_traits": [
             "stoic",
@@ -101,6 +112,11 @@ CHARACTERS = {
         "name": "Roy Kent",
         "role": "player",
         "team_id": "afc-richmond",
+        "date_of_birth": "1980-01-28",
+        "email": "roy.kent@afcrichmond.com",
+        "profile_image_url": "https://afcrichmond.com/images/players/roy-kent.jpg",
+        "salary_gbp": "3500000.00",
+        "height_meters": 1.78,
         "background": "Legendary midfielder, former captain of Chelsea and AFC Richmond. Known for his gruff exterior and intensity. Transitions from player to coach.",
         "personality_traits": [
             "gruff",
@@ -1219,14 +1235,23 @@ TEAMS = {
         "nickname": "The Greyhounds",
         "league": "Premier League",
         "stadium": "Nelson Road",
+        "stadium_location": {"latitude": 51.4816, "longitude": -0.1910},
         "founded_year": 1897,
+        "website": "https://www.afcrichmond.com",
+        "contact_email": "info@afcrichmond.com",
+        "annual_budget_gbp": "75000000.00",
+        "average_attendance": 24500.5,
+        "win_percentage": 52.3,
         "culture_score": 95,
+        "is_active": True,
         "values": {
             "primary_value": "Believe",
             "secondary_values": ["Family", "Resilience", "Joy", "Curiosity"],
             "team_motto": "Football is life!",
         },
         "rival_teams": ["west-ham", "tottenham"],
+        "primary_color": "#0033A0",
+        "secondary_color": "#FFFFFF",
     },
     "manchester-city": {
         "id": "manchester-city",
@@ -1234,14 +1259,23 @@ TEAMS = {
         "nickname": "The Citizens",
         "league": "Premier League",
         "stadium": "Etihad Stadium",
+        "stadium_location": {"latitude": 53.4831, "longitude": -2.2004},
         "founded_year": 1880,
+        "website": "https://www.mancity.com",
+        "contact_email": "info@mancity.com",
+        "annual_budget_gbp": "500000000.00",
+        "average_attendance": 53500.0,
+        "win_percentage": 78.5,
         "culture_score": 70,
+        "is_active": True,
         "values": {
             "primary_value": "Excellence",
             "secondary_values": ["Winning", "Skill", "Resources"],
             "team_motto": "Superbia in Proelio",
         },
         "rival_teams": ["manchester-united", "liverpool"],
+        "primary_color": "#6CABDD",
+        "secondary_color": "#1C2C5B",
     },
     "west-ham": {
         "id": "west-ham",
@@ -1406,6 +1440,8 @@ EPISODES = {
         "writer": "Jason Sudeikis, Bill Lawrence, Brendan Hunt, Joe Kelly",
         "air_date": "2020-08-14",
         "runtime_minutes": 32,
+        "viewer_rating": 8.1,
+        "us_viewers_millions": 1.25,
         "synopsis": "American football coach Ted Lasso is hired to manage AFC Richmond, a struggling English Premier League team, despite having no experience with association football.",
         "main_theme": "Taking chances and believing in yourself",
         "ted_wisdom": "Taking on a challenge is a lot like riding a horse. If you're comfortable while you're doing it, you're probably doing it wrong.",
@@ -1446,6 +1482,8 @@ EPISODES = {
         "writer": "Jane Becker",
         "air_date": "2020-09-18",
         "runtime_minutes": 29,
+        "viewer_rating": 9.4,
+        "us_viewers_millions": 2.10,
         "synopsis": "Ted creates a support group for discussing personal problems called the Diamond Dogs.",
         "main_theme": "Male friendship and vulnerability",
         "ted_wisdom": "Be curious, not judgmental.",
@@ -1528,6 +1566,10 @@ MATCHES = {
         ],
         "lesson_learned": "Sometimes growth matters more than winning.",
         "ted_halftime_speech": "You know what, fellas? I think you're all so focused on the outcome that you're forgetting to enjoy the process.",
+        "attendance": 24500,
+        "ticket_revenue_gbp": "735000.00",
+        "possession_percentage": 48.5,
+        "weather_temp_celsius": 12.5,
     },
     "match-002": {
         "id": "match-002",
@@ -1586,6 +1628,8 @@ QUOTES = {
         "moment_type": "pub",
         "is_inspirational": True,
         "is_funny": False,
+        "popularity_score": 98.5,
+        "times_shared": 2500000,
     },
     "quote-002": {
         "id": "quote-002",
@@ -1598,6 +1642,8 @@ QUOTES = {
         "moment_type": "press_conference",
         "is_inspirational": True,
         "is_funny": False,
+        "popularity_score": 95.0,
+        "times_shared": 1800000,
     },
     "quote-003": {
         "id": "quote-003",

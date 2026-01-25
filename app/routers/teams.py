@@ -1,16 +1,36 @@
 """Teams router for Ted Lasso API."""
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+import hashlib
+from datetime import datetime, timezone
 from typing import Optional
+from uuid import UUID, uuid4
+
+from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile
+from fastapi.responses import Response
+from pydantic import BaseModel
 
 from app.data import TEAMS
 from app.models.teams import Team, TeamCreate, TeamUpdate, League
 from app.pagination import PaginationParams, PaginatedResponse, paginate
 
+
+class FileUploadResponse(BaseModel):
+    """Response model for file uploads."""
+
+    file_id: UUID
+    filename: str
+    content_type: str
+    size_bytes: int
+    checksum_sha256: str
+    uploaded_at: datetime
+
 router = APIRouter(prefix="/teams", tags=["Teams"])
 
 # In-memory storage (copy of seed data)
 _teams_db: dict[str, dict] = dict(TEAMS)
+
+# File storage for team logos
+_team_files: dict[str, dict[UUID, tuple[bytes, str, str]]] = {}  # team_id -> {file_id -> (content, filename, content_type)}
 
 
 def _generate_id(name: str) -> str:
@@ -395,3 +415,139 @@ def _assess_culture(score: int) -> str:
         return "Room for improvement. Time for some Diamond Dogs sessions."
     else:
         return "Culture crisis. Needs immediate biscuits-with-the-boss intervention."
+
+
+# =============================================================================
+# FILE UPLOAD/DOWNLOAD ENDPOINTS (Logo, images, etc.)
+# =============================================================================
+
+
+@router.post(
+    "/{team_id}/logo",
+    response_model=FileUploadResponse,
+    status_code=201,
+    summary="Upload team logo",
+    description="Upload a logo image for a team. Accepts image files (jpg, png, gif, webp).",
+    responses={
+        201: {"description": "Logo uploaded successfully"},
+        404: {"description": "Team not found"},
+        415: {"description": "Unsupported file type"},
+    },
+)
+async def upload_team_logo(
+    team_id: str,
+    file: UploadFile = File(..., description="Logo image file"),
+) -> FileUploadResponse:
+    """Upload a team logo."""
+    if team_id not in _teams_db:
+        raise HTTPException(status_code=404, detail=f"Team '{team_id}' not found.")
+
+    # Validate file type
+    allowed_types = ["image/jpeg", "image/png", "image/gif", "image/webp"]
+    content_type = file.content_type or "application/octet-stream"
+    if content_type not in allowed_types:
+        raise HTTPException(
+            status_code=415,
+            detail=f"Unsupported file type '{content_type}'. Allowed: {', '.join(allowed_types)}",
+        )
+
+    # Read file content
+    content = await file.read()
+    file_id = uuid4()
+    checksum = hashlib.sha256(content).hexdigest()
+
+    # Store file
+    if team_id not in _team_files:
+        _team_files[team_id] = {}
+    _team_files[team_id][file_id] = (content, file.filename or "logo", content_type)
+
+    return FileUploadResponse(
+        file_id=file_id,
+        filename=file.filename or "logo",
+        content_type=content_type,
+        size_bytes=len(content),
+        checksum_sha256=checksum,
+        uploaded_at=datetime.now(timezone.utc),
+    )
+
+
+@router.get(
+    "/{team_id}/logo/{file_id}",
+    summary="Download team logo",
+    description="Download a team's logo by file ID.",
+    responses={
+        200: {
+            "description": "Logo file content",
+            "content": {"image/*": {}},
+        },
+        404: {"description": "Team or file not found"},
+    },
+)
+async def download_team_logo(team_id: str, file_id: UUID) -> Response:
+    """Download a team's logo."""
+    if team_id not in _teams_db:
+        raise HTTPException(status_code=404, detail=f"Team '{team_id}' not found.")
+
+    if team_id not in _team_files or file_id not in _team_files[team_id]:
+        raise HTTPException(status_code=404, detail="Logo not found.")
+
+    content, filename, content_type = _team_files[team_id][file_id]
+
+    return Response(
+        content=content,
+        media_type=content_type,
+        headers={
+            "Content-Disposition": f'inline; filename="{filename}"',
+        },
+    )
+
+
+@router.delete(
+    "/{team_id}/logo/{file_id}",
+    status_code=204,
+    summary="Delete team logo",
+    description="Delete a team's logo.",
+    responses={
+        204: {"description": "Logo deleted"},
+        404: {"description": "Team or file not found"},
+    },
+)
+async def delete_team_logo(team_id: str, file_id: UUID) -> None:
+    """Delete a team's logo."""
+    if team_id not in _teams_db:
+        raise HTTPException(status_code=404, detail=f"Team '{team_id}' not found.")
+
+    if team_id not in _team_files or file_id not in _team_files[team_id]:
+        raise HTTPException(status_code=404, detail="Logo not found.")
+
+    del _team_files[team_id][file_id]
+
+
+@router.get(
+    "/{team_id}/logos",
+    response_model=list[FileUploadResponse],
+    summary="List team logos",
+    description="List all uploaded logos for a team.",
+)
+async def list_team_logos(team_id: str) -> list[FileUploadResponse]:
+    """List all logos for a team."""
+    if team_id not in _teams_db:
+        raise HTTPException(status_code=404, detail=f"Team '{team_id}' not found.")
+
+    if team_id not in _team_files:
+        return []
+
+    logos = []
+    for file_id, (content, filename, content_type) in _team_files[team_id].items():
+        logos.append(
+            FileUploadResponse(
+                file_id=file_id,
+                filename=filename,
+                content_type=content_type,
+                size_bytes=len(content),
+                checksum_sha256=hashlib.sha256(content).hexdigest(),
+                uploaded_at=datetime.now(timezone.utc),  # Simplified for demo
+            )
+        )
+
+    return logos
