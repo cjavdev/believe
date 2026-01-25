@@ -131,7 +131,11 @@ async def test_get_coaching_principles(client):
     """Test getting all coaching principles."""
     response = await client.get("/coaching/principles")
     assert response.status_code == 200
-    data = response.json()
+    result = response.json()
+    # Check pagination structure
+    assert "data" in result
+    assert "total" in result
+    data = result["data"]
     assert isinstance(data, list)
     assert len(data) > 0
     # Check structure
@@ -162,7 +166,11 @@ async def test_get_biscuits(client):
     """Test getting all biscuits."""
     response = await client.get("/biscuits")
     assert response.status_code == 200
-    data = response.json()
+    result = response.json()
+    # Check pagination structure
+    assert "data" in result
+    assert "total" in result
+    data = result["data"]
     assert isinstance(data, list)
     assert len(data) > 0
     # Check structure

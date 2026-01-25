@@ -9,7 +9,11 @@ async def test_list_matches(client):
     """Test listing all matches."""
     response = await client.get("/matches")
     assert response.status_code == 200
-    data = response.json()
+    result = response.json()
+    # Check pagination structure
+    assert "data" in result
+    assert "total" in result
+    data = result["data"]
     assert isinstance(data, list)
     assert len(data) > 0
 
@@ -19,7 +23,7 @@ async def test_list_matches_filter_by_team(client):
     """Test filtering matches by team."""
     response = await client.get("/matches?team_id=afc-richmond")
     assert response.status_code == 200
-    data = response.json()
+    data = response.json()["data"]
     assert all(
         m["home_team_id"] == "afc-richmond" or m["away_team_id"] == "afc-richmond"
         for m in data
@@ -31,8 +35,19 @@ async def test_list_matches_filter_by_result(client):
     """Test filtering matches by result."""
     response = await client.get("/matches?result=draw")
     assert response.status_code == 200
-    data = response.json()
+    data = response.json()["data"]
     assert all(m["result"] == "draw" for m in data)
+
+
+@pytest.mark.asyncio
+async def test_list_matches_pagination(client):
+    """Test pagination parameters."""
+    response = await client.get("/matches?limit=2&skip=0")
+    assert response.status_code == 200
+    result = response.json()
+    assert len(result["data"]) <= 2
+    assert result["limit"] == 2
+    assert result["skip"] == 0
 
 
 @pytest.mark.asyncio

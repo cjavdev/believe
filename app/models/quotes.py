@@ -21,6 +21,21 @@ class QuoteTheme(str, Enum):
     LEADERSHIP = "leadership"
     LOVE = "love"
     FORGIVENESS = "forgiveness"
+    PHILOSOPHY = "philosophy"
+    ROMANCE = "romance"
+    CULTURAL_PRIDE = "cultural-pride"
+    CULTURAL_DIFFERENCES = "cultural-differences"
+    ANTAGONISM = "antagonism"
+    CELEBRATION = "celebration"
+    IDENTITY = "identity"
+    ISOLATION = "isolation"
+    POWER = "power"
+    SACRIFICE = "sacrifice"
+    STANDARDS = "standards"
+    CONFIDENCE = "confidence"
+    CONFLICT = "conflict"
+    HONESTY = "honesty"
+    INTEGRITY = "integrity"
 
 
 class QuoteMoment(str, Enum):
@@ -36,6 +51,7 @@ class QuoteMoment(str, Enum):
     CELEBRATION = "celebration"
     CRISIS = "crisis"
     CASUAL = "casual"
+    CONFRONTATION = "confrontation"
 
 
 class QuoteBase(BaseModel):

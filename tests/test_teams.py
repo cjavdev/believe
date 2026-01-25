@@ -8,7 +8,13 @@ async def test_list_teams(client):
     """Test listing all teams."""
     response = await client.get("/teams")
     assert response.status_code == 200
-    data = response.json()
+    result = response.json()
+    # Check pagination structure
+    assert "data" in result
+    assert "total" in result
+    assert "skip" in result
+    assert "limit" in result
+    data = result["data"]
     assert isinstance(data, list)
     assert len(data) > 0
     # Check AFC Richmond is in the list
@@ -21,7 +27,7 @@ async def test_list_teams_filter_by_league(client):
     """Test filtering teams by league."""
     response = await client.get("/teams?league=Premier League")
     assert response.status_code == 200
-    data = response.json()
+    data = response.json()["data"]
     assert all(t["league"] == "Premier League" for t in data)
 
 
@@ -30,8 +36,18 @@ async def test_list_teams_filter_by_culture(client):
     """Test filtering teams by minimum culture score."""
     response = await client.get("/teams?min_culture_score=80")
     assert response.status_code == 200
-    data = response.json()
+    data = response.json()["data"]
     assert all(t["culture_score"] >= 80 for t in data)
+
+
+@pytest.mark.asyncio
+async def test_list_teams_pagination(client):
+    """Test pagination parameters."""
+    response = await client.get("/teams?limit=1")
+    assert response.status_code == 200
+    result = response.json()
+    assert len(result["data"]) <= 1
+    assert result["limit"] == 1
 
 
 @pytest.mark.asyncio
