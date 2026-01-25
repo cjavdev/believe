@@ -159,6 +159,36 @@ app.include_router(streaming_router)
     summary="Welcome to the Ted Lasso API",
     description="Get a warm welcome and overview of available endpoints.",
     tags=["Root"],
+    responses={
+        200: {
+            "description": "Welcome message and API overview",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "message": "Welcome to the Ted Lasso API! Believe!",
+                        "version": "1.0.0",
+                        "ted_says": "Hey there, friend! You've made it to the Ted Lasso API. Now that's what I call a good decision!",
+                        "endpoints": {
+                            "characters": "/characters",
+                            "teams": "/teams",
+                            "matches": "/matches",
+                            "episodes": "/episodes",
+                            "quotes": "/quotes",
+                            "believe_engine": "/believe",
+                            "conflict_resolution": "/conflicts/resolve",
+                            "reframe": "/reframe",
+                            "press_conference": "/press",
+                            "coaching_principles": "/coaching/principles",
+                            "biscuits": "/biscuits",
+                            "pep_talk_stream": "/pep-talk/stream",
+                            "documentation": "/docs",
+                        },
+                        "tip": "Try GET /quotes/random for some instant wisdom!",
+                    }
+                }
+            },
+        }
+    },
 )
 async def root(request: Request):
     """Welcome endpoint with API overview."""
@@ -195,6 +225,20 @@ async def root(request: Request):
     summary="Health Check",
     description="Check if the API is running and healthy.",
     tags=["Root"],
+    responses={
+        200: {
+            "description": "API health status",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "status": "healthy",
+                        "message": "The API is running smoother than Ted's mustache!",
+                        "believe_level": "maximum",
+                    }
+                }
+            },
+        }
+    },
 )
 async def health_check():
     """Health check endpoint."""

@@ -26,6 +26,40 @@ def _generate_id(name: str) -> str:
     responses={
         200: {
             "description": "Paginated list of characters",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "data": [
+                            {
+                                "id": "ted-lasso",
+                                "name": "Ted Lasso",
+                                "role": "coach",
+                                "team_id": "afc-richmond",
+                                "background": "Former American football coach from Kansas who moved to London to coach AFC Richmond",
+                                "personality_traits": ["optimistic", "kind", "folksy", "persistent"],
+                                "emotional_stats": {
+                                    "optimism": 95,
+                                    "vulnerability": 80,
+                                    "empathy": 100,
+                                    "resilience": 90,
+                                    "curiosity": 99,
+                                },
+                                "signature_quotes": [
+                                    "I believe in believe.",
+                                    "Be curious, not judgmental.",
+                                ],
+                                "growth_arcs": [],
+                            }
+                        ],
+                        "total": 15,
+                        "skip": 0,
+                        "limit": 20,
+                        "has_more": False,
+                        "page": 1,
+                        "pages": 1,
+                    }
+                }
+            },
         }
     },
 )
@@ -64,8 +98,51 @@ async def list_characters(
     summary="Get a character by ID",
     description="Retrieve detailed information about a specific character.",
     responses={
-        200: {"description": "Character details"},
-        404: {"description": "Character not found"},
+        200: {
+            "description": "Character details",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "id": "ted-lasso",
+                        "name": "Ted Lasso",
+                        "role": "coach",
+                        "team_id": "afc-richmond",
+                        "background": "Former American football coach from Kansas who moved to London to coach AFC Richmond",
+                        "personality_traits": ["optimistic", "kind", "folksy", "persistent"],
+                        "emotional_stats": {
+                            "optimism": 95,
+                            "vulnerability": 80,
+                            "empathy": 100,
+                            "resilience": 90,
+                            "curiosity": 99,
+                        },
+                        "signature_quotes": [
+                            "I believe in believe.",
+                            "Be curious, not judgmental.",
+                        ],
+                        "growth_arcs": [
+                            {
+                                "season": 1,
+                                "starting_point": "Fish out of water, hiding pain with humor",
+                                "challenge": "Earning respect despite inexperience",
+                                "breakthrough": "Showing vulnerability about his marriage",
+                                "ending_point": "Accepted by the team despite relegation",
+                            }
+                        ],
+                    }
+                }
+            },
+        },
+        404: {
+            "description": "Character not found",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "detail": "Character 'unknown-character' not found. Be curious about who else might be in our roster!"
+                    }
+                }
+            },
+        },
     },
 )
 async def get_character(character_id: str) -> Character:
@@ -85,8 +162,40 @@ async def get_character(character_id: str) -> Character:
     summary="Create a new character",
     description="Add a new character to the Ted Lasso universe.",
     responses={
-        201: {"description": "Character created successfully"},
-        409: {"description": "Character already exists"},
+        201: {
+            "description": "Character created successfully",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "id": "mae-the-publican",
+                        "name": "Mae the Publican",
+                        "role": "other",
+                        "team_id": None,
+                        "background": "Owner of the Crown & Anchor pub near Nelson Road, unofficial heart of Richmond fandom",
+                        "personality_traits": ["welcoming", "wise", "supportive", "witty"],
+                        "emotional_stats": {
+                            "optimism": 75,
+                            "vulnerability": 60,
+                            "empathy": 85,
+                            "resilience": 80,
+                            "curiosity": 70,
+                        },
+                        "signature_quotes": ["This is a pub. People come here to feel better."],
+                        "growth_arcs": [],
+                    }
+                }
+            },
+        },
+        409: {
+            "description": "Character already exists",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "detail": "Character with ID 'ted-lasso' already exists. Everyone's unique, like snowflakes!"
+                    }
+                }
+            },
+        },
     },
 )
 async def create_character(character: CharacterCreate) -> Character:
@@ -111,8 +220,43 @@ async def create_character(character: CharacterCreate) -> Character:
     summary="Update a character",
     description="Update specific fields of an existing character.",
     responses={
-        200: {"description": "Character updated successfully"},
-        404: {"description": "Character not found"},
+        200: {
+            "description": "Character updated successfully",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "id": "ted-lasso",
+                        "name": "Ted Lasso",
+                        "role": "coach",
+                        "team_id": "afc-richmond",
+                        "background": "Former American football coach from Kansas, now beloved manager of AFC Richmond",
+                        "personality_traits": ["optimistic", "kind", "folksy", "persistent", "wise"],
+                        "emotional_stats": {
+                            "optimism": 98,
+                            "vulnerability": 85,
+                            "empathy": 100,
+                            "resilience": 95,
+                            "curiosity": 99,
+                        },
+                        "signature_quotes": [
+                            "I believe in believe.",
+                            "Be curious, not judgmental.",
+                        ],
+                        "growth_arcs": [],
+                    }
+                }
+            },
+        },
+        404: {
+            "description": "Character not found",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "detail": "Character 'unknown-character' not found. Can't update someone who doesn't exist... yet!"
+                    }
+                }
+            },
+        },
     },
 )
 async def update_character(character_id: str, updates: CharacterUpdate) -> Character:
@@ -144,7 +288,16 @@ async def update_character(character_id: str, updates: CharacterUpdate) -> Chara
     description="Remove a character from the database.",
     responses={
         204: {"description": "Character deleted successfully"},
-        404: {"description": "Character not found"},
+        404: {
+            "description": "Character not found",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "detail": "Character 'unknown-character' not found. Already gone, like yesterday's worries!"
+                    }
+                }
+            },
+        },
     },
 )
 async def delete_character(character_id: str) -> None:
@@ -163,6 +316,29 @@ async def delete_character(character_id: str) -> None:
     response_model=list[str],
     summary="Get character's signature quotes",
     description="Get all signature quotes from a specific character.",
+    responses={
+        200: {
+            "description": "List of signature quotes",
+            "content": {
+                "application/json": {
+                    "example": [
+                        "I believe in believe.",
+                        "Be curious, not judgmental.",
+                        "Taking on a challenge is a lot like riding a horse. If you're comfortable while you're doing it, you're probably doing it wrong.",
+                        "You know what the happiest animal on Earth is? It's a goldfish. You know why? Got a 10-second memory.",
+                    ]
+                }
+            },
+        },
+        404: {
+            "description": "Character not found",
+            "content": {
+                "application/json": {
+                    "example": {"detail": "Character 'unknown-character' not found."}
+                }
+            },
+        },
+    },
 )
 async def get_character_quotes(character_id: str) -> list[str]:
     """Get a character's signature quotes."""

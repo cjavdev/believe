@@ -25,6 +25,41 @@ _match_counter = len(_matches_db) + 1
     responses={
         200: {
             "description": "Paginated list of matches",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "data": [
+                            {
+                                "id": "match-001",
+                                "home_team_id": "afc-richmond",
+                                "away_team_id": "manchester-city",
+                                "match_type": "league",
+                                "date": "2024-01-15T15:00:00Z",
+                                "home_score": 2,
+                                "away_score": 2,
+                                "result": "draw",
+                                "episode_id": "s01e10",
+                                "turning_points": [
+                                    {
+                                        "minute": 89,
+                                        "description": "Jamie Tartt passes to Sam instead of shooting",
+                                        "emotional_impact": "Showed Jamie's growth from selfish to team player",
+                                        "character_involved": "jamie-tartt",
+                                    }
+                                ],
+                                "lesson_learned": "Sometimes a tie feels like a win when you've grown as people.",
+                                "ted_halftime_speech": "Guys, I want you to know, I don't care if we win or lose today.",
+                            }
+                        ],
+                        "total": 10,
+                        "skip": 0,
+                        "limit": 20,
+                        "has_more": False,
+                        "page": 1,
+                        "pages": 1,
+                    }
+                }
+            },
         }
     },
 )
@@ -65,8 +100,44 @@ async def list_matches(
     summary="Get a match by ID",
     description="Retrieve detailed information about a specific match.",
     responses={
-        200: {"description": "Match details"},
-        404: {"description": "Match not found"},
+        200: {
+            "description": "Match details",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "id": "match-001",
+                        "home_team_id": "afc-richmond",
+                        "away_team_id": "manchester-city",
+                        "match_type": "league",
+                        "date": "2024-01-15T15:00:00Z",
+                        "home_score": 2,
+                        "away_score": 2,
+                        "result": "draw",
+                        "episode_id": "s01e10",
+                        "turning_points": [
+                            {
+                                "minute": 89,
+                                "description": "Jamie Tartt passes to Sam instead of shooting",
+                                "emotional_impact": "Showed Jamie's growth from selfish to team player",
+                                "character_involved": "jamie-tartt",
+                            }
+                        ],
+                        "lesson_learned": "Sometimes a tie feels like a win when you've grown as people.",
+                        "ted_halftime_speech": "Guys, I want you to know, I don't care if we win or lose today.",
+                    }
+                }
+            },
+        },
+        404: {
+            "description": "Match not found",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "detail": "Match 'match-999' not found. Must have been played in an alternate universe!"
+                    }
+                }
+            },
+        },
     },
 )
 async def get_match(match_id: str) -> Match:
@@ -86,7 +157,27 @@ async def get_match(match_id: str) -> Match:
     summary="Create a new match",
     description="Schedule a new match.",
     responses={
-        201: {"description": "Match created successfully"},
+        201: {
+            "description": "Match created successfully",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "id": "match-011",
+                        "home_team_id": "afc-richmond",
+                        "away_team_id": "tottenham-hotspur",
+                        "match_type": "cup",
+                        "date": "2024-03-15T20:00:00Z",
+                        "home_score": 0,
+                        "away_score": 0,
+                        "result": "pending",
+                        "episode_id": None,
+                        "turning_points": [],
+                        "lesson_learned": None,
+                        "ted_halftime_speech": None,
+                    }
+                }
+            },
+        }
     },
 )
 async def create_match(match: MatchCreate) -> Match:
@@ -113,8 +204,42 @@ async def create_match(match: MatchCreate) -> Match:
     summary="Update a match",
     description="Update specific fields of an existing match (e.g., update score).",
     responses={
-        200: {"description": "Match updated successfully"},
-        404: {"description": "Match not found"},
+        200: {
+            "description": "Match updated successfully",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "id": "match-001",
+                        "home_team_id": "afc-richmond",
+                        "away_team_id": "manchester-city",
+                        "match_type": "league",
+                        "date": "2024-01-15T15:00:00Z",
+                        "home_score": 3,
+                        "away_score": 2,
+                        "result": "win",
+                        "episode_id": "s01e10",
+                        "turning_points": [
+                            {
+                                "minute": 89,
+                                "description": "Jamie Tartt passes to Sam instead of shooting",
+                                "emotional_impact": "Showed Jamie's growth from selfish to team player",
+                                "character_involved": "jamie-tartt",
+                            }
+                        ],
+                        "lesson_learned": "Believing in each other is what makes a team.",
+                        "ted_halftime_speech": "Guys, I want you to know, I don't care if we win or lose today.",
+                    }
+                }
+            },
+        },
+        404: {
+            "description": "Match not found",
+            "content": {
+                "application/json": {
+                    "example": {"detail": "Match 'match-999' not found."}
+                }
+            },
+        },
     },
 )
 async def update_match(match_id: str, updates: MatchUpdate) -> Match:
@@ -152,7 +277,14 @@ async def update_match(match_id: str, updates: MatchUpdate) -> Match:
     description="Remove a match from the database.",
     responses={
         204: {"description": "Match deleted successfully"},
-        404: {"description": "Match not found"},
+        404: {
+            "description": "Match not found",
+            "content": {
+                "application/json": {
+                    "example": {"detail": "Match 'match-999' not found."}
+                }
+            },
+        },
     },
 )
 async def delete_match(match_id: str) -> None:
@@ -170,6 +302,37 @@ async def delete_match(match_id: str) -> None:
     "/{match_id}/turning-points",
     summary="Get match turning points",
     description="Get all turning points from a specific match.",
+    responses={
+        200: {
+            "description": "List of turning points",
+            "content": {
+                "application/json": {
+                    "example": [
+                        {
+                            "minute": 45,
+                            "description": "Ted's inspirational halftime speech turns the game around",
+                            "emotional_impact": "Unified the team with renewed belief",
+                            "character_involved": "ted-lasso",
+                        },
+                        {
+                            "minute": 89,
+                            "description": "Jamie Tartt passes to Sam instead of shooting",
+                            "emotional_impact": "Showed Jamie's growth from selfish to team player",
+                            "character_involved": "jamie-tartt",
+                        },
+                    ]
+                }
+            },
+        },
+        404: {
+            "description": "Match not found",
+            "content": {
+                "application/json": {
+                    "example": {"detail": "Match 'match-999' not found."}
+                }
+            },
+        },
+    },
 )
 async def get_turning_points(match_id: str) -> list[dict]:
     """Get a match's turning points."""
@@ -186,6 +349,29 @@ async def get_turning_points(match_id: str) -> list[dict]:
     "/{match_id}/lesson",
     summary="Get match lesson",
     description="Get the life lesson learned from a specific match.",
+    responses={
+        200: {
+            "description": "Match lesson details",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "match_id": "match-001",
+                        "result": "draw",
+                        "lesson_learned": "Sometimes a tie feels like a win when you've grown as people.",
+                        "ted_halftime_speech": "Guys, I want you to know, I don't care if we win or lose today. I just want you to go out there and play the best football of your lives.",
+                    }
+                }
+            },
+        },
+        404: {
+            "description": "Match not found",
+            "content": {
+                "application/json": {
+                    "example": {"detail": "Match 'match-999' not found."}
+                }
+            },
+        },
+    },
 )
 async def get_match_lesson(match_id: str) -> dict:
     """Get the lesson learned from a match."""
