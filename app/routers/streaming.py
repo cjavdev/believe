@@ -49,11 +49,20 @@ async def stream_pep_talk():
             "description": "SSE stream of match commentary events",
             "content": {
                 "text/event-stream": {
-                    "example": 'data: {"event_id": 0, "minute": 0, "event_type": "kickoff", "description": "The match kicks off", "commentary": "And we\'re off!", "is_final": false}\n\n'
+                    "example": 'data: {"event_id": 0, "minute": 0, "event_type": "kickoff", "description": "The match kicks off", "commentary": "And we\'re off!", "ted_sideline_reaction": "Ted claps enthusiastically", "crowd_reaction": "The crowd roars", "is_final": false}\n\n'
                 }
             },
         },
-        404: {"description": "Match not found"},
+        404: {
+            "description": "Match not found",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "detail": "Match 'invalid-match' not found. Try one of our existing matches or use format 'match-XXX'!"
+                    }
+                }
+            },
+        },
     },
 )
 async def stream_match_commentary(match_id: str):
@@ -82,6 +91,11 @@ async def stream_match_commentary(match_id: str):
     responses={
         200: {
             "description": "SSE stream of test messages",
+            "content": {
+                "text/event-stream": {
+                    "example": 'data: {"sequence": 1, "message": "Testing... 1, 2, 3..."}\n\ndata: {"sequence": 2, "message": "Is this thing on?"}\n\ndata: {"sequence": 3, "message": "Believe!"}\n\n'
+                }
+            },
         }
     },
 )

@@ -26,6 +26,39 @@ def _generate_id(season: int, episode_number: int) -> str:
     responses={
         200: {
             "description": "Paginated list of episodes",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "data": [
+                            {
+                                "id": "s01e01",
+                                "season": 1,
+                                "episode_number": 1,
+                                "title": "Pilot",
+                                "director": "Tom Marshall",
+                                "writer": "Jason Sudeikis, Bill Lawrence, Brendan Hunt, Joe Kelly",
+                                "air_date": "2020-08-14",
+                                "runtime_minutes": 32,
+                                "synopsis": "American football coach Ted Lasso is hired to manage AFC Richmond, a struggling English Premier League team.",
+                                "main_theme": "Taking chances and believing in yourself",
+                                "ted_wisdom": "Taking on a challenge is a lot like riding a horse. If you're comfortable while you're doing it, you're probably doing it wrong.",
+                                "biscuits_with_boss_moment": "Ted brings Rebecca homemade biscuits for the first time.",
+                                "character_focus": ["ted-lasso", "rebecca-welton", "coach-beard"],
+                                "memorable_moments": [
+                                    "Ted's first press conference",
+                                    "The BELIEVE sign goes up",
+                                ],
+                            }
+                        ],
+                        "total": 34,
+                        "skip": 0,
+                        "limit": 20,
+                        "has_more": True,
+                        "page": 1,
+                        "pages": 2,
+                    }
+                }
+            },
         }
     },
 )
@@ -65,8 +98,43 @@ async def list_episodes(
     summary="Get an episode by ID",
     description="Retrieve detailed information about a specific episode.",
     responses={
-        200: {"description": "Episode details"},
-        404: {"description": "Episode not found"},
+        200: {
+            "description": "Episode details",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "id": "s01e01",
+                        "season": 1,
+                        "episode_number": 1,
+                        "title": "Pilot",
+                        "director": "Tom Marshall",
+                        "writer": "Jason Sudeikis, Bill Lawrence, Brendan Hunt, Joe Kelly",
+                        "air_date": "2020-08-14",
+                        "runtime_minutes": 32,
+                        "synopsis": "American football coach Ted Lasso is hired to manage AFC Richmond, a struggling English Premier League team.",
+                        "main_theme": "Taking chances and believing in yourself",
+                        "ted_wisdom": "Taking on a challenge is a lot like riding a horse. If you're comfortable while you're doing it, you're probably doing it wrong.",
+                        "biscuits_with_boss_moment": "Ted brings Rebecca homemade biscuits for the first time.",
+                        "character_focus": ["ted-lasso", "rebecca-welton", "coach-beard"],
+                        "memorable_moments": [
+                            "Ted's first press conference",
+                            "The BELIEVE sign goes up",
+                            "Ted tastes his first 'garbage water' (English tea)",
+                        ],
+                    }
+                }
+            },
+        },
+        404: {
+            "description": "Episode not found",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "detail": "Episode 's04e01' not found. Maybe it's in the blooper reel!"
+                    }
+                }
+            },
+        },
     },
 )
 async def get_episode(episode_id: str) -> Episode:
@@ -86,8 +154,39 @@ async def get_episode(episode_id: str) -> Episode:
     summary="Create a new episode",
     description="Add a new episode to the series.",
     responses={
-        201: {"description": "Episode created successfully"},
-        409: {"description": "Episode already exists"},
+        201: {
+            "description": "Episode created successfully",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "id": "s04e01",
+                        "season": 4,
+                        "episode_number": 1,
+                        "title": "New Beginnings",
+                        "director": "MJ Delaney",
+                        "writer": "Jason Sudeikis",
+                        "air_date": "2025-06-01",
+                        "runtime_minutes": 45,
+                        "synopsis": "A new chapter begins for AFC Richmond as they face their biggest challenge yet.",
+                        "main_theme": "Fresh starts and second chances",
+                        "ted_wisdom": "Every ending is just a new beginning wearing a different hat.",
+                        "biscuits_with_boss_moment": None,
+                        "character_focus": ["ted-lasso", "roy-kent"],
+                        "memorable_moments": [],
+                    }
+                }
+            },
+        },
+        409: {
+            "description": "Episode already exists",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "detail": "Episode 's01e01' already exists. No retcons allowed!"
+                    }
+                }
+            },
+        },
     },
 )
 async def create_episode(episode: EpisodeCreate) -> Episode:
@@ -112,8 +211,42 @@ async def create_episode(episode: EpisodeCreate) -> Episode:
     summary="Update an episode",
     description="Update specific fields of an existing episode.",
     responses={
-        200: {"description": "Episode updated successfully"},
-        404: {"description": "Episode not found"},
+        200: {
+            "description": "Episode updated successfully",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "id": "s01e01",
+                        "season": 1,
+                        "episode_number": 1,
+                        "title": "Pilot",
+                        "director": "Tom Marshall",
+                        "writer": "Jason Sudeikis, Bill Lawrence, Brendan Hunt, Joe Kelly",
+                        "air_date": "2020-08-14",
+                        "runtime_minutes": 32,
+                        "synopsis": "American football coach Ted Lasso is hired to manage AFC Richmond, a struggling English Premier League team.",
+                        "main_theme": "Taking chances and believing in yourself",
+                        "ted_wisdom": "Taking on a challenge is a lot like riding a horse. If you're comfortable while you're doing it, you're probably doing it wrong.",
+                        "biscuits_with_boss_moment": "Ted brings Rebecca homemade biscuits for the first time, beginning their bonding ritual.",
+                        "character_focus": ["ted-lasso", "rebecca-welton", "coach-beard"],
+                        "memorable_moments": [
+                            "Ted's first press conference",
+                            "The BELIEVE sign goes up",
+                            "Ted tastes his first 'garbage water' (English tea)",
+                            "Ted meets Nate for the first time",
+                        ],
+                    }
+                }
+            },
+        },
+        404: {
+            "description": "Episode not found",
+            "content": {
+                "application/json": {
+                    "example": {"detail": "Episode 's04e01' not found."}
+                }
+            },
+        },
     },
 )
 async def update_episode(episode_id: str, updates: EpisodeUpdate) -> Episode:
@@ -152,7 +285,14 @@ async def update_episode(episode_id: str, updates: EpisodeUpdate) -> Episode:
     description="Remove an episode from the database.",
     responses={
         204: {"description": "Episode deleted successfully"},
-        404: {"description": "Episode not found"},
+        404: {
+            "description": "Episode not found",
+            "content": {
+                "application/json": {
+                    "example": {"detail": "Episode 's04e01' not found."}
+                }
+            },
+        },
     },
 )
 async def delete_episode(episode_id: str) -> None:
@@ -170,6 +310,35 @@ async def delete_episode(episode_id: str) -> None:
     "/{episode_id}/wisdom",
     summary="Get episode wisdom",
     description="Get Ted's wisdom and memorable moments from a specific episode.",
+    responses={
+        200: {
+            "description": "Episode wisdom details",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "episode_id": "s01e01",
+                        "title": "Pilot",
+                        "main_theme": "Taking chances and believing in yourself",
+                        "ted_wisdom": "Taking on a challenge is a lot like riding a horse. If you're comfortable while you're doing it, you're probably doing it wrong.",
+                        "biscuits_with_boss_moment": "Ted brings Rebecca homemade biscuits for the first time.",
+                        "memorable_moments": [
+                            "Ted's first press conference",
+                            "The BELIEVE sign goes up",
+                            "Ted tastes his first 'garbage water' (English tea)",
+                        ],
+                    }
+                }
+            },
+        },
+        404: {
+            "description": "Episode not found",
+            "content": {
+                "application/json": {
+                    "example": {"detail": "Episode 's04e01' not found."}
+                }
+            },
+        },
+    },
 )
 async def get_episode_wisdom(episode_id: str) -> dict:
     """Get the wisdom from an episode."""
@@ -195,6 +364,51 @@ async def get_episode_wisdom(episode_id: str) -> dict:
     response_model=PaginatedResponse[Episode],
     summary="Get all episodes from a season",
     description="Get a paginated list of episodes from a specific season.",
+    responses={
+        200: {
+            "description": "Paginated list of episodes from the season",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "data": [
+                            {
+                                "id": "s01e01",
+                                "season": 1,
+                                "episode_number": 1,
+                                "title": "Pilot",
+                                "director": "Tom Marshall",
+                                "writer": "Jason Sudeikis, Bill Lawrence, Brendan Hunt, Joe Kelly",
+                                "air_date": "2020-08-14",
+                                "runtime_minutes": 32,
+                                "synopsis": "American football coach Ted Lasso is hired to manage AFC Richmond.",
+                                "main_theme": "Taking chances and believing in yourself",
+                                "ted_wisdom": "Taking on a challenge is a lot like riding a horse.",
+                                "biscuits_with_boss_moment": "Ted brings Rebecca homemade biscuits for the first time.",
+                                "character_focus": ["ted-lasso", "rebecca-welton"],
+                                "memorable_moments": ["Ted's first press conference"],
+                            }
+                        ],
+                        "total": 10,
+                        "skip": 0,
+                        "limit": 20,
+                        "has_more": False,
+                        "page": 1,
+                        "pages": 1,
+                    }
+                }
+            },
+        },
+        404: {
+            "description": "Season not found",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "detail": "Season 4 doesn't exist. Ted Lasso has 3 seasons!"
+                    }
+                }
+            },
+        },
+    },
 )
 async def get_season_episodes(
     season_number: int,

@@ -25,6 +25,32 @@ _quote_counter = len(_quotes_db) + 1
     responses={
         200: {
             "description": "Paginated list of quotes",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "data": [
+                            {
+                                "id": "quote-001",
+                                "text": "Be curious, not judgmental.",
+                                "character_id": "ted-lasso",
+                                "episode_id": "s01e08",
+                                "context": "Ted playing darts against Rupert in the pub, explaining his philosophy",
+                                "theme": "curiosity",
+                                "secondary_themes": ["wisdom", "kindness"],
+                                "moment_type": "pub",
+                                "is_inspirational": True,
+                                "is_funny": False,
+                            }
+                        ],
+                        "total": 50,
+                        "skip": 0,
+                        "limit": 20,
+                        "has_more": True,
+                        "page": 1,
+                        "pages": 3,
+                    }
+                }
+            },
         }
     },
 )
@@ -72,6 +98,37 @@ async def list_quotes(
     response_model=Quote,
     summary="Get a random quote",
     description="Get a random Ted Lasso quote, optionally filtered.",
+    responses={
+        200: {
+            "description": "A random quote",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "id": "quote-007",
+                        "text": "I believe in believe.",
+                        "character_id": "ted-lasso",
+                        "episode_id": "s01e01",
+                        "context": "Ted explaining his coaching philosophy",
+                        "theme": "belief",
+                        "secondary_themes": ["leadership"],
+                        "moment_type": "locker_room",
+                        "is_inspirational": True,
+                        "is_funny": False,
+                    }
+                }
+            },
+        },
+        404: {
+            "description": "No quotes found matching criteria",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "detail": "No quotes found matching your criteria. Try being more curious and less specific!"
+                    }
+                }
+            },
+        },
+    },
 )
 async def get_random_quote(
     character_id: Optional[str] = Query(None, description="Filter by character"),
@@ -109,8 +166,35 @@ async def get_random_quote(
     summary="Get a quote by ID",
     description="Retrieve a specific quote by its ID.",
     responses={
-        200: {"description": "Quote details"},
-        404: {"description": "Quote not found"},
+        200: {
+            "description": "Quote details",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "id": "quote-001",
+                        "text": "Be curious, not judgmental.",
+                        "character_id": "ted-lasso",
+                        "episode_id": "s01e08",
+                        "context": "Ted playing darts against Rupert in the pub, explaining his philosophy",
+                        "theme": "curiosity",
+                        "secondary_themes": ["wisdom", "kindness"],
+                        "moment_type": "pub",
+                        "is_inspirational": True,
+                        "is_funny": False,
+                    }
+                }
+            },
+        },
+        404: {
+            "description": "Quote not found",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "detail": "Quote 'quote-999' not found. The wisdom you seek is elsewhere!"
+                    }
+                }
+            },
+        },
     },
 )
 async def get_quote(quote_id: str) -> Quote:
@@ -130,7 +214,25 @@ async def get_quote(quote_id: str) -> Quote:
     summary="Create a new quote",
     description="Add a new memorable quote to the collection.",
     responses={
-        201: {"description": "Quote created successfully"},
+        201: {
+            "description": "Quote created successfully",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "id": "quote-051",
+                        "text": "Football is life! But also, football is death. And football is football too.",
+                        "character_id": "dani-rojas",
+                        "episode_id": "s02e01",
+                        "context": "Dani reflecting on the deeper meaning of the game",
+                        "theme": "philosophy",
+                        "secondary_themes": ["resilience", "humor"],
+                        "moment_type": "training",
+                        "is_inspirational": True,
+                        "is_funny": True,
+                    }
+                }
+            },
+        }
     },
 )
 async def create_quote(quote: QuoteCreate) -> Quote:
@@ -152,8 +254,33 @@ async def create_quote(quote: QuoteCreate) -> Quote:
     summary="Update a quote",
     description="Update specific fields of an existing quote.",
     responses={
-        200: {"description": "Quote updated successfully"},
-        404: {"description": "Quote not found"},
+        200: {
+            "description": "Quote updated successfully",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "id": "quote-001",
+                        "text": "Be curious, not judgmental.",
+                        "character_id": "ted-lasso",
+                        "episode_id": "s01e08",
+                        "context": "Ted playing darts against Rupert in the pub, teaching him a lesson about assumptions",
+                        "theme": "curiosity",
+                        "secondary_themes": ["wisdom", "kindness", "leadership"],
+                        "moment_type": "pub",
+                        "is_inspirational": True,
+                        "is_funny": False,
+                    }
+                }
+            },
+        },
+        404: {
+            "description": "Quote not found",
+            "content": {
+                "application/json": {
+                    "example": {"detail": "Quote 'quote-999' not found."}
+                }
+            },
+        },
     },
 )
 async def update_quote(quote_id: str, updates: QuoteUpdate) -> Quote:
@@ -182,7 +309,14 @@ async def update_quote(quote_id: str, updates: QuoteUpdate) -> Quote:
     description="Remove a quote from the collection.",
     responses={
         204: {"description": "Quote deleted successfully"},
-        404: {"description": "Quote not found"},
+        404: {
+            "description": "Quote not found",
+            "content": {
+                "application/json": {
+                    "example": {"detail": "Quote 'quote-999' not found."}
+                }
+            },
+        },
     },
 )
 async def delete_quote(quote_id: str) -> None:
@@ -201,6 +335,47 @@ async def delete_quote(quote_id: str) -> None:
     response_model=PaginatedResponse[Quote],
     summary="Get quotes by theme",
     description="Get a paginated list of quotes related to a specific theme.",
+    responses={
+        200: {
+            "description": "Paginated list of quotes for the theme",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "data": [
+                            {
+                                "id": "quote-001",
+                                "text": "Be curious, not judgmental.",
+                                "character_id": "ted-lasso",
+                                "episode_id": "s01e08",
+                                "context": "Ted playing darts against Rupert",
+                                "theme": "curiosity",
+                                "secondary_themes": ["wisdom", "kindness"],
+                                "moment_type": "pub",
+                                "is_inspirational": True,
+                                "is_funny": False,
+                            }
+                        ],
+                        "total": 8,
+                        "skip": 0,
+                        "limit": 20,
+                        "has_more": False,
+                        "page": 1,
+                        "pages": 1,
+                    }
+                }
+            },
+        },
+        404: {
+            "description": "No quotes found for theme",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "detail": "No quotes found for theme 'celebration'. We'll add some soon!"
+                    }
+                }
+            },
+        },
+    },
 )
 async def get_quotes_by_theme(
     theme: QuoteTheme,
@@ -233,6 +408,47 @@ async def get_quotes_by_theme(
     response_model=PaginatedResponse[Quote],
     summary="Get all quotes by a character",
     description="Get a paginated list of quotes from a specific character.",
+    responses={
+        200: {
+            "description": "Paginated list of quotes from the character",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "data": [
+                            {
+                                "id": "quote-010",
+                                "text": "He's here, he's there, he's every-f***ing-where, Roy Kent!",
+                                "character_id": "roy-kent",
+                                "episode_id": "s01e03",
+                                "context": "The fans chanting Roy's famous song",
+                                "theme": "celebration",
+                                "secondary_themes": ["identity"],
+                                "moment_type": "celebration",
+                                "is_inspirational": False,
+                                "is_funny": True,
+                            }
+                        ],
+                        "total": 12,
+                        "skip": 0,
+                        "limit": 20,
+                        "has_more": False,
+                        "page": 1,
+                        "pages": 1,
+                    }
+                }
+            },
+        },
+        404: {
+            "description": "No quotes found for character",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "detail": "No quotes found for character 'unknown-character'. Maybe they're the strong, silent type!"
+                    }
+                }
+            },
+        },
+    },
 )
 async def get_character_quotes(
     character_id: str,

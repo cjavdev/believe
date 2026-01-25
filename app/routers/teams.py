@@ -26,6 +26,35 @@ def _generate_id(name: str) -> str:
     responses={
         200: {
             "description": "Paginated list of teams",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "data": [
+                            {
+                                "id": "afc-richmond",
+                                "name": "AFC Richmond",
+                                "nickname": "The Greyhounds",
+                                "league": "Premier League",
+                                "stadium": "Nelson Road",
+                                "founded_year": 1897,
+                                "culture_score": 85,
+                                "values": {
+                                    "primary_value": "Believe",
+                                    "secondary_values": ["Family", "Resilience", "Joy"],
+                                    "team_motto": "Football is life!",
+                                },
+                                "rival_teams": ["west-ham", "rupert-fc"],
+                            }
+                        ],
+                        "total": 5,
+                        "skip": 0,
+                        "limit": 20,
+                        "has_more": False,
+                        "page": 1,
+                        "pages": 1,
+                    }
+                }
+            },
         }
     },
 )
@@ -60,8 +89,38 @@ async def list_teams(
     summary="Get a team by ID",
     description="Retrieve detailed information about a specific team.",
     responses={
-        200: {"description": "Team details"},
-        404: {"description": "Team not found"},
+        200: {
+            "description": "Team details",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "id": "afc-richmond",
+                        "name": "AFC Richmond",
+                        "nickname": "The Greyhounds",
+                        "league": "Premier League",
+                        "stadium": "Nelson Road",
+                        "founded_year": 1897,
+                        "culture_score": 85,
+                        "values": {
+                            "primary_value": "Believe",
+                            "secondary_values": ["Family", "Resilience", "Joy"],
+                            "team_motto": "Football is life!",
+                        },
+                        "rival_teams": ["west-ham", "rupert-fc"],
+                    }
+                }
+            },
+        },
+        404: {
+            "description": "Team not found",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "detail": "Team 'unknown-team' not found. Maybe they got relegated to obscurity!"
+                    }
+                }
+            },
+        },
     },
 )
 async def get_team(team_id: str) -> Team:
@@ -81,8 +140,38 @@ async def get_team(team_id: str) -> Team:
     summary="Create a new team",
     description="Add a new team to the league.",
     responses={
-        201: {"description": "Team created successfully"},
-        409: {"description": "Team already exists"},
+        201: {
+            "description": "Team created successfully",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "id": "tottenham-hotspur",
+                        "name": "Tottenham Hotspur",
+                        "nickname": "Spurs",
+                        "league": "Premier League",
+                        "stadium": "Tottenham Hotspur Stadium",
+                        "founded_year": 1882,
+                        "culture_score": 70,
+                        "values": {
+                            "primary_value": "Excellence",
+                            "secondary_values": ["Tradition", "Ambition"],
+                            "team_motto": "To Dare Is To Do",
+                        },
+                        "rival_teams": ["arsenal-fc"],
+                    }
+                }
+            },
+        },
+        409: {
+            "description": "Team already exists",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "detail": "Team with ID 'afc-richmond' already exists. There's only room for one!"
+                    }
+                }
+            },
+        },
     },
 )
 async def create_team(team: TeamCreate) -> Team:
@@ -107,8 +196,38 @@ async def create_team(team: TeamCreate) -> Team:
     summary="Update a team",
     description="Update specific fields of an existing team.",
     responses={
-        200: {"description": "Team updated successfully"},
-        404: {"description": "Team not found"},
+        200: {
+            "description": "Team updated successfully",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "id": "afc-richmond",
+                        "name": "AFC Richmond",
+                        "nickname": "The Greyhounds",
+                        "league": "Premier League",
+                        "stadium": "Nelson Road",
+                        "founded_year": 1897,
+                        "culture_score": 95,
+                        "values": {
+                            "primary_value": "Believe",
+                            "secondary_values": ["Family", "Resilience", "Joy", "Growth"],
+                            "team_motto": "Football is life!",
+                        },
+                        "rival_teams": ["west-ham", "rupert-fc"],
+                    }
+                }
+            },
+        },
+        404: {
+            "description": "Team not found",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "detail": "Team 'unknown-team' not found. Can't improve what doesn't exist!"
+                    }
+                }
+            },
+        },
     },
 )
 async def update_team(team_id: str, updates: TeamUpdate) -> Team:
@@ -140,7 +259,16 @@ async def update_team(team_id: str, updates: TeamUpdate) -> Team:
     description="Remove a team from the database (relegation to oblivion).",
     responses={
         204: {"description": "Team deleted successfully"},
-        404: {"description": "Team not found"},
+        404: {
+            "description": "Team not found",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "detail": "Team 'unknown-team' not found. Already relegated!"
+                    }
+                }
+            },
+        },
     },
 )
 async def delete_team(team_id: str) -> None:
@@ -159,6 +287,40 @@ async def delete_team(team_id: str) -> None:
     response_model=list[Team],
     summary="Get team's rivals",
     description="Get all rival teams for a specific team.",
+    responses={
+        200: {
+            "description": "List of rival teams",
+            "content": {
+                "application/json": {
+                    "example": [
+                        {
+                            "id": "west-ham",
+                            "name": "West Ham United",
+                            "nickname": "The Hammers",
+                            "league": "Premier League",
+                            "stadium": "London Stadium",
+                            "founded_year": 1895,
+                            "culture_score": 65,
+                            "values": {
+                                "primary_value": "Tradition",
+                                "secondary_values": ["Grit", "Pride"],
+                                "team_motto": "Fortune favours the brave",
+                            },
+                            "rival_teams": ["afc-richmond"],
+                        }
+                    ]
+                }
+            },
+        },
+        404: {
+            "description": "Team not found",
+            "content": {
+                "application/json": {
+                    "example": {"detail": "Team 'unknown-team' not found."}
+                }
+            },
+        },
+    },
 )
 async def get_team_rivals(team_id: str) -> list[Team]:
     """Get a team's rivals."""
@@ -178,6 +340,33 @@ async def get_team_rivals(team_id: str) -> list[Team]:
     "/{team_id}/culture",
     summary="Get team culture details",
     description="Get detailed culture and values information for a team.",
+    responses={
+        200: {
+            "description": "Team culture details",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "team_name": "AFC Richmond",
+                        "culture_score": 85,
+                        "values": {
+                            "primary_value": "Believe",
+                            "secondary_values": ["Family", "Resilience", "Joy"],
+                            "team_motto": "Football is life!",
+                        },
+                        "culture_assessment": "This team has embraced the BELIEVE philosophy. They're playing for each other, not just themselves.",
+                    }
+                }
+            },
+        },
+        404: {
+            "description": "Team not found",
+            "content": {
+                "application/json": {
+                    "example": {"detail": "Team 'unknown-team' not found."}
+                }
+            },
+        },
+    },
 )
 async def get_team_culture(team_id: str) -> dict:
     """Get detailed team culture information."""
