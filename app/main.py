@@ -17,6 +17,7 @@ from app.routers import (
     quotes_router,
     interactive_router,
     streaming_router,
+    team_members_router,
 )
 
 # Create the FastAPI application
@@ -33,6 +34,7 @@ Perfect for SDK demos showcasing various REST API features.
 
 - **CRUD Operations**: Full Create, Read, Update, Delete for all resources
 - **Rich Data Models**: Characters, Teams, Matches, Episodes, and Quotes
+- **Union Types (oneOf)**: Team Members demonstrate discriminated unions
 - **Interactive Endpoints**: Believe Engine, Conflict Resolution, and more
 - **SSE Streaming**: Real-time pep talks and match commentary
 - **Custom Easter Eggs**: Special HTTP status codes for fun
@@ -108,6 +110,10 @@ Perfect for SDK demos showcasing various REST API features.
             "name": "Streaming",
             "description": "Server-Sent Events (SSE) streaming endpoints",
         },
+        {
+            "name": "Team Members",
+            "description": "Team members with union types (oneOf) - Players, Coaches, Medical Staff, Equipment Managers",
+        },
     ],
 )
 
@@ -128,6 +134,7 @@ app.include_router(episodes_router)
 app.include_router(quotes_router)
 app.include_router(interactive_router)
 app.include_router(streaming_router)
+app.include_router(team_members_router)
 
 
 # Root endpoint
@@ -147,6 +154,7 @@ async def root():
         "endpoints": {
             "characters": "/characters",
             "teams": "/teams",
+            "team_members": "/team-members",
             "matches": "/matches",
             "episodes": "/episodes",
             "quotes": "/quotes",
