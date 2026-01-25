@@ -1,9 +1,11 @@
 """Character models for Ted Lasso API."""
 
+from datetime import date
+from decimal import Decimal
 from enum import Enum
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, EmailStr, Field, HttpUrl
 
 
 class CharacterRole(str, Enum):
@@ -81,6 +83,34 @@ class CharacterBase(BaseModel):
         description="ID of the team they belong to",
         json_schema_extra={"example": "afc-richmond"},
     )
+    date_of_birth: Optional[date] = Field(
+        default=None,
+        description="Character's date of birth",
+        json_schema_extra={"example": "1970-09-22"},
+    )
+    email: Optional[EmailStr] = Field(
+        default=None,
+        description="Character's email address",
+        json_schema_extra={"example": "ted.lasso@afcrichmond.com"},
+    )
+    profile_image_url: Optional[HttpUrl] = Field(
+        default=None,
+        description="URL to character's profile image",
+        json_schema_extra={"example": "https://afcrichmond.com/images/ted-lasso.jpg"},
+    )
+    salary_gbp: Optional[Decimal] = Field(
+        default=None,
+        decimal_places=2,
+        description="Annual salary in GBP",
+        json_schema_extra={"example": "150000.00"},
+    )
+    height_meters: Optional[float] = Field(
+        default=None,
+        ge=1.0,
+        le=2.5,
+        description="Height in meters",
+        json_schema_extra={"example": 1.83},
+    )
     background: str = Field(
         description="Character background and history",
         json_schema_extra={
@@ -119,6 +149,11 @@ class CharacterUpdate(BaseModel):
     name: Optional[str] = Field(default=None, min_length=1, max_length=100)
     role: Optional[CharacterRole] = None
     team_id: Optional[str] = None
+    date_of_birth: Optional[date] = None
+    email: Optional[EmailStr] = None
+    profile_image_url: Optional[HttpUrl] = None
+    salary_gbp: Optional[Decimal] = Field(default=None, decimal_places=2)
+    height_meters: Optional[float] = Field(default=None, ge=1.0, le=2.5)
     background: Optional[str] = None
     personality_traits: Optional[list[str]] = None
     emotional_stats: Optional[EmotionalStats] = None
@@ -140,6 +175,11 @@ class Character(CharacterBase):
                 "name": "Ted Lasso",
                 "role": "coach",
                 "team_id": "afc-richmond",
+                "date_of_birth": "1970-09-22",
+                "email": "ted.lasso@afcrichmond.com",
+                "profile_image_url": "https://afcrichmond.com/images/ted-lasso.jpg",
+                "salary_gbp": "150000.00",
+                "height_meters": 1.83,
                 "background": "Former American football coach from Kansas who moved to London to coach AFC Richmond",
                 "personality_traits": ["optimistic", "kind", "folksy", "persistent"],
                 "emotional_stats": {

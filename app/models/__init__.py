@@ -7,7 +7,7 @@ from app.models.characters import (
     EmotionalStats,
     GrowthArc,
 )
-from app.models.teams import Team, TeamCreate, TeamUpdate, TeamValues
+from app.models.teams import Team, TeamCreate, TeamUpdate, TeamValues, GeoLocation
 from app.models.matches import Match, MatchCreate, MatchUpdate, TurningPoint
 from app.models.episodes import Episode, EpisodeCreate, EpisodeUpdate
 from app.models.quotes import Quote, QuoteCreate, QuoteUpdate, QuoteTheme
@@ -25,27 +25,6 @@ from app.models.interactive import (
     PepTalkChunk,
     MatchCommentaryEvent,
 )
-from app.models.data_types import (
-    DataTypesShowcase,
-    DataTypesShowcaseCreate,
-    DataTypesShowcaseUpdate,
-    GeoLocation,
-    MonetaryAmount,
-    ContactInfo,
-    FileMetadata,
-    FileUploadResponse,
-    BinaryDataRequest,
-    BinaryDataResponse,
-    ContentCollection,
-    TextContent,
-    ImageContent,
-    LinkContent,
-    TimeRange,
-    DateRange,
-    Priority,
-    FileType,
-    Currency,
-)
 
 __all__ = [
     "Character",
@@ -57,6 +36,7 @@ __all__ = [
     "TeamCreate",
     "TeamUpdate",
     "TeamValues",
+    "GeoLocation",
     "Match",
     "MatchCreate",
     "MatchUpdate",
@@ -80,24 +60,4 @@ __all__ = [
     "Biscuit",
     "PepTalkChunk",
     "MatchCommentaryEvent",
-    # Data types showcase
-    "DataTypesShowcase",
-    "DataTypesShowcaseCreate",
-    "DataTypesShowcaseUpdate",
-    "GeoLocation",
-    "MonetaryAmount",
-    "ContactInfo",
-    "FileMetadata",
-    "FileUploadResponse",
-    "BinaryDataRequest",
-    "BinaryDataResponse",
-    "ContentCollection",
-    "TextContent",
-    "ImageContent",
-    "LinkContent",
-    "TimeRange",
-    "DateRange",
-    "Priority",
-    "FileType",
-    "Currency",
 ]

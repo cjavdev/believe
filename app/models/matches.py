@@ -1,6 +1,7 @@
 """Match models for Ted Lasso API."""
 
 from datetime import datetime
+from decimal import Decimal
 from enum import Enum
 from typing import Optional
 
@@ -80,6 +81,32 @@ class MatchBase(BaseModel):
             "example": "You know what the happiest animal on Earth is? It's a goldfish. You know why? It's got a 10-second memory."
         },
     )
+    attendance: Optional[int] = Field(
+        default=None,
+        ge=0,
+        description="Match attendance",
+        json_schema_extra={"example": 24500},
+    )
+    ticket_revenue_gbp: Optional[Decimal] = Field(
+        default=None,
+        decimal_places=2,
+        description="Total ticket revenue in GBP",
+        json_schema_extra={"example": "735000.00"},
+    )
+    possession_percentage: Optional[float] = Field(
+        default=None,
+        ge=0.0,
+        le=100.0,
+        description="Home team possession percentage",
+        json_schema_extra={"example": 52.3},
+    )
+    weather_temp_celsius: Optional[float] = Field(
+        default=None,
+        ge=-30.0,
+        le=50.0,
+        description="Temperature at kickoff in Celsius",
+        json_schema_extra={"example": 14.5},
+    )
 
 
 class MatchCreate(MatchBase):
@@ -102,6 +129,10 @@ class MatchUpdate(BaseModel):
     turning_points: Optional[list[TurningPoint]] = None
     lesson_learned: Optional[str] = None
     ted_halftime_speech: Optional[str] = None
+    attendance: Optional[int] = Field(default=None, ge=0)
+    ticket_revenue_gbp: Optional[Decimal] = Field(default=None, decimal_places=2)
+    possession_percentage: Optional[float] = Field(default=None, ge=0.0, le=100.0)
+    weather_temp_celsius: Optional[float] = Field(default=None, ge=-30.0, le=50.0)
 
 
 class Match(MatchBase):
@@ -133,6 +164,10 @@ class Match(MatchBase):
                 ],
                 "lesson_learned": "Sometimes a tie feels like a win when you've grown as people.",
                 "ted_halftime_speech": "Guys, I want you to know, I don't care if we win or lose today. I just want you to go out there and play the best football of your lives.",
+                "attendance": 24500,
+                "ticket_revenue_gbp": "735000.00",
+                "possession_percentage": 52.3,
+                "weather_temp_celsius": 14.5,
             }
         }
     }
