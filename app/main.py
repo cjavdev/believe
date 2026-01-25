@@ -71,10 +71,11 @@ Perfect for SDK demos showcasing various REST API features.
 
 ### API Versioning
 
-This API supports header-based versioning. Include one of these headers in your request:
+This API supports header-based versioning using date format (YYYY-MM-DD).
+Include one of these headers in your request:
 
-- `X-API-Version: 1.0.0` (preferred)
-- `API-Version: 1.0.0`
+- `X-API-Version: 2026-01-20` (preferred)
+- `API-Version: 2026-01-20`
 
 Response headers will include:
 - `X-API-Version`: The version used for the request
@@ -84,7 +85,7 @@ If no version header is provided, the API defaults to the latest stable version.
 
 *"Be curious, not judgmental."* - Ted Lasso
     """,
-    version="1.0.0",
+    version="2026-01-20",
     contact={
         "name": "AFC Richmond Technical Team",
         "email": "believe@afcrichmond.com",
@@ -219,7 +220,7 @@ async def version_info(request: Request):
         "versioning": {
             "header": "X-API-Version",
             "alternative_header": "API-Version",
-            "format": "major.minor.patch (e.g., 1.0.0)",
+            "format": "YYYY-MM-DD (e.g., 2026-01-20)",
         },
         "ted_says": "Versions are like growth, friend. "
         "We keep getting better, but we never forget where we came from!",

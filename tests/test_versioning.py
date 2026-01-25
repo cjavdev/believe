@@ -6,8 +6,7 @@ from app.middleware.versioning import (
     SUPPORTED_VERSIONS,
     DEFAULT_VERSION,
     DEPRECATED_VERSIONS,
-    _normalize_version,
-    _is_version_compatible,
+    _is_valid_date,
     _find_best_version,
 )
 
@@ -15,47 +14,33 @@ from app.middleware.versioning import (
 class TestVersionHelpers:
     """Tests for version helper functions."""
 
-    def test_normalize_version_with_patch(self):
-        """Test normalizing a version that already has patch number."""
-        assert _normalize_version("1.0.0") == "1.0.0"
-        assert _normalize_version("2.1.5") == "2.1.5"
+    def test_is_valid_date_valid(self):
+        """Test valid date formats."""
+        assert _is_valid_date("2026-01-20") is True
+        assert _is_valid_date("2025-12-31") is True
+        assert _is_valid_date("2024-06-15") is True
 
-    def test_normalize_version_without_patch(self):
-        """Test normalizing a version without patch number."""
-        assert _normalize_version("1.0") == "1.0.0"
-        assert _normalize_version("2.1") == "2.1.0"
+    def test_is_valid_date_invalid_format(self):
+        """Test invalid date formats."""
+        assert _is_valid_date("invalid") is False
+        assert _is_valid_date("2026-13-01") is False  # Invalid month
+        assert _is_valid_date("2026-00-01") is False  # Invalid month
+        assert _is_valid_date("2026-01-32") is False  # Invalid day
+        assert _is_valid_date("2026-01-00") is False  # Invalid day
 
-    def test_is_version_compatible_exact_match(self):
-        """Test compatibility check with exact version match."""
-        assert _is_version_compatible("1.0.0", "1.0.0") is True
-        assert _is_version_compatible("2.1.0", "2.1.0") is True
-
-    def test_is_version_compatible_minor_version(self):
-        """Test compatibility with different minor versions."""
-        # Lower minor version should be compatible with higher
-        assert _is_version_compatible("1.0.0", "1.1.0") is True
-        assert _is_version_compatible("1.0.0", "1.5.0") is True
-        # Higher minor version should not be compatible with lower
-        assert _is_version_compatible("1.5.0", "1.0.0") is False
-
-    def test_is_version_compatible_major_version_mismatch(self):
-        """Test that different major versions are not compatible."""
-        assert _is_version_compatible("2.0.0", "1.0.0") is False
-        assert _is_version_compatible("1.0.0", "2.0.0") is False
+    def test_is_valid_date_out_of_range_year(self):
+        """Test years outside valid range."""
+        assert _is_valid_date("2019-01-01") is False  # Too old
+        assert _is_valid_date("2101-01-01") is False  # Too far in future
 
     def test_find_best_version_exact_match(self):
         """Test finding best version with exact match."""
-        result = _find_best_version("1.0.0")
-        assert result == "1.0.0"
-
-    def test_find_best_version_with_normalization(self):
-        """Test finding best version with version normalization."""
-        result = _find_best_version("1.0")
-        assert result == "1.0.0"
+        result = _find_best_version("2026-01-20")
+        assert result == "2026-01-20"
 
     def test_find_best_version_unsupported(self):
         """Test finding best version for unsupported version."""
-        result = _find_best_version("99.0.0")
+        result = _find_best_version("2099-01-01")
         assert result is None
 
 
@@ -73,16 +58,16 @@ class TestVersionMiddlewareResponses:
     @pytest.mark.asyncio
     async def test_x_api_version_header(self, client):
         """Test X-API-Version header is recognized."""
-        response = await client.get("/", headers={"X-API-Version": "1.0.0"})
+        response = await client.get("/", headers={"X-API-Version": "2026-01-20"})
         assert response.status_code == 200
-        assert response.headers.get("X-API-Version") == "1.0.0"
+        assert response.headers.get("X-API-Version") == "2026-01-20"
 
     @pytest.mark.asyncio
     async def test_api_version_header_alternative(self, client):
         """Test API-Version header (alternative) is recognized."""
-        response = await client.get("/", headers={"API-Version": "1.0.0"})
+        response = await client.get("/", headers={"API-Version": "2026-01-20"})
         assert response.status_code == 200
-        assert response.headers.get("X-API-Version") == "1.0.0"
+        assert response.headers.get("X-API-Version") == "2026-01-20"
 
     @pytest.mark.asyncio
     async def test_x_api_version_takes_precedence(self, client):
@@ -90,12 +75,12 @@ class TestVersionMiddlewareResponses:
         response = await client.get(
             "/",
             headers={
-                "X-API-Version": "1.0.0",
-                "API-Version": "1.0.0",
+                "X-API-Version": "2026-01-20",
+                "API-Version": "2026-01-20",
             },
         )
         assert response.status_code == 200
-        assert response.headers.get("X-API-Version") == "1.0.0"
+        assert response.headers.get("X-API-Version") == "2026-01-20"
 
     @pytest.mark.asyncio
     async def test_invalid_version_format(self, client):
@@ -108,27 +93,35 @@ class TestVersionMiddlewareResponses:
         assert "ted_advice" in data
 
     @pytest.mark.asyncio
-    async def test_invalid_version_format_partial(self, client):
-        """Test that partial version format returns 400."""
-        response = await client.get("/", headers={"X-API-Version": "1"})
+    async def test_invalid_version_format_semantic(self, client):
+        """Test that semantic version format returns 400 (we use dates)."""
+        response = await client.get("/", headers={"X-API-Version": "1.0.0"})
         assert response.status_code == 400
 
     @pytest.mark.asyncio
-    async def test_invalid_version_format_too_many_parts(self, client):
-        """Test that version with too many parts returns 400."""
-        response = await client.get("/", headers={"X-API-Version": "1.0.0.0"})
+    async def test_invalid_version_format_partial_date(self, client):
+        """Test that partial date format returns 400."""
+        response = await client.get("/", headers={"X-API-Version": "2026-01"})
         assert response.status_code == 400
 
     @pytest.mark.asyncio
-    async def test_invalid_version_format_letters(self, client):
-        """Test that version with letters returns 400."""
-        response = await client.get("/", headers={"X-API-Version": "v1.0.0"})
+    async def test_invalid_version_date_bad_month(self, client):
+        """Test that invalid month in date returns 400."""
+        response = await client.get("/", headers={"X-API-Version": "2026-13-01"})
+        assert response.status_code == 400
+        data = response.json()
+        assert "Invalid Version Date" in data["error"]
+
+    @pytest.mark.asyncio
+    async def test_invalid_version_date_bad_day(self, client):
+        """Test that invalid day in date returns 400."""
+        response = await client.get("/", headers={"X-API-Version": "2026-01-32"})
         assert response.status_code == 400
 
     @pytest.mark.asyncio
     async def test_unsupported_version(self, client):
         """Test that unsupported version returns 406."""
-        response = await client.get("/", headers={"X-API-Version": "99.0.0"})
+        response = await client.get("/", headers={"X-API-Version": "2099-01-01"})
         assert response.status_code == 406
         data = response.json()
         assert "Unsupported API Version" in data["error"]
@@ -144,13 +137,6 @@ class TestVersionMiddlewareResponses:
         supported = response.headers["X-API-Supported-Versions"]
         for version in SUPPORTED_VERSIONS:
             assert version in supported
-
-    @pytest.mark.asyncio
-    async def test_version_short_format_accepted(self, client):
-        """Test that short version format (1.0) is accepted and normalized."""
-        response = await client.get("/", headers={"X-API-Version": "1.0"})
-        assert response.status_code == 200
-        assert response.headers.get("X-API-Version") == "1.0.0"
 
 
 class TestVersionEndpoint:
@@ -171,10 +157,10 @@ class TestVersionEndpoint:
     @pytest.mark.asyncio
     async def test_version_endpoint_with_header(self, client):
         """Test that /version endpoint respects version header."""
-        response = await client.get("/version", headers={"X-API-Version": "1.0.0"})
+        response = await client.get("/version", headers={"X-API-Version": "2026-01-20"})
         assert response.status_code == 200
         data = response.json()
-        assert data["current_version"] == "1.0.0"
+        assert data["current_version"] == "2026-01-20"
 
     @pytest.mark.asyncio
     async def test_version_endpoint_shows_header_info(self, client):
@@ -184,6 +170,7 @@ class TestVersionEndpoint:
         data = response.json()
         assert data["versioning"]["header"] == "X-API-Version"
         assert data["versioning"]["alternative_header"] == "API-Version"
+        assert "YYYY-MM-DD" in data["versioning"]["format"]
 
 
 class TestRootEndpointVersionInfo:
@@ -202,10 +189,10 @@ class TestRootEndpointVersionInfo:
     @pytest.mark.asyncio
     async def test_root_version_reflects_header(self, client):
         """Test that root endpoint version reflects request header."""
-        response = await client.get("/", headers={"X-API-Version": "1.0.0"})
+        response = await client.get("/", headers={"X-API-Version": "2026-01-20"})
         assert response.status_code == 200
         data = response.json()
-        assert data["version"] == "1.0.0"
+        assert data["version"] == "2026-01-20"
 
 
 class TestVersioningAcrossEndpoints:
@@ -216,26 +203,26 @@ class TestVersioningAcrossEndpoints:
         """Test that versioning works on /teams endpoint."""
         response = await client.get(
             "/teams",
-            headers={"X-API-Version": "1.0.0"},
+            headers={"X-API-Version": "2026-01-20"},
         )
         assert response.status_code == 200
-        assert response.headers.get("X-API-Version") == "1.0.0"
+        assert response.headers.get("X-API-Version") == "2026-01-20"
 
     @pytest.mark.asyncio
     async def test_versioning_on_health_endpoint(self, client):
         """Test that versioning works on /health endpoint."""
         response = await client.get(
             "/health",
-            headers={"X-API-Version": "1.0.0"},
+            headers={"X-API-Version": "2026-01-20"},
         )
         assert response.status_code == 200
-        assert response.headers.get("X-API-Version") == "1.0.0"
+        assert response.headers.get("X-API-Version") == "2026-01-20"
 
     @pytest.mark.asyncio
     async def test_invalid_version_blocked_before_endpoint(self, client):
         """Test that invalid version is blocked before reaching endpoint."""
         response = await client.get(
-            "/characters",
+            "/teams",
             headers={"X-API-Version": "invalid"},
         )
         assert response.status_code == 400
@@ -244,8 +231,8 @@ class TestVersioningAcrossEndpoints:
     async def test_unsupported_version_blocked_before_endpoint(self, client):
         """Test that unsupported version is blocked before reaching endpoint."""
         response = await client.get(
-            "/characters",
-            headers={"X-API-Version": "99.0.0"},
+            "/teams",
+            headers={"X-API-Version": "2099-12-31"},
         )
         assert response.status_code == 406
 
@@ -265,3 +252,11 @@ class TestVersionConstants:
         """Test that deprecated versions are subset of supported."""
         for version in DEPRECATED_VERSIONS:
             assert version in SUPPORTED_VERSIONS
+
+    def test_versions_are_date_format(self):
+        """Test that all versions use YYYY-MM-DD format."""
+        import re
+        date_pattern = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+        for version in SUPPORTED_VERSIONS:
+            assert date_pattern.match(version), f"Version {version} is not in YYYY-MM-DD format"
+        assert date_pattern.match(DEFAULT_VERSION)

@@ -1,5 +1,8 @@
 """API Versioning middleware for header-based version negotiation.
 
+Uses date-based versioning (YYYY-MM-DD format) to clearly differentiate
+API versions from SDK semantic versions.
+
 Supports version headers:
 - X-API-Version (primary)
 - API-Version (alternative)
@@ -17,13 +20,13 @@ from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import JSONResponse
 
-# Supported API versions (newest first)
-SUPPORTED_VERSIONS = ["1.0.0"]
-DEFAULT_VERSION = "1.0.0"
+# Supported API versions (newest first) - using date format YYYY-MM-DD
+SUPPORTED_VERSIONS = ["2026-01-20"]
+DEFAULT_VERSION = "2026-01-20"
 DEPRECATED_VERSIONS: set[str] = set()  # Add deprecated versions here as needed
 
-# Version pattern: major.minor.patch or major.minor
-VERSION_PATTERN = re.compile(r"^\d+\.\d+(\.\d+)?$")
+# Version pattern: YYYY-MM-DD date format
+VERSION_PATTERN = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
 # Request context for storing version info
 _request_version: dict[int, str] = {}
@@ -43,70 +46,43 @@ def get_api_version(request: Request) -> str:
     return _request_version.get(id(request), DEFAULT_VERSION)
 
 
-def _normalize_version(version: str) -> str:
-    """Normalize version string to major.minor.patch format.
+def _is_valid_date(version: str) -> bool:
+    """Check if the version string is a valid date.
 
     Args:
-        version: Version string (e.g., "1.0" or "1.0.0")
+        version: Version string in YYYY-MM-DD format
 
     Returns:
-        Normalized version string (e.g., "1.0.0")
+        True if the date is valid
     """
-    parts = version.split(".")
-    if len(parts) == 2:
-        return f"{version}.0"
-    return version
-
-
-def _is_version_compatible(requested: str, supported: str) -> bool:
-    """Check if a requested version is compatible with a supported version.
-
-    Uses semantic versioning compatibility:
-    - Exact match is always compatible
-    - Major version must match
-    - Requested minor version must be <= supported minor version
-
-    Args:
-        requested: The requested version
-        supported: A supported version to check against
-
-    Returns:
-        True if the versions are compatible
-    """
-    req_parts = [int(x) for x in requested.split(".")]
-    sup_parts = [int(x) for x in supported.split(".")]
-
-    # Major version must match exactly
-    if req_parts[0] != sup_parts[0]:
-        return False
-
-    # For exact version requests, check exact match or compatible
-    if req_parts[1] <= sup_parts[1]:
+    try:
+        year, month, day = map(int, version.split("-"))
+        # Basic validation
+        if year < 2020 or year > 2100:
+            return False
+        if month < 1 or month > 12:
+            return False
+        if day < 1 or day > 31:
+            return False
         return True
-
-    return False
+    except (ValueError, AttributeError):
+        return False
 
 
 def _find_best_version(requested: str) -> str | None:
     """Find the best matching supported version for a request.
 
+    For date-based versioning, we use exact matching.
+    The requested version must be in the supported versions list.
+
     Args:
-        requested: The requested version string
+        requested: The requested version string (YYYY-MM-DD)
 
     Returns:
-        The best matching supported version, or None if no match
+        The matching supported version, or None if no match
     """
-    normalized = _normalize_version(requested)
-
-    # First try exact match
-    if normalized in SUPPORTED_VERSIONS:
-        return normalized
-
-    # Then try compatibility matching
-    for supported in SUPPORTED_VERSIONS:
-        if _is_version_compatible(normalized, supported):
-            return supported
-
+    if requested in SUPPORTED_VERSIONS:
+        return requested
     return None
 
 
@@ -115,7 +91,7 @@ class APIVersionMiddleware(BaseHTTPMiddleware):
 
     This middleware:
     1. Reads version from X-API-Version or API-Version headers
-    2. Validates the version format and availability
+    2. Validates the version format (YYYY-MM-DD) and availability
     3. Sets response headers with version information
     4. Returns 400 for invalid version format
     5. Returns 406 for unsupported versions
@@ -135,21 +111,33 @@ class APIVersionMiddleware(BaseHTTPMiddleware):
         if not requested_version:
             version_to_use = DEFAULT_VERSION
         else:
-            # Validate version format
+            # Validate version format (YYYY-MM-DD)
             if not VERSION_PATTERN.match(requested_version):
                 return JSONResponse(
                     status_code=400,
                     content={
                         "error": "Invalid Version Format",
                         "message": f"The API version '{requested_version}' is not a valid format. "
-                        "Expected format: major.minor.patch (e.g., 1.0.0) or major.minor (e.g., 1.0)",
+                        "Expected format: YYYY-MM-DD (e.g., 2026-01-20)",
                         "ted_advice": "Sometimes we gotta follow the rules, friend. "
                         "But once you know 'em, you can really start to play!",
                         "supported_versions": SUPPORTED_VERSIONS,
                     },
                 )
 
-            # Find compatible version
+            # Validate it's a reasonable date
+            if not _is_valid_date(requested_version):
+                return JSONResponse(
+                    status_code=400,
+                    content={
+                        "error": "Invalid Version Date",
+                        "message": f"The API version '{requested_version}' is not a valid date.",
+                        "ted_advice": "Dates are like memories - they gotta make sense!",
+                        "supported_versions": SUPPORTED_VERSIONS,
+                    },
+                )
+
+            # Find matching version
             version_to_use = _find_best_version(requested_version)
 
             if not version_to_use:
