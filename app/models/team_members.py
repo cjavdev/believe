@@ -2,6 +2,9 @@
 
 This module shows how to use discriminated unions in Pydantic/FastAPI
 to generate oneOf schemas in OpenAPI documentation.
+
+TeamMember references a Character by ID - character details (name, bio, etc.)
+come from the Character model. TeamMember only stores role-specific data.
 """
 
 from enum import Enum
@@ -52,13 +55,14 @@ class MedicalSpecialty(str, Enum):
 
 
 class TeamMemberBase(BaseModel):
-    """Base fields shared by all team member types."""
+    """Base fields shared by all team member types.
 
-    name: str = Field(
-        min_length=1,
-        max_length=100,
-        description="Full name of the team member",
-        json_schema_extra={"example": "Jamie Tartt"},
+    References a Character by ID rather than duplicating character data.
+    """
+
+    character_id: str = Field(
+        description="ID of the character (references /characters/{id})",
+        json_schema_extra={"example": "jamie-tartt"},
     )
     team_id: str = Field(
         description="ID of the team they belong to",
@@ -69,11 +73,6 @@ class TeamMemberBase(BaseModel):
         le=50,
         description="Number of years with the current team",
         json_schema_extra={"example": 3},
-    )
-    bio: Optional[str] = Field(
-        default=None,
-        description="Short biography",
-        json_schema_extra={"example": "A talented but initially arrogant striker who grows throughout the series."},
     )
 
 
@@ -114,11 +113,6 @@ class PlayerBase(TeamMemberBase):
         description="Whether this player is team captain",
         json_schema_extra={"example": False},
     )
-    preferred_foot: str = Field(
-        default="right",
-        description="Preferred foot (left/right/both)",
-        json_schema_extra={"example": "right"},
-    )
 
 
 class CoachBase(TeamMemberBase):
@@ -137,22 +131,12 @@ class CoachBase(TeamMemberBase):
         description="Coaching certifications and licenses",
         json_schema_extra={"example": ["UEFA Pro License", "FA Level 4"]},
     )
-    previous_teams: list[str] = Field(
-        default_factory=list,
-        description="Previous teams coached",
-        json_schema_extra={"example": ["Wichita State Shockers"]},
-    )
     win_rate: Optional[float] = Field(
         default=None,
         ge=0.0,
         le=1.0,
         description="Career win rate (0.0 to 1.0)",
         json_schema_extra={"example": 0.65},
-    )
-    philosophy: Optional[str] = Field(
-        default=None,
-        description="Coaching philosophy",
-        json_schema_extra={"example": "Believe in your players, and they'll believe in themselves."},
     )
 
 
@@ -177,12 +161,6 @@ class MedicalStaffBase(TeamMemberBase):
         description="Professional license number",
         json_schema_extra={"example": "PSY-12345"},
     )
-    patients_treated: int = Field(
-        ge=0,
-        default=0,
-        description="Number of team members treated/supported",
-        json_schema_extra={"example": 25},
-    )
 
 
 class EquipmentManagerBase(TeamMemberBase):
@@ -195,23 +173,12 @@ class EquipmentManagerBase(TeamMemberBase):
     responsibilities: list[str] = Field(
         default_factory=list,
         description="List of responsibilities",
-        json_schema_extra={"example": ["Kit preparation", "Equipment maintenance", "Travel logistics"]},
-    )
-    inventory_count: int = Field(
-        ge=0,
-        default=0,
-        description="Number of items in inventory",
-        json_schema_extra={"example": 500},
+        json_schema_extra={"example": ["Kit preparation", "Equipment maintenance"]},
     )
     is_head_kitman: bool = Field(
         default=False,
         description="Whether this is the head equipment manager",
         json_schema_extra={"example": True},
-    )
-    match_day_role: Optional[str] = Field(
-        default=None,
-        description="Specific role on match days",
-        json_schema_extra={"example": "First team kit preparation and pitch-side equipment"},
     )
 
 
@@ -222,25 +189,23 @@ class Player(PlayerBase):
     """Full player model with ID."""
 
     id: str = Field(
-        description="Unique identifier",
-        json_schema_extra={"example": "jamie-tartt"},
+        description="Unique identifier for this team membership",
+        json_schema_extra={"example": "jamie-tartt-richmond"},
     )
 
     model_config = {
         "json_schema_extra": {
             "example": {
-                "id": "jamie-tartt",
+                "id": "jamie-tartt-richmond",
                 "member_type": "player",
-                "name": "Jamie Tartt",
+                "character_id": "jamie-tartt",
                 "team_id": "afc-richmond",
                 "years_with_team": 3,
-                "bio": "A talented striker who evolved from arrogant to team-first player.",
                 "position": "forward",
                 "jersey_number": 9,
                 "goals_scored": 47,
                 "assists": 23,
                 "is_captain": False,
-                "preferred_foot": "right",
             }
         }
     }
@@ -250,24 +215,21 @@ class Coach(CoachBase):
     """Full coach model with ID."""
 
     id: str = Field(
-        description="Unique identifier",
-        json_schema_extra={"example": "ted-lasso-coach"},
+        description="Unique identifier for this team membership",
+        json_schema_extra={"example": "ted-lasso-richmond"},
     )
 
     model_config = {
         "json_schema_extra": {
             "example": {
-                "id": "ted-lasso-coach",
+                "id": "ted-lasso-richmond",
                 "member_type": "coach",
-                "name": "Ted Lasso",
+                "character_id": "ted-lasso",
                 "team_id": "afc-richmond",
                 "years_with_team": 2,
-                "bio": "American football coach turned English football manager.",
                 "specialty": "head_coach",
                 "certifications": ["NCAA Division II"],
-                "previous_teams": ["Wichita State Shockers"],
                 "win_rate": 0.55,
-                "philosophy": "Believe in believe.",
             }
         }
     }
@@ -277,23 +239,21 @@ class MedicalStaff(MedicalStaffBase):
     """Full medical staff model with ID."""
 
     id: str = Field(
-        description="Unique identifier",
-        json_schema_extra={"example": "dr-sharon-fieldstone"},
+        description="Unique identifier for this team membership",
+        json_schema_extra={"example": "sharon-fieldstone-richmond"},
     )
 
     model_config = {
         "json_schema_extra": {
             "example": {
-                "id": "dr-sharon-fieldstone",
+                "id": "sharon-fieldstone-richmond",
                 "member_type": "medical_staff",
-                "name": "Dr. Sharon Fieldstone",
+                "character_id": "dr-sharon",
                 "team_id": "afc-richmond",
                 "years_with_team": 1,
-                "bio": "Team sports psychologist who helps players with mental health.",
                 "specialty": "sports_psychologist",
-                "qualifications": ["PhD Clinical Psychology", "Sports Psychology Certification"],
+                "qualifications": ["PhD Clinical Psychology"],
                 "license_number": "PSY-12345",
-                "patients_treated": 25,
             }
         }
     }
@@ -303,23 +263,20 @@ class EquipmentManager(EquipmentManagerBase):
     """Full equipment manager model with ID."""
 
     id: str = Field(
-        description="Unique identifier",
-        json_schema_extra={"example": "nathan-shelley-kitman"},
+        description="Unique identifier for this team membership",
+        json_schema_extra={"example": "nate-kitman-richmond"},
     )
 
     model_config = {
         "json_schema_extra": {
             "example": {
-                "id": "nathan-shelley-kitman",
+                "id": "nate-kitman-richmond",
                 "member_type": "equipment_manager",
-                "name": "Nathan Shelley",
+                "character_id": "nathan-shelley",
                 "team_id": "afc-richmond",
                 "years_with_team": 5,
-                "bio": "Former kit man who showed tactical genius.",
                 "responsibilities": ["Kit preparation", "Equipment maintenance"],
-                "inventory_count": 500,
                 "is_head_kitman": True,
-                "match_day_role": "First team kit preparation",
             }
         }
     }
@@ -348,56 +305,42 @@ TeamMemberCreate = Annotated[
 class PlayerUpdate(BaseModel):
     """Update model for players."""
 
-    name: Optional[str] = Field(default=None, min_length=1, max_length=100)
     team_id: Optional[str] = None
     years_with_team: Optional[int] = Field(default=None, ge=0, le=50)
-    bio: Optional[str] = None
     position: Optional[Position] = None
     jersey_number: Optional[int] = Field(default=None, ge=1, le=99)
     goals_scored: Optional[int] = Field(default=None, ge=0)
     assists: Optional[int] = Field(default=None, ge=0)
     is_captain: Optional[bool] = None
-    preferred_foot: Optional[str] = None
 
 
 class CoachUpdate(BaseModel):
     """Update model for coaches."""
 
-    name: Optional[str] = Field(default=None, min_length=1, max_length=100)
     team_id: Optional[str] = None
     years_with_team: Optional[int] = Field(default=None, ge=0, le=50)
-    bio: Optional[str] = None
     specialty: Optional[CoachSpecialty] = None
     certifications: Optional[list[str]] = None
-    previous_teams: Optional[list[str]] = None
     win_rate: Optional[float] = Field(default=None, ge=0.0, le=1.0)
-    philosophy: Optional[str] = None
 
 
 class MedicalStaffUpdate(BaseModel):
     """Update model for medical staff."""
 
-    name: Optional[str] = Field(default=None, min_length=1, max_length=100)
     team_id: Optional[str] = None
     years_with_team: Optional[int] = Field(default=None, ge=0, le=50)
-    bio: Optional[str] = None
     specialty: Optional[MedicalSpecialty] = None
     qualifications: Optional[list[str]] = None
     license_number: Optional[str] = None
-    patients_treated: Optional[int] = Field(default=None, ge=0)
 
 
 class EquipmentManagerUpdate(BaseModel):
     """Update model for equipment managers."""
 
-    name: Optional[str] = Field(default=None, min_length=1, max_length=100)
     team_id: Optional[str] = None
     years_with_team: Optional[int] = Field(default=None, ge=0, le=50)
-    bio: Optional[str] = None
     responsibilities: Optional[list[str]] = None
-    inventory_count: Optional[int] = Field(default=None, ge=0)
     is_head_kitman: Optional[bool] = None
-    match_day_role: Optional[str] = None
 
 
 # Union for updates - also demonstrates oneOf

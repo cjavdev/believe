@@ -36,9 +36,9 @@ router = APIRouter(prefix="/team-members", tags=["Team Members"])
 _members_db: dict[str, dict] = dict(TEAM_MEMBERS)
 
 
-def _generate_id(name: str) -> str:
-    """Generate a URL-friendly ID from a name."""
-    return name.lower().replace(" ", "-").replace("'", "").replace(".", "")
+def _generate_id(character_id: str, team_id: str) -> str:
+    """Generate a URL-friendly ID from character and team IDs."""
+    return f"{character_id}-{team_id}"
 
 
 def _dict_to_model(data: dict) -> TeamMember:
@@ -102,10 +102,12 @@ async def list_team_members(
     description="""Retrieve detailed information about a specific team member.
 
 The response is a **union type (oneOf)** - the actual shape depends on the member's type:
-- **player**: Includes position, jersey_number, goals, assists
+- **player**: Includes position, jersey_number, goals_scored, assists, is_captain
 - **coach**: Includes specialty, certifications, win_rate
-- **medical_staff**: Includes medical specialty, qualifications
-- **equipment_manager**: Includes responsibilities, inventory
+- **medical_staff**: Includes specialty, qualifications, license_number
+- **equipment_manager**: Includes responsibilities, is_head_kitman
+
+Use `character_id` to fetch full character details from `/characters/{character_id}`.
 """,
     responses={
         200: {"description": "Team member details (oneOf based on member_type)"},
@@ -135,11 +137,13 @@ The request body is a **union type (oneOf)** - you must include the `member_type
 - `"member_type": "medical_staff"` - Creates medical staff (requires medical specialty, etc.)
 - `"member_type": "equipment_manager"` - Creates equipment manager (requires responsibilities, etc.)
 
+The `character_id` field references an existing character from `/characters/{id}`.
+
 **Example for creating a player:**
 ```json
 {
   "member_type": "player",
-  "name": "Sam Obisanya",
+  "character_id": "sam-obisanya",
   "team_id": "afc-richmond",
   "years_with_team": 2,
   "position": "midfielder",
@@ -156,7 +160,7 @@ The request body is a **union type (oneOf)** - you must include the `member_type
 )
 async def create_team_member(member: TeamMemberCreate) -> TeamMember:
     """Create a new team member."""
-    member_id = _generate_id(member.name)
+    member_id = _generate_id(member.character_id, member.team_id)
 
     if member_id in _members_db:
         raise HTTPException(
