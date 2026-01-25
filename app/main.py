@@ -17,6 +17,7 @@ from app.routers import (
     quotes_router,
     interactive_router,
     streaming_router,
+    data_types_router,
 )
 
 # Create the FastAPI application
@@ -58,6 +59,16 @@ Perfect for SDK demos showcasing various REST API features.
 
 - **GET /pep-talk/stream**: SSE streaming pep talk from Ted
 - **POST /matches/{id}/commentary/stream**: Live match commentary
+
+### Data Types Demo
+
+Full coverage of all common API data types for SDK testing:
+- **Scalar types**: string, integer, float, decimal, boolean
+- **Date/time types**: date, time, datetime
+- **Identifier types**: UUID, URL (HttpUrl), Email (EmailStr)
+- **Collection types**: arrays, nested objects, dictionaries/maps
+- **File operations**: upload, download, binary (base64)
+- **Special types**: enums, optional/nullable, union/polymorphic
 
 ### Easter Eggs
 
@@ -108,6 +119,10 @@ Perfect for SDK demos showcasing various REST API features.
             "name": "Streaming",
             "description": "Server-Sent Events (SSE) streaming endpoints",
         },
+        {
+            "name": "Data Types Demo",
+            "description": "Comprehensive data type coverage for SDK demos (string, int, float, decimal, date, time, datetime, UUID, URL, email, arrays, objects, files, binary)",
+        },
     ],
 )
 
@@ -128,6 +143,7 @@ app.include_router(episodes_router)
 app.include_router(quotes_router)
 app.include_router(interactive_router)
 app.include_router(streaming_router)
+app.include_router(data_types_router)
 
 
 # Root endpoint
@@ -157,6 +173,7 @@ async def root():
             "coaching_principles": "/coaching/principles",
             "biscuits": "/biscuits",
             "pep_talk_stream": "/pep-talk/stream",
+            "data_types_demo": "/data-types",
             "documentation": "/docs",
         },
         "tip": "Try GET /quotes/random for some instant wisdom!",
