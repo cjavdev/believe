@@ -4,10 +4,11 @@ A comprehensive API celebrating the wisdom, humor, and heart of Ted Lasso.
 Perfect for SDK demos showcasing REST API features.
 """
 
-from fastapi import FastAPI, Request
+from fastapi import Depends, FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.auth import verify_api_key
 from app.routers import (
     characters_router,
     teams_router,
@@ -21,6 +22,7 @@ from app.routers import (
 # Create the FastAPI application
 app = FastAPI(
     title="Ted Lasso API",
+    dependencies=[Depends(verify_api_key)],
     description="""
 ## Believe in the Power of Positivity!
 
