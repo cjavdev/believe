@@ -8,6 +8,12 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.middleware.versioning import (
+    APIVersionMiddleware,
+    SUPPORTED_VERSIONS,
+    DEFAULT_VERSION,
+    get_api_version,
+)
 from app.routers import (
     characters_router,
     teams_router,
@@ -62,6 +68,19 @@ Perfect for SDK demos showcasing various REST API features.
 - **429**: "Too Much Negativity" - when you need to be more positive
 - **403**: "Judgment Without Curiosity" - be curious, not judgmental
 - **418**: "I'm a Believer!" - when you believe too much (is that possible?)
+
+### API Versioning
+
+This API supports header-based versioning. Include one of these headers in your request:
+
+- `X-API-Version: 1.0.0` (preferred)
+- `API-Version: 1.0.0`
+
+Response headers will include:
+- `X-API-Version`: The version used for the request
+- `X-API-Supported-Versions`: List of all supported versions
+
+If no version header is provided, the API defaults to the latest stable version.
 
 *"Be curious, not judgmental."* - Ted Lasso
     """,
@@ -118,6 +137,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Add API versioning middleware
+app.add_middleware(APIVersionMiddleware)
+
 # Include routers
 app.include_router(characters_router)
 app.include_router(teams_router)
@@ -135,11 +157,14 @@ app.include_router(streaming_router)
     description="Get a warm welcome and overview of available endpoints.",
     tags=["Root"],
 )
-async def root():
+async def root(request: Request):
     """Welcome endpoint with API overview."""
+    current_version = get_api_version(request)
     return {
         "message": "Welcome to the Ted Lasso API! Believe!",
-        "version": "1.0.0",
+        "version": current_version,
+        "supported_versions": SUPPORTED_VERSIONS,
+        "default_version": DEFAULT_VERSION,
         "ted_says": "Hey there, friend! You've made it to the Ted Lasso API. "
         "Now that's what I call a good decision!",
         "endpoints": {
@@ -174,6 +199,30 @@ async def health_check():
         "status": "healthy",
         "message": "The API is running smoother than Ted's mustache!",
         "believe_level": "maximum",
+    }
+
+
+# Version endpoint
+@app.get(
+    "/version",
+    summary="API Version Information",
+    description="Get detailed information about API versioning.",
+    tags=["Root"],
+)
+async def version_info(request: Request):
+    """Get API version information."""
+    current_version = get_api_version(request)
+    return {
+        "current_version": current_version,
+        "default_version": DEFAULT_VERSION,
+        "supported_versions": SUPPORTED_VERSIONS,
+        "versioning": {
+            "header": "X-API-Version",
+            "alternative_header": "API-Version",
+            "format": "major.minor.patch (e.g., 1.0.0)",
+        },
+        "ted_says": "Versions are like growth, friend. "
+        "We keep getting better, but we never forget where we came from!",
     }
 
 
