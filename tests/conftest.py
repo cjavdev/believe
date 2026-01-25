@@ -4,20 +4,18 @@ import os
 import pytest
 from httpx import AsyncClient, ASGITransport
 
-# Set API key for testing before importing app
-os.environ["API_KEY"] = "test-api-key-believe"
+# Set API key for testing before importing the app
+os.environ["API_KEY"] = "test-api-key"
 
 from app.main import app
 
 
 @pytest.fixture
 async def client():
-    """Create an async test client with API key authentication."""
+    """Create an async test client with authentication."""
     transport = ASGITransport(app=app)
-    headers = {"Authorization": "Bearer test-api-key-believe"}
-    async with AsyncClient(
-        transport=transport, base_url="http://test", headers=headers
-    ) as ac:
+    headers = {"Authorization": "Bearer test-api-key"}
+    async with AsyncClient(transport=transport, base_url="http://test", headers=headers) as ac:
         yield ac
 
 

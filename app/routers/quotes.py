@@ -1,11 +1,12 @@
 """Quotes router for Ted Lasso API."""
 
 import random
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 from typing import Optional
 
 from app.data import QUOTES
 from app.models.quotes import Quote, QuoteCreate, QuoteUpdate, QuoteTheme, QuoteMoment
+from app.pagination import PaginationParams, PaginatedResponse, paginate
 
 router = APIRouter(prefix="/quotes", tags=["Quotes"])
 
@@ -18,23 +19,24 @@ _quote_counter = len(_quotes_db) + 1
 
 @router.get(
     "",
-    response_model=list[Quote],
+    response_model=PaginatedResponse[Quote],
     summary="List all quotes",
-    description="Get a list of all memorable Ted Lasso quotes with optional filtering.",
+    description="Get a paginated list of all memorable Ted Lasso quotes with optional filtering.",
     responses={
         200: {
-            "description": "List of quotes",
+            "description": "Paginated list of quotes",
         }
     },
 )
 async def list_quotes(
+    pagination: PaginationParams = Depends(),
     character_id: Optional[str] = Query(None, description="Filter by character"),
     theme: Optional[QuoteTheme] = Query(None, description="Filter by theme"),
     moment_type: Optional[QuoteMoment] = Query(None, description="Filter by moment type"),
     inspirational: Optional[bool] = Query(None, description="Filter inspirational quotes"),
     funny: Optional[bool] = Query(None, description="Filter funny quotes"),
-) -> list[Quote]:
-    """List all quotes with optional filters."""
+) -> PaginatedResponse[Quote]:
+    """List all quotes with optional filters and pagination."""
     quotes = list(_quotes_db.values())
 
     if character_id:
@@ -56,7 +58,13 @@ async def list_quotes(
     if funny is not None:
         quotes = [q for q in quotes if q.get("is_funny") == funny]
 
-    return [Quote(**q) for q in quotes]
+    paginated, total = paginate(quotes, pagination.skip, pagination.limit)
+    return PaginatedResponse(
+        data=[Quote(**q) for q in paginated],
+        total=total,
+        skip=pagination.skip,
+        limit=pagination.limit,
+    )
 
 
 @router.get(
@@ -190,12 +198,15 @@ async def delete_quote(quote_id: str) -> None:
 
 @router.get(
     "/themes/{theme}",
-    response_model=list[Quote],
+    response_model=PaginatedResponse[Quote],
     summary="Get quotes by theme",
-    description="Get all quotes related to a specific theme.",
+    description="Get a paginated list of quotes related to a specific theme.",
 )
-async def get_quotes_by_theme(theme: QuoteTheme) -> list[Quote]:
-    """Get quotes by theme."""
+async def get_quotes_by_theme(
+    theme: QuoteTheme,
+    pagination: PaginationParams = Depends(),
+) -> PaginatedResponse[Quote]:
+    """Get quotes by theme with pagination."""
     quotes = [
         q
         for q in _quotes_db.values()
@@ -208,17 +219,26 @@ async def get_quotes_by_theme(theme: QuoteTheme) -> list[Quote]:
             detail=f"No quotes found for theme '{theme.value}'. We'll add some soon!",
         )
 
-    return [Quote(**q) for q in quotes]
+    paginated, total = paginate(quotes, pagination.skip, pagination.limit)
+    return PaginatedResponse(
+        data=[Quote(**q) for q in paginated],
+        total=total,
+        skip=pagination.skip,
+        limit=pagination.limit,
+    )
 
 
 @router.get(
     "/characters/{character_id}",
-    response_model=list[Quote],
+    response_model=PaginatedResponse[Quote],
     summary="Get all quotes by a character",
-    description="Get all quotes from a specific character.",
+    description="Get a paginated list of quotes from a specific character.",
 )
-async def get_character_quotes(character_id: str) -> list[Quote]:
-    """Get all quotes by a character."""
+async def get_character_quotes(
+    character_id: str,
+    pagination: PaginationParams = Depends(),
+) -> PaginatedResponse[Quote]:
+    """Get all quotes by a character with pagination."""
     quotes = [q for q in _quotes_db.values() if q["character_id"] == character_id]
 
     if not quotes:
@@ -227,4 +247,10 @@ async def get_character_quotes(character_id: str) -> list[Quote]:
             detail=f"No quotes found for character '{character_id}'. Maybe they're the strong, silent type!",
         )
 
-    return [Quote(**q) for q in quotes]
+    paginated, total = paginate(quotes, pagination.skip, pagination.limit)
+    return PaginatedResponse(
+        data=[Quote(**q) for q in paginated],
+        total=total,
+        skip=pagination.skip,
+        limit=pagination.limit,
+    )

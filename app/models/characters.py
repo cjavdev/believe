@@ -15,6 +15,7 @@ class CharacterRole(str, Enum):
     MANAGER = "manager"
     STAFF = "staff"
     JOURNALIST = "journalist"
+    FAMILY = "family"
     OTHER = "other"
 
 

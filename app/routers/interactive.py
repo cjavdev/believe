@@ -1,10 +1,11 @@
 """Interactive endpoints router for Ted Lasso API."""
 
 import random
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import JSONResponse
 
 from app.data import COACHING_PRINCIPLES, BISCUITS
+from app.pagination import PaginationParams, PaginatedResponse, paginate
 from app.models.interactive import (
     BelieveRequest,
     BelieveResponse,
@@ -167,16 +168,24 @@ async def press_conference(request: PressConferenceRequest) -> PressConferenceRe
 
 @router.get(
     "/coaching/principles",
-    response_model=list[CoachingPrinciple],
+    response_model=PaginatedResponse[CoachingPrinciple],
     summary="Get Coaching Principles",
-    description="Get Ted Lasso's core coaching principles and philosophy.",
+    description="Get a paginated list of Ted Lasso's core coaching principles and philosophy.",
     responses={
-        200: {"description": "List of coaching principles"},
+        200: {"description": "Paginated list of coaching principles"},
     },
 )
-async def get_coaching_principles() -> list[CoachingPrinciple]:
-    """Get all Ted Lasso coaching principles."""
-    return [CoachingPrinciple(**p) for p in COACHING_PRINCIPLES]
+async def get_coaching_principles(
+    pagination: PaginationParams = Depends(),
+) -> PaginatedResponse[CoachingPrinciple]:
+    """Get all Ted Lasso coaching principles with pagination."""
+    paginated, total = paginate(COACHING_PRINCIPLES, pagination.skip, pagination.limit)
+    return PaginatedResponse(
+        data=[CoachingPrinciple(**p) for p in paginated],
+        total=total,
+        skip=pagination.skip,
+        limit=pagination.limit,
+    )
 
 
 @router.get(
@@ -213,16 +222,24 @@ async def get_random_principle() -> CoachingPrinciple:
 
 @router.get(
     "/biscuits",
-    response_model=list[Biscuit],
+    response_model=PaginatedResponse[Biscuit],
     summary="Biscuits as a Service",
-    description="Get Ted's famous homemade biscuits! Each comes with a heartwarming message.",
+    description="Get a paginated list of Ted's famous homemade biscuits! Each comes with a heartwarming message.",
     responses={
-        200: {"description": "Fresh biscuits from Ted's kitchen"},
+        200: {"description": "Paginated list of fresh biscuits from Ted's kitchen"},
     },
 )
-async def get_biscuits() -> list[Biscuit]:
-    """Get all available biscuits."""
-    return [Biscuit(**b) for b in BISCUITS]
+async def get_biscuits(
+    pagination: PaginationParams = Depends(),
+) -> PaginatedResponse[Biscuit]:
+    """Get all available biscuits with pagination."""
+    paginated, total = paginate(BISCUITS, pagination.skip, pagination.limit)
+    return PaginatedResponse(
+        data=[Biscuit(**b) for b in paginated],
+        total=total,
+        skip=pagination.skip,
+        limit=pagination.limit,
+    )
 
 
 @router.get(
