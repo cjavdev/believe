@@ -7,6 +7,7 @@ from app.routers.episodes import router as episodes_router
 from app.routers.quotes import router as quotes_router
 from app.routers.interactive import router as interactive_router
 from app.routers.streaming import router as streaming_router
+from app.routers.team_members import router as team_members_router
 
 __all__ = [
     "characters_router",
@@ -16,4 +17,5 @@ __all__ = [
     "quotes_router",
     "interactive_router",
     "streaming_router",
+    "team_members_router",
 ]

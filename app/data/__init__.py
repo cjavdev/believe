@@ -11,6 +11,7 @@ from app.data.seed_data import (
     PEP_TALK_SEGMENTS,
     BELIEVE_RESPONSES,
     REFRAME_TEMPLATES,
+    TEAM_MEMBERS,
 )
 
 __all__ = [
@@ -24,4 +25,5 @@ __all__ = [
     "PEP_TALK_SEGMENTS",
     "BELIEVE_RESPONSES",
     "REFRAME_TEMPLATES",
+    "TEAM_MEMBERS",
 ]
