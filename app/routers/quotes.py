@@ -1,13 +1,13 @@
 """Quotes router for Ted Lasso API."""
 
 import random
+
 from fastapi import APIRouter, Depends, HTTPException, Query
-from typing import Optional
 
 from app.auth import verify_api_key
 from app.data import QUOTES
-from app.models.quotes import Quote, QuoteCreate, QuoteUpdate, QuoteTheme, QuoteMoment
-from app.pagination import PaginationParams, PaginatedResponse, paginate
+from app.models.quotes import Quote, QuoteCreate, QuoteMoment, QuoteTheme, QuoteUpdate
+from app.pagination import PaginatedResponse, PaginationParams, paginate
 
 router = APIRouter(
     prefix="/quotes",
@@ -61,11 +61,11 @@ _quote_counter = len(_quotes_db) + 1
 )
 async def list_quotes(
     pagination: PaginationParams = Depends(),
-    character_id: Optional[str] = Query(None, description="Filter by character"),
-    theme: Optional[QuoteTheme] = Query(None, description="Filter by theme"),
-    moment_type: Optional[QuoteMoment] = Query(None, description="Filter by moment type"),
-    inspirational: Optional[bool] = Query(None, description="Filter inspirational quotes"),
-    funny: Optional[bool] = Query(None, description="Filter funny quotes"),
+    character_id: str | None = Query(None, description="Filter by character"),
+    theme: QuoteTheme | None = Query(None, description="Filter by theme"),
+    moment_type: QuoteMoment | None = Query(None, description="Filter by moment type"),
+    inspirational: bool | None = Query(None, description="Filter inspirational quotes"),
+    funny: bool | None = Query(None, description="Filter funny quotes"),
 ) -> PaginatedResponse[Quote]:
     """List all quotes with optional filters and pagination."""
     quotes = list(_quotes_db.values())
@@ -136,9 +136,9 @@ async def list_quotes(
     },
 )
 async def get_random_quote(
-    character_id: Optional[str] = Query(None, description="Filter by character"),
-    theme: Optional[QuoteTheme] = Query(None, description="Filter by theme"),
-    inspirational: Optional[bool] = Query(None, description="Filter inspirational quotes"),
+    character_id: str | None = Query(None, description="Filter by character"),
+    theme: QuoteTheme | None = Query(None, description="Filter by theme"),
+    inspirational: bool | None = Query(None, description="Filter inspirational quotes"),
 ) -> Quote:
     """Get a random quote."""
     quotes = list(_quotes_db.values())

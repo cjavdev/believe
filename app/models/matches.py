@@ -3,7 +3,6 @@
 from datetime import datetime
 from decimal import Decimal
 from enum import Enum
-from typing import Optional
 
 from pydantic import BaseModel, Field
 
@@ -36,7 +35,7 @@ class TurningPoint(BaseModel):
         description="How this affected the team emotionally",
         json_schema_extra={"example": "Galvanized the team's fighting spirit"},
     )
-    character_involved: Optional[str] = Field(
+    character_involved: str | None = Field(
         default=None,
         description="Character ID who was central to this moment",
         json_schema_extra={"example": "jamie-tartt"},
@@ -59,7 +58,7 @@ class MatchBase(BaseModel):
     result: MatchResult = Field(
         default=MatchResult.PENDING, description="Match result from home team perspective"
     )
-    episode_id: Optional[str] = Field(
+    episode_id: str | None = Field(
         default=None,
         description="Episode ID where this match is featured",
         json_schema_extra={"example": "s01e10"},
@@ -67,40 +66,40 @@ class MatchBase(BaseModel):
     turning_points: list[TurningPoint] = Field(
         default_factory=list, description="Key moments that changed the match"
     )
-    lesson_learned: Optional[str] = Field(
+    lesson_learned: str | None = Field(
         default=None,
         description="The life lesson learned from this match",
         json_schema_extra={
             "example": "It's not about the wins and losses, it's about helping these young fellas be the best versions of themselves."
         },
     )
-    ted_halftime_speech: Optional[str] = Field(
+    ted_halftime_speech: str | None = Field(
         default=None,
         description="Ted's inspirational halftime speech",
         json_schema_extra={
             "example": "You know what the happiest animal on Earth is? It's a goldfish. You know why? It's got a 10-second memory."
         },
     )
-    attendance: Optional[int] = Field(
+    attendance: int | None = Field(
         default=None,
         ge=0,
         description="Match attendance",
         json_schema_extra={"example": 24500},
     )
-    ticket_revenue_gbp: Optional[Decimal] = Field(
+    ticket_revenue_gbp: Decimal | None = Field(
         default=None,
         decimal_places=2,
         description="Total ticket revenue in GBP",
         json_schema_extra={"example": "735000.00"},
     )
-    possession_percentage: Optional[float] = Field(
+    possession_percentage: float | None = Field(
         default=None,
         ge=0.0,
         le=100.0,
         description="Home team possession percentage",
         json_schema_extra={"example": 52.3},
     )
-    weather_temp_celsius: Optional[float] = Field(
+    weather_temp_celsius: float | None = Field(
         default=None,
         ge=-30.0,
         le=50.0,
@@ -118,21 +117,21 @@ class MatchCreate(MatchBase):
 class MatchUpdate(BaseModel):
     """Model for updating a match (all fields optional)."""
 
-    home_team_id: Optional[str] = None
-    away_team_id: Optional[str] = None
-    match_type: Optional[MatchType] = None
-    date: Optional[datetime] = None
-    home_score: Optional[int] = Field(default=None, ge=0)
-    away_score: Optional[int] = Field(default=None, ge=0)
-    result: Optional[MatchResult] = None
-    episode_id: Optional[str] = None
-    turning_points: Optional[list[TurningPoint]] = None
-    lesson_learned: Optional[str] = None
-    ted_halftime_speech: Optional[str] = None
-    attendance: Optional[int] = Field(default=None, ge=0)
-    ticket_revenue_gbp: Optional[Decimal] = Field(default=None, decimal_places=2)
-    possession_percentage: Optional[float] = Field(default=None, ge=0.0, le=100.0)
-    weather_temp_celsius: Optional[float] = Field(default=None, ge=-30.0, le=50.0)
+    home_team_id: str | None = None
+    away_team_id: str | None = None
+    match_type: MatchType | None = None
+    date: datetime | None = None
+    home_score: int | None = Field(default=None, ge=0)
+    away_score: int | None = Field(default=None, ge=0)
+    result: MatchResult | None = None
+    episode_id: str | None = None
+    turning_points: list[TurningPoint] | None = None
+    lesson_learned: str | None = None
+    ted_halftime_speech: str | None = None
+    attendance: int | None = Field(default=None, ge=0)
+    ticket_revenue_gbp: Decimal | None = Field(default=None, decimal_places=2)
+    possession_percentage: float | None = Field(default=None, ge=0.0, le=100.0)
+    weather_temp_celsius: float | None = Field(default=None, ge=-30.0, le=50.0)
 
 
 class Match(MatchBase):

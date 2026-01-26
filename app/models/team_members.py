@@ -8,7 +8,7 @@ come from the Character model. TeamMember only stores role-specific data.
 """
 
 from enum import Enum
-from typing import Annotated, Literal, Optional, Union
+from typing import Annotated, Literal
 
 from pydantic import BaseModel, Field
 
@@ -131,7 +131,7 @@ class CoachBase(TeamMemberBase):
         description="Coaching certifications and licenses",
         json_schema_extra={"example": ["UEFA Pro License", "FA Level 4"]},
     )
-    win_rate: Optional[float] = Field(
+    win_rate: float | None = Field(
         default=None,
         ge=0.0,
         le=1.0,
@@ -156,7 +156,7 @@ class MedicalStaffBase(TeamMemberBase):
         description="Medical qualifications and degrees",
         json_schema_extra={"example": ["PhD Clinical Psychology", "Sports Psychology Certification"]},
     )
-    license_number: Optional[str] = Field(
+    license_number: str | None = Field(
         default=None,
         description="Professional license number",
         json_schema_extra={"example": "PSY-12345"},
@@ -288,13 +288,13 @@ class EquipmentManager(EquipmentManagerBase):
 # This creates a discriminated union using Pydantic's Annotated + Field(discriminator=...)
 # In OpenAPI/JSON Schema, this generates a "oneOf" with a discriminator mapping
 TeamMember = Annotated[
-    Union[Player, Coach, MedicalStaff, EquipmentManager],
+    Player | Coach | MedicalStaff | EquipmentManager,
     Field(discriminator="member_type"),
 ]
 
 # For create operations (without ID)
 TeamMemberCreate = Annotated[
-    Union[PlayerBase, CoachBase, MedicalStaffBase, EquipmentManagerBase],
+    PlayerBase | CoachBase | MedicalStaffBase | EquipmentManagerBase,
     Field(discriminator="member_type"),
 ]
 
@@ -305,46 +305,46 @@ TeamMemberCreate = Annotated[
 class PlayerUpdate(BaseModel):
     """Update model for players."""
 
-    team_id: Optional[str] = None
-    years_with_team: Optional[int] = Field(default=None, ge=0, le=50)
-    position: Optional[Position] = None
-    jersey_number: Optional[int] = Field(default=None, ge=1, le=99)
-    goals_scored: Optional[int] = Field(default=None, ge=0)
-    assists: Optional[int] = Field(default=None, ge=0)
-    is_captain: Optional[bool] = None
+    team_id: str | None = None
+    years_with_team: int | None = Field(default=None, ge=0, le=50)
+    position: Position | None = None
+    jersey_number: int | None = Field(default=None, ge=1, le=99)
+    goals_scored: int | None = Field(default=None, ge=0)
+    assists: int | None = Field(default=None, ge=0)
+    is_captain: bool | None = None
 
 
 class CoachUpdate(BaseModel):
     """Update model for coaches."""
 
-    team_id: Optional[str] = None
-    years_with_team: Optional[int] = Field(default=None, ge=0, le=50)
-    specialty: Optional[CoachSpecialty] = None
-    certifications: Optional[list[str]] = None
-    win_rate: Optional[float] = Field(default=None, ge=0.0, le=1.0)
+    team_id: str | None = None
+    years_with_team: int | None = Field(default=None, ge=0, le=50)
+    specialty: CoachSpecialty | None = None
+    certifications: list[str] | None = None
+    win_rate: float | None = Field(default=None, ge=0.0, le=1.0)
 
 
 class MedicalStaffUpdate(BaseModel):
     """Update model for medical staff."""
 
-    team_id: Optional[str] = None
-    years_with_team: Optional[int] = Field(default=None, ge=0, le=50)
-    specialty: Optional[MedicalSpecialty] = None
-    qualifications: Optional[list[str]] = None
-    license_number: Optional[str] = None
+    team_id: str | None = None
+    years_with_team: int | None = Field(default=None, ge=0, le=50)
+    specialty: MedicalSpecialty | None = None
+    qualifications: list[str] | None = None
+    license_number: str | None = None
 
 
 class EquipmentManagerUpdate(BaseModel):
     """Update model for equipment managers."""
 
-    team_id: Optional[str] = None
-    years_with_team: Optional[int] = Field(default=None, ge=0, le=50)
-    responsibilities: Optional[list[str]] = None
-    is_head_kitman: Optional[bool] = None
+    team_id: str | None = None
+    years_with_team: int | None = Field(default=None, ge=0, le=50)
+    responsibilities: list[str] | None = None
+    is_head_kitman: bool | None = None
 
 
 # Union for updates - also demonstrates oneOf
 TeamMemberUpdate = Annotated[
-    Union[PlayerUpdate, CoachUpdate, MedicalStaffUpdate, EquipmentManagerUpdate],
+    PlayerUpdate | CoachUpdate | MedicalStaffUpdate | EquipmentManagerUpdate,
     Field(description="Update data for a team member - type determines which fields are valid"),
 ]

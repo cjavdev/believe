@@ -3,16 +3,16 @@
 import asyncio
 import random
 import uuid
-from typing import AsyncGenerator
+from collections.abc import AsyncGenerator
 
 from app.models.websocket import (
     LiveMatchEvent,
     LiveMatchEventType,
-    TeamSide,
+    MatchConfig,
     MatchScore,
     MatchStats,
     PlayerInfo,
-    MatchConfig,
+    TeamSide,
 )
 
 
@@ -323,7 +323,7 @@ class MatchSimulationService:
             (LiveMatchEventType.RED_CARD, 0.5),
         ]
 
-        events, weights = zip(*event_weights)
+        events, weights = zip(*event_weights, strict=True)
         event_type = random.choices(events, weights=weights)[0]
 
         # Handle event-specific logic
@@ -435,7 +435,6 @@ class MatchSimulationService:
                 self.stats.shots_away += 1
                 self.stats.shots_on_target_away += 1
 
-            team_name = self.config.home_team if team == TeamSide.HOME else self.config.away_team
             return self._create_event(
                 LiveMatchEventType.PENALTY_SCORED,
                 minute,

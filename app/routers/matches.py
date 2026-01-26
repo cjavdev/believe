@@ -1,13 +1,13 @@
 """Matches router for Ted Lasso API."""
 
 from datetime import datetime
+
 from fastapi import APIRouter, Depends, HTTPException, Query
-from typing import Optional
 
 from app.auth import verify_api_key
 from app.data import MATCHES
-from app.models.matches import Match, MatchCreate, MatchUpdate, MatchResult, MatchType
-from app.pagination import PaginationParams, PaginatedResponse, paginate
+from app.models.matches import Match, MatchCreate, MatchResult, MatchType, MatchUpdate
+from app.pagination import PaginatedResponse, PaginationParams, paginate
 
 router = APIRouter(
     prefix="/matches",
@@ -70,9 +70,9 @@ _match_counter = len(_matches_db) + 1
 )
 async def list_matches(
     pagination: PaginationParams = Depends(),
-    team_id: Optional[str] = Query(None, description="Filter by team (home or away)"),
-    result: Optional[MatchResult] = Query(None, description="Filter by result"),
-    match_type: Optional[MatchType] = Query(None, description="Filter by match type"),
+    team_id: str | None = Query(None, description="Filter by team (home or away)"),
+    result: MatchResult | None = Query(None, description="Filter by result"),
+    match_type: MatchType | None = Query(None, description="Filter by match type"),
 ) -> PaginatedResponse[Match]:
     """List all matches with optional filters and pagination."""
     matches = list(_matches_db.values())

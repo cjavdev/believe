@@ -1,7 +1,8 @@
 """WebSocket models for Ted Lasso API - Live Match Simulation."""
 
 from enum import Enum
-from typing import Optional, Literal, Annotated
+from typing import Literal
+
 from pydantic import BaseModel, Field
 
 
@@ -78,25 +79,25 @@ class LiveMatchEvent(BaseModel):
     event_id: int = Field(description="Unique event sequence number")
     event_type: LiveMatchEventType = Field(description="Type of match event")
     minute: int = Field(ge=0, le=120, description="Match minute")
-    added_time: Optional[int] = Field(
+    added_time: int | None = Field(
         default=None, ge=0, le=15, description="Added/injury time minutes"
     )
-    team: Optional[TeamSide] = Field(
+    team: TeamSide | None = Field(
         default=None, description="Which team the event relates to"
     )
-    player: Optional[PlayerInfo] = Field(
+    player: PlayerInfo | None = Field(
         default=None, description="Player involved in the event"
     )
-    secondary_player: Optional[PlayerInfo] = Field(
+    secondary_player: PlayerInfo | None = Field(
         default=None, description="Second player involved (e.g., assist, replaced player)"
     )
     description: str = Field(description="Human-readable event description")
     score: MatchScore = Field(description="Current score after this event")
     stats: MatchStats = Field(description="Current match statistics")
-    ted_reaction: Optional[str] = Field(
+    ted_reaction: str | None = Field(
         default=None, description="Ted Lasso's sideline reaction"
     )
-    crowd_reaction: Optional[str] = Field(
+    crowd_reaction: str | None = Field(
         default=None, description="Crowd reaction to the event"
     )
     commentary: str = Field(description="Match commentary for this event")

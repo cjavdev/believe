@@ -1,6 +1,7 @@
 """Tests for the streaming endpoints."""
 
 import json
+
 import pytest
 
 

@@ -1,7 +1,8 @@
 """Tests for the matches router."""
 
-import pytest
 from datetime import datetime
+
+import pytest
 
 
 @pytest.mark.asyncio

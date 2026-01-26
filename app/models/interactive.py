@@ -1,10 +1,8 @@
 """Interactive endpoint models for Ted Lasso API."""
 
 from enum import Enum
-from typing import Optional
 
 from pydantic import BaseModel, Field
-
 
 # === Believe Engine Models ===
 
@@ -36,7 +34,7 @@ class BelieveRequest(BaseModel):
         description="Type of situation",
         json_schema_extra={"example": "work_challenge"},
     )
-    context: Optional[str] = Field(
+    context: str | None = Field(
         default=None,
         description="Additional context",
         json_schema_extra={
@@ -97,7 +95,7 @@ class ConflictRequest(BaseModel):
             "example": "Alex keeps taking credit for my ideas in meetings and I'm getting resentful."
         },
     )
-    attempts_made: Optional[list[str]] = Field(
+    attempts_made: list[str] | None = Field(
         default=None,
         description="What you've already tried",
         json_schema_extra={"example": ["Mentioned it casually", "Avoided them"]},
@@ -143,7 +141,7 @@ class ReframeResponse(BaseModel):
     original_thought: str = Field(description="The original negative thought")
     reframed_thought: str = Field(description="The thought reframed positively")
     ted_perspective: str = Field(description="Ted's take on this thought")
-    dr_sharon_insight: Optional[str] = Field(
+    dr_sharon_insight: str | None = Field(
         default=None, description="Dr. Sharon's therapeutic insight"
     )
     daily_affirmation: str = Field(description="A daily affirmation to practice")
@@ -165,7 +163,7 @@ class PressConferenceRequest(BaseModel):
     hostile: bool = Field(
         default=False, description="Is this a hostile question from Trent Crimm?"
     )
-    topic: Optional[str] = Field(
+    topic: str | None = Field(
         default=None,
         description="Topic category",
         json_schema_extra={"example": "match_result"},
@@ -176,7 +174,7 @@ class PressConferenceResponse(BaseModel):
     """Ted's press conference response."""
 
     response: str = Field(description="Ted's press conference answer")
-    deflection_humor: Optional[str] = Field(
+    deflection_humor: str | None = Field(
         default=None, description="Humorous deflection if appropriate"
     )
     actual_wisdom: str = Field(description="The actual wisdom beneath the humor")
@@ -230,7 +228,7 @@ class PepTalkChunk(BaseModel):
     chunk_id: int = Field(description="Chunk sequence number")
     text: str = Field(description="The text of this chunk")
     is_final: bool = Field(default=False, description="Is this the final chunk")
-    emotional_beat: Optional[str] = Field(
+    emotional_beat: str | None = Field(
         default=None, description="The emotional purpose of this chunk"
     )
 
@@ -258,10 +256,10 @@ class MatchCommentaryEvent(BaseModel):
     event_type: CommentaryEventType = Field(description="Type of event")
     description: str = Field(description="What happened")
     commentary: str = Field(description="Commentator's call")
-    ted_sideline_reaction: Optional[str] = Field(
+    ted_sideline_reaction: str | None = Field(
         default=None, description="Ted's reaction on the sideline"
     )
-    crowd_reaction: Optional[str] = Field(
+    crowd_reaction: str | None = Field(
         default=None, description="How the crowd reacted"
     )
     is_final: bool = Field(default=False, description="Is this the final event")

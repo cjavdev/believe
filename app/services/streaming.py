@@ -2,10 +2,14 @@
 
 import asyncio
 import random
-from typing import AsyncGenerator
+from collections.abc import AsyncGenerator
 
-from app.data import PEP_TALK_SEGMENTS, MATCHES
-from app.models.interactive import PepTalkChunk, MatchCommentaryEvent, CommentaryEventType
+from app.data import MATCHES, PEP_TALK_SEGMENTS
+from app.models.interactive import (
+    CommentaryEventType,
+    MatchCommentaryEvent,
+    PepTalkChunk,
+)
 
 
 class StreamingService:

@@ -6,7 +6,9 @@ This module provides reusable pagination components following FastAPI best pract
 - paginate: Utility function to apply pagination to any list
 """
 
-from typing import Generic, TypeVar, Sequence
+from collections.abc import Sequence
+from typing import Generic, TypeVar
+
 from fastapi import Query
 from pydantic import BaseModel, computed_field
 

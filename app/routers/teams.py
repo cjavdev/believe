@@ -2,7 +2,6 @@
 
 import hashlib
 from datetime import datetime, timezone
-from typing import Optional
 from uuid import UUID, uuid4
 
 from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile
@@ -11,8 +10,8 @@ from pydantic import BaseModel
 
 from app.auth import verify_api_key
 from app.data import TEAMS
-from app.models.teams import Team, TeamCreate, TeamUpdate, League
-from app.pagination import PaginationParams, PaginatedResponse, paginate
+from app.models.teams import League, Team, TeamCreate, TeamUpdate
+from app.pagination import PaginatedResponse, PaginationParams, paginate
 
 
 class FileUploadResponse(BaseModel):
@@ -85,8 +84,8 @@ def _generate_id(name: str) -> str:
 )
 async def list_teams(
     pagination: PaginationParams = Depends(),
-    league: Optional[League] = Query(None, description="Filter by league"),
-    min_culture_score: Optional[int] = Query(
+    league: League | None = Query(None, description="Filter by league"),
+    min_culture_score: int | None = Query(
         None, ge=0, le=100, description="Minimum culture score"
     ),
 ) -> PaginatedResponse[Team]:

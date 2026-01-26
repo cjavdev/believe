@@ -3,7 +3,6 @@
 from datetime import date
 from decimal import Decimal
 from enum import Enum
-from typing import Optional
 
 from pydantic import BaseModel, EmailStr, Field, HttpUrl
 
@@ -78,33 +77,33 @@ class CharacterBase(BaseModel):
     role: CharacterRole = Field(
         description="Character's role", json_schema_extra={"example": "coach"}
     )
-    team_id: Optional[str] = Field(
+    team_id: str | None = Field(
         default=None,
         description="ID of the team they belong to",
         json_schema_extra={"example": "afc-richmond"},
     )
-    date_of_birth: Optional[date] = Field(
+    date_of_birth: date | None = Field(
         default=None,
         description="Character's date of birth",
         json_schema_extra={"example": "1970-09-22"},
     )
-    email: Optional[EmailStr] = Field(
+    email: EmailStr | None = Field(
         default=None,
         description="Character's email address",
         json_schema_extra={"example": "ted.lasso@afcrichmond.com"},
     )
-    profile_image_url: Optional[HttpUrl] = Field(
+    profile_image_url: HttpUrl | None = Field(
         default=None,
         description="URL to character's profile image",
         json_schema_extra={"example": "https://afcrichmond.com/images/ted-lasso.jpg"},
     )
-    salary_gbp: Optional[Decimal] = Field(
+    salary_gbp: Decimal | None = Field(
         default=None,
         decimal_places=2,
         description="Annual salary in GBP",
         json_schema_extra={"example": "150000.00"},
     )
-    height_meters: Optional[float] = Field(
+    height_meters: float | None = Field(
         default=None,
         ge=1.0,
         le=2.5,
@@ -146,19 +145,19 @@ class CharacterCreate(CharacterBase):
 class CharacterUpdate(BaseModel):
     """Model for updating a character (all fields optional)."""
 
-    name: Optional[str] = Field(default=None, min_length=1, max_length=100)
-    role: Optional[CharacterRole] = None
-    team_id: Optional[str] = None
-    date_of_birth: Optional[date] = None
-    email: Optional[EmailStr] = None
-    profile_image_url: Optional[HttpUrl] = None
-    salary_gbp: Optional[Decimal] = Field(default=None, decimal_places=2)
-    height_meters: Optional[float] = Field(default=None, ge=1.0, le=2.5)
-    background: Optional[str] = None
-    personality_traits: Optional[list[str]] = None
-    emotional_stats: Optional[EmotionalStats] = None
-    signature_quotes: Optional[list[str]] = None
-    growth_arcs: Optional[list[GrowthArc]] = None
+    name: str | None = Field(default=None, min_length=1, max_length=100)
+    role: CharacterRole | None = None
+    team_id: str | None = None
+    date_of_birth: date | None = None
+    email: EmailStr | None = None
+    profile_image_url: HttpUrl | None = None
+    salary_gbp: Decimal | None = Field(default=None, decimal_places=2)
+    height_meters: float | None = Field(default=None, ge=1.0, le=2.5)
+    background: str | None = None
+    personality_traits: list[str] | None = None
+    emotional_stats: EmotionalStats | None = None
+    signature_quotes: list[str] | None = None
+    growth_arcs: list[GrowthArc] | None = None
 
 
 class Character(CharacterBase):

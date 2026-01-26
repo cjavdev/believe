@@ -1,12 +1,12 @@
 """Episodes router for Ted Lasso API."""
 
+
 from fastapi import APIRouter, Depends, HTTPException, Query
-from typing import Optional
 
 from app.auth import verify_api_key
 from app.data import EPISODES
 from app.models.episodes import Episode, EpisodeCreate, EpisodeUpdate
-from app.pagination import PaginationParams, PaginatedResponse, paginate
+from app.pagination import PaginatedResponse, PaginationParams, paginate
 
 router = APIRouter(
     prefix="/episodes",
@@ -69,8 +69,8 @@ def _generate_id(season: int, episode_number: int) -> str:
 )
 async def list_episodes(
     pagination: PaginationParams = Depends(),
-    season: Optional[int] = Query(None, ge=1, le=3, description="Filter by season"),
-    character_focus: Optional[str] = Query(
+    season: int | None = Query(None, ge=1, le=3, description="Filter by season"),
+    character_focus: str | None = Query(
         None, description="Filter by character focus (character ID)"
     ),
 ) -> PaginatedResponse[Episode]:

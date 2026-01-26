@@ -1,6 +1,7 @@
 """Streaming endpoints router for Ted Lasso API."""
 
 import json
+
 from fastapi import APIRouter, Depends, HTTPException
 from sse_starlette.sse import EventSourceResponse
 

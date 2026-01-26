@@ -1,15 +1,16 @@
 """WebSocket router for Ted Lasso API - Live Match Simulation."""
 
 import json
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Query
+
+from fastapi import APIRouter, Query, WebSocket, WebSocketDisconnect
 from pydantic import ValidationError
 
 from app.models.websocket import (
-    MatchConfig,
-    MatchStartMessage,
-    MatchEventMessage,
-    MatchEndMessage,
     ErrorMessage,
+    MatchConfig,
+    MatchEndMessage,
+    MatchEventMessage,
+    MatchStartMessage,
 )
 from app.services.match_simulation import MatchSimulationService
 

@@ -1,7 +1,6 @@
 """Episode models for Ted Lasso API."""
 
 from datetime import date
-from typing import Optional
 
 from pydantic import BaseModel, Field
 
@@ -24,14 +23,14 @@ class EpisodeBase(BaseModel):
         json_schema_extra={"example": "2020-08-14"},
     )
     runtime_minutes: int = Field(ge=20, le=60, description="Episode runtime in minutes")
-    viewer_rating: Optional[float] = Field(
+    viewer_rating: float | None = Field(
         default=None,
         ge=0.0,
         le=10.0,
         description="Viewer rating out of 10",
         json_schema_extra={"example": 8.7},
     )
-    us_viewers_millions: Optional[float] = Field(
+    us_viewers_millions: float | None = Field(
         default=None,
         ge=0.0,
         description="US viewership in millions",
@@ -53,7 +52,7 @@ class EpisodeBase(BaseModel):
             "example": "Taking on a challenge is a lot like riding a horse. If you're comfortable while you're doing it, you're probably doing it wrong."
         },
     )
-    biscuits_with_boss_moment: Optional[str] = Field(
+    biscuits_with_boss_moment: str | None = Field(
         default=None,
         description="Notable biscuits with the boss scene",
         json_schema_extra={
@@ -85,21 +84,21 @@ class EpisodeCreate(EpisodeBase):
 class EpisodeUpdate(BaseModel):
     """Model for updating an episode (all fields optional)."""
 
-    season: Optional[int] = Field(default=None, ge=1, le=3)
-    episode_number: Optional[int] = Field(default=None, ge=1, le=12)
-    title: Optional[str] = Field(default=None, min_length=1, max_length=200)
-    director: Optional[str] = None
-    writer: Optional[str] = None
-    air_date: Optional[date] = None
-    runtime_minutes: Optional[int] = Field(default=None, ge=20, le=60)
-    viewer_rating: Optional[float] = Field(default=None, ge=0.0, le=10.0)
-    us_viewers_millions: Optional[float] = Field(default=None, ge=0.0)
-    synopsis: Optional[str] = None
-    main_theme: Optional[str] = None
-    ted_wisdom: Optional[str] = None
-    biscuits_with_boss_moment: Optional[str] = None
-    character_focus: Optional[list[str]] = None
-    memorable_moments: Optional[list[str]] = None
+    season: int | None = Field(default=None, ge=1, le=3)
+    episode_number: int | None = Field(default=None, ge=1, le=12)
+    title: str | None = Field(default=None, min_length=1, max_length=200)
+    director: str | None = None
+    writer: str | None = None
+    air_date: date | None = None
+    runtime_minutes: int | None = Field(default=None, ge=20, le=60)
+    viewer_rating: float | None = Field(default=None, ge=0.0, le=10.0)
+    us_viewers_millions: float | None = Field(default=None, ge=0.0)
+    synopsis: str | None = None
+    main_theme: str | None = None
+    ted_wisdom: str | None = None
+    biscuits_with_boss_moment: str | None = None
+    character_focus: list[str] | None = None
+    memorable_moments: list[str] | None = None
 
 
 class Episode(EpisodeBase):

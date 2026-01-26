@@ -1,8 +1,9 @@
 """Pytest configuration and fixtures for Ted Lasso API tests."""
 
 import os
+
 import pytest
-from httpx import AsyncClient, ASGITransport
+from httpx import ASGITransport, AsyncClient
 
 # Set API key for testing before importing the app
 os.environ["API_KEY"] = "test-api-key"

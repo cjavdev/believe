@@ -1,7 +1,6 @@
 """Believe Engine - Ted Lasso's motivational response generator."""
 
 import random
-from typing import Optional
 
 from app.data import BELIEVE_RESPONSES, QUOTES
 from app.models.interactive import BelieveRequest, BelieveResponse

@@ -5,25 +5,25 @@ Perfect for SDK demos showcasing REST API features.
 """
 
 from fastapi import Depends, FastAPI, Request
-from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 from app.auth import verify_api_key
 from app.middleware.versioning import (
-    APIVersionMiddleware,
-    SUPPORTED_VERSIONS,
     DEFAULT_VERSION,
+    SUPPORTED_VERSIONS,
+    APIVersionMiddleware,
     get_api_version,
 )
 from app.routers import (
     characters_router,
-    teams_router,
-    matches_router,
     episodes_router,
-    quotes_router,
     interactive_router,
+    matches_router,
+    quotes_router,
     streaming_router,
     team_members_router,
+    teams_router,
     websocket_router,
 )
 

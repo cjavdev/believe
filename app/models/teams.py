@@ -2,7 +2,6 @@
 
 from decimal import Decimal
 from enum import Enum
-from typing import Optional
 
 from pydantic import BaseModel, EmailStr, Field, HttpUrl
 
@@ -63,7 +62,7 @@ class TeamBase(BaseModel):
         description="Team name",
         json_schema_extra={"example": "AFC Richmond"},
     )
-    nickname: Optional[str] = Field(
+    nickname: str | None = Field(
         default=None,
         description="Team nickname",
         json_schema_extra={"example": "The Greyhounds"},
@@ -73,7 +72,7 @@ class TeamBase(BaseModel):
         description="Home stadium name",
         json_schema_extra={"example": "Nelson Road"},
     )
-    stadium_location: Optional[GeoLocation] = Field(
+    stadium_location: GeoLocation | None = Field(
         default=None,
         description="Geographic coordinates of the stadium",
         json_schema_extra={"example": {"latitude": 51.4816, "longitude": -0.1910}},
@@ -84,29 +83,29 @@ class TeamBase(BaseModel):
         description="Year the club was founded",
         json_schema_extra={"example": 1897},
     )
-    website: Optional[HttpUrl] = Field(
+    website: HttpUrl | None = Field(
         default=None,
         description="Official team website",
         json_schema_extra={"example": "https://www.afcrichmond.com"},
     )
-    contact_email: Optional[EmailStr] = Field(
+    contact_email: EmailStr | None = Field(
         default=None,
         description="Team contact email",
         json_schema_extra={"example": "info@afcrichmond.com"},
     )
-    annual_budget_gbp: Optional[Decimal] = Field(
+    annual_budget_gbp: Decimal | None = Field(
         default=None,
         decimal_places=2,
         description="Annual budget in GBP",
         json_schema_extra={"example": "50000000.00"},
     )
-    average_attendance: Optional[float] = Field(
+    average_attendance: float | None = Field(
         default=None,
         ge=0,
         description="Average match attendance",
         json_schema_extra={"example": 24500.5},
     )
-    win_percentage: Optional[float] = Field(
+    win_percentage: float | None = Field(
         default=None,
         ge=0.0,
         le=100.0,
@@ -129,12 +128,12 @@ class TeamBase(BaseModel):
         description="List of rival team IDs",
         json_schema_extra={"example": ["west-ham", "rupert-fc"]},
     )
-    primary_color: Optional[str] = Field(
+    primary_color: str | None = Field(
         default=None,
         description="Primary team color (hex)",
         json_schema_extra={"example": "#0033A0"},
     )
-    secondary_color: Optional[str] = Field(
+    secondary_color: str | None = Field(
         default=None,
         description="Secondary team color (hex)",
         json_schema_extra={"example": "#FFFFFF"},
@@ -150,23 +149,23 @@ class TeamCreate(TeamBase):
 class TeamUpdate(BaseModel):
     """Model for updating a team (all fields optional)."""
 
-    name: Optional[str] = Field(default=None, min_length=1, max_length=100)
-    nickname: Optional[str] = None
-    league: Optional[League] = None
-    stadium: Optional[str] = None
-    stadium_location: Optional[GeoLocation] = None
-    founded_year: Optional[int] = Field(default=None, ge=1800, le=2030)
-    website: Optional[HttpUrl] = None
-    contact_email: Optional[EmailStr] = None
-    annual_budget_gbp: Optional[Decimal] = Field(default=None, decimal_places=2)
-    average_attendance: Optional[float] = Field(default=None, ge=0)
-    win_percentage: Optional[float] = Field(default=None, ge=0.0, le=100.0)
-    culture_score: Optional[int] = Field(default=None, ge=0, le=100)
-    is_active: Optional[bool] = None
-    values: Optional[TeamValues] = None
-    rival_teams: Optional[list[str]] = None
-    primary_color: Optional[str] = None
-    secondary_color: Optional[str] = None
+    name: str | None = Field(default=None, min_length=1, max_length=100)
+    nickname: str | None = None
+    league: League | None = None
+    stadium: str | None = None
+    stadium_location: GeoLocation | None = None
+    founded_year: int | None = Field(default=None, ge=1800, le=2030)
+    website: HttpUrl | None = None
+    contact_email: EmailStr | None = None
+    annual_budget_gbp: Decimal | None = Field(default=None, decimal_places=2)
+    average_attendance: float | None = Field(default=None, ge=0)
+    win_percentage: float | None = Field(default=None, ge=0.0, le=100.0)
+    culture_score: int | None = Field(default=None, ge=0, le=100)
+    is_active: bool | None = None
+    values: TeamValues | None = None
+    rival_teams: list[str] | None = None
+    primary_color: str | None = None
+    secondary_color: str | None = None
 
 
 class Team(TeamBase):

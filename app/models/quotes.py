@@ -1,7 +1,6 @@
 """Quote models for Ted Lasso API."""
 
 from enum import Enum
-from typing import Optional
 
 from pydantic import BaseModel, Field
 
@@ -66,7 +65,7 @@ class QuoteBase(BaseModel):
         description="ID of the character who said it",
         json_schema_extra={"example": "ted-lasso"},
     )
-    episode_id: Optional[str] = Field(
+    episode_id: str | None = Field(
         default=None,
         description="Episode where the quote appears",
         json_schema_extra={"example": "s01e08"},
@@ -94,14 +93,14 @@ class QuoteBase(BaseModel):
         default=True, description="Whether this quote is inspirational"
     )
     is_funny: bool = Field(default=False, description="Whether this quote is humorous")
-    popularity_score: Optional[float] = Field(
+    popularity_score: float | None = Field(
         default=None,
         ge=0.0,
         le=100.0,
         description="Popularity/virality score (0-100)",
         json_schema_extra={"example": 95.5},
     )
-    times_shared: Optional[int] = Field(
+    times_shared: int | None = Field(
         default=None,
         ge=0,
         description="Number of times shared on social media",
@@ -118,17 +117,17 @@ class QuoteCreate(QuoteBase):
 class QuoteUpdate(BaseModel):
     """Model for updating a quote (all fields optional)."""
 
-    text: Optional[str] = Field(default=None, min_length=1)
-    character_id: Optional[str] = None
-    episode_id: Optional[str] = None
-    context: Optional[str] = None
-    theme: Optional[QuoteTheme] = None
-    secondary_themes: Optional[list[QuoteTheme]] = None
-    moment_type: Optional[QuoteMoment] = None
-    is_inspirational: Optional[bool] = None
-    is_funny: Optional[bool] = None
-    popularity_score: Optional[float] = Field(default=None, ge=0.0, le=100.0)
-    times_shared: Optional[int] = Field(default=None, ge=0)
+    text: str | None = Field(default=None, min_length=1)
+    character_id: str | None = None
+    episode_id: str | None = None
+    context: str | None = None
+    theme: QuoteTheme | None = None
+    secondary_themes: list[QuoteTheme] | None = None
+    moment_type: QuoteMoment | None = None
+    is_inspirational: bool | None = None
+    is_funny: bool | None = None
+    popularity_score: float | None = Field(default=None, ge=0.0, le=100.0)
+    times_shared: int | None = Field(default=None, ge=0)
 
 
 class Quote(QuoteBase):

@@ -3,11 +3,11 @@
 import pytest
 
 from app.middleware.versioning import (
-    SUPPORTED_VERSIONS,
     DEFAULT_VERSION,
     DEPRECATED_VERSIONS,
-    _is_valid_date,
+    SUPPORTED_VERSIONS,
     _find_best_version,
+    _is_valid_date,
 )
 
 

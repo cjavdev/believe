@@ -1,12 +1,17 @@
 """Characters router for Ted Lasso API."""
 
+
 from fastapi import APIRouter, Depends, HTTPException, Query
-from typing import Optional
 
 from app.auth import verify_api_key
 from app.data import CHARACTERS
-from app.models.characters import Character, CharacterCreate, CharacterUpdate, CharacterRole
-from app.pagination import PaginationParams, PaginatedResponse, paginate
+from app.models.characters import (
+    Character,
+    CharacterCreate,
+    CharacterRole,
+    CharacterUpdate,
+)
+from app.pagination import PaginatedResponse, PaginationParams, paginate
 
 router = APIRouter(
     prefix="/characters",
@@ -70,9 +75,9 @@ def _generate_id(name: str) -> str:
 )
 async def list_characters(
     pagination: PaginationParams = Depends(),
-    role: Optional[CharacterRole] = Query(None, description="Filter by role"),
-    team_id: Optional[str] = Query(None, description="Filter by team ID"),
-    min_optimism: Optional[int] = Query(None, ge=0, le=100, description="Minimum optimism score"),
+    role: CharacterRole | None = Query(None, description="Filter by role"),
+    team_id: str | None = Query(None, description="Filter by team ID"),
+    min_optimism: int | None = Query(None, ge=0, le=100, description="Minimum optimism score"),
 ) -> PaginatedResponse[Character]:
     """List all characters with optional filters and pagination."""
     characters = list(_characters_db.values())

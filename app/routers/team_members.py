@@ -4,32 +4,27 @@ This router shows how discriminated unions work with FastAPI/Pydantic,
 generating proper oneOf schemas in the OpenAPI documentation.
 """
 
+
 from fastapi import APIRouter, Depends, HTTPException, Query
-from typing import Optional
 
 from app.auth import verify_api_key
 from app.data import TEAM_MEMBERS
 from app.models.team_members import (
+    Coach,
+    CoachSpecialty,
+    CoachUpdate,
+    EquipmentManager,
+    EquipmentManagerUpdate,
+    MedicalStaff,
+    MedicalStaffUpdate,
+    MemberType,
+    Player,
+    PlayerUpdate,
+    Position,
     TeamMember,
     TeamMemberCreate,
-    Player,
-    PlayerBase,
-    PlayerUpdate,
-    Coach,
-    CoachBase,
-    CoachUpdate,
-    MedicalStaff,
-    MedicalStaffBase,
-    MedicalStaffUpdate,
-    EquipmentManager,
-    EquipmentManagerBase,
-    EquipmentManagerUpdate,
-    MemberType,
-    Position,
-    CoachSpecialty,
-    MedicalSpecialty,
 )
-from app.pagination import PaginationParams, PaginatedResponse, paginate
+from app.pagination import PaginatedResponse, PaginationParams, paginate
 
 router = APIRouter(
     prefix="/team-members",
@@ -79,8 +74,8 @@ The `member_type` field acts as a discriminator to determine the shape of each o
 )
 async def list_team_members(
     pagination: PaginationParams = Depends(),
-    member_type: Optional[MemberType] = Query(None, description="Filter by member type"),
-    team_id: Optional[str] = Query(None, description="Filter by team ID"),
+    member_type: MemberType | None = Query(None, description="Filter by member type"),
+    team_id: str | None = Query(None, description="Filter by team ID"),
 ) -> PaginatedResponse[TeamMember]:
     """List all team members with optional filters and pagination."""
     members = list(_members_db.values())
@@ -243,8 +238,8 @@ async def delete_team_member(member_id: str) -> None:
 )
 async def list_players(
     pagination: PaginationParams = Depends(),
-    position: Optional[Position] = Query(None, description="Filter by position"),
-    team_id: Optional[str] = Query(None, description="Filter by team ID"),
+    position: Position | None = Query(None, description="Filter by position"),
+    team_id: str | None = Query(None, description="Filter by team ID"),
 ) -> PaginatedResponse[Player]:
     """List all players with optional filters."""
     players = [m for m in _members_db.values() if m["member_type"] == "player"]
@@ -272,8 +267,8 @@ async def list_players(
 )
 async def list_coaches(
     pagination: PaginationParams = Depends(),
-    specialty: Optional[CoachSpecialty] = Query(None, description="Filter by specialty"),
-    team_id: Optional[str] = Query(None, description="Filter by team ID"),
+    specialty: CoachSpecialty | None = Query(None, description="Filter by specialty"),
+    team_id: str | None = Query(None, description="Filter by team ID"),
 ) -> PaginatedResponse[Coach]:
     """List all coaches with optional filters."""
     coaches = [m for m in _members_db.values() if m["member_type"] == "coach"]
@@ -304,7 +299,7 @@ This demonstrates a **narrower union type** - the response is oneOf MedicalStaff
 )
 async def list_staff(
     pagination: PaginationParams = Depends(),
-    team_id: Optional[str] = Query(None, description="Filter by team ID"),
+    team_id: str | None = Query(None, description="Filter by team ID"),
 ) -> PaginatedResponse[MedicalStaff | EquipmentManager]:
     """List all staff (medical and equipment)."""
     staff = [

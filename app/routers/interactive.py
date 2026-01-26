@@ -1,29 +1,30 @@
 """Interactive endpoints router for Ted Lasso API."""
 
 import random
-from fastapi import APIRouter, Depends, HTTPException, Request
+
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import JSONResponse
 
 from app.auth import verify_api_key
-from app.data import COACHING_PRINCIPLES, BISCUITS
-from app.pagination import PaginationParams, PaginatedResponse, paginate
+from app.data import BISCUITS, COACHING_PRINCIPLES
 from app.models.interactive import (
     BelieveRequest,
     BelieveResponse,
+    Biscuit,
+    CoachingPrinciple,
     ConflictRequest,
     ConflictResolution,
-    ReframeRequest,
-    ReframeResponse,
     PressConferenceRequest,
     PressConferenceResponse,
-    CoachingPrinciple,
-    Biscuit,
+    ReframeRequest,
+    ReframeResponse,
 )
+from app.pagination import PaginatedResponse, PaginationParams, paginate
 from app.services import (
     BelieveEngine,
     ConflictResolver,
-    ReframeService,
     PressConferenceSimulator,
+    ReframeService,
 )
 
 router = APIRouter(

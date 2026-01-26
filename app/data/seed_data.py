@@ -1,7 +1,6 @@
 """Comprehensive seed data for Ted Lasso API."""
 
-from datetime import date, datetime
-from decimal import Decimal
+from datetime import datetime
 
 # === CHARACTERS ===
 CHARACTERS = {
