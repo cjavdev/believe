@@ -7,6 +7,7 @@ generating proper oneOf schemas in the OpenAPI documentation.
 from fastapi import APIRouter, Depends, HTTPException, Query
 from typing import Optional
 
+from app.auth import verify_api_key
 from app.data import TEAM_MEMBERS
 from app.models.team_members import (
     TeamMember,
@@ -30,7 +31,11 @@ from app.models.team_members import (
 )
 from app.pagination import PaginationParams, PaginatedResponse, paginate
 
-router = APIRouter(prefix="/team-members", tags=["Team Members"])
+router = APIRouter(
+    prefix="/team-members",
+    tags=["Team Members"],
+    dependencies=[Depends(verify_api_key)],
+)
 
 # In-memory storage (copy of seed data)
 _members_db: dict[str, dict] = dict(TEAM_MEMBERS)

@@ -5,6 +5,7 @@ from app.services.conflict_resolver import ConflictResolver
 from app.services.reframe_service import ReframeService
 from app.services.press_conference import PressConferenceSimulator
 from app.services.streaming import StreamingService
+from app.services.match_simulation import MatchSimulationService
 
 __all__ = [
     "BelieveEngine",
@@ -12,4 +13,5 @@ __all__ = [
     "ReframeService",
     "PressConferenceSimulator",
     "StreamingService",
+    "MatchSimulationService",
 ]

@@ -24,12 +24,14 @@ from app.routers import (
     interactive_router,
     streaming_router,
     team_members_router,
+    websocket_router,
 )
 
 # Create the FastAPI application
+# Note: Auth dependency is applied per-router to allow WebSocket endpoints to work
+# (HTTPBearer doesn't support WebSocket connections)
 app = FastAPI(
     title="Ted Lasso API",
-    dependencies=[Depends(verify_api_key)],
     description="""
 ## Believe in the Power of Positivity!
 
@@ -62,10 +64,15 @@ Perfect for SDK demos showcasing various REST API features.
 - **GET /coaching/principles**: Ted's coaching philosophy
 - **GET /biscuits**: Biscuits as a Service!
 
-### Streaming
+### Streaming (Server-Sent Events)
 
 - **GET /pep-talk/stream**: SSE streaming pep talk from Ted
 - **POST /matches/{id}/commentary/stream**: Live match commentary
+
+### WebSocket (Real-time)
+
+- **WS /matches/live**: Live match simulation with real-time events (goals, fouls, cards, etc.)
+- **WS /ws/test**: Simple WebSocket echo test endpoint
 
 ### Data Types Coverage
 
@@ -141,6 +148,10 @@ If no version header is provided, the API defaults to the latest stable version.
             "description": "Server-Sent Events (SSE) streaming endpoints",
         },
         {
+            "name": "WebSocket",
+            "description": "WebSocket endpoints for real-time bidirectional communication - Live match simulation",
+        },
+        {
             "name": "Team Members",
             "description": "Team members with union types (oneOf) - Players, Coaches, Medical Staff, Equipment Managers",
         },
@@ -167,6 +178,7 @@ app.include_router(episodes_router)
 app.include_router(quotes_router)
 app.include_router(interactive_router)
 app.include_router(streaming_router)
+app.include_router(websocket_router)
 app.include_router(team_members_router)
 
 
@@ -174,6 +186,7 @@ app.include_router(team_members_router)
 @app.get(
     "/",
     summary="Welcome to the Ted Lasso API",
+    dependencies=[Depends(verify_api_key)],
     description="Get a warm welcome and overview of available endpoints.",
     tags=["Root"],
     responses={
@@ -198,6 +211,7 @@ app.include_router(team_members_router)
                             "coaching_principles": "/coaching/principles",
                             "biscuits": "/biscuits",
                             "pep_talk_stream": "/pep-talk/stream",
+                            "live_match_websocket": "ws://localhost:8000/matches/live",
                             "documentation": "/docs",
                         },
                         "tip": "Try GET /quotes/random for some instant wisdom!",
@@ -231,9 +245,10 @@ async def root(request: Request):
             "coaching_principles": "/coaching/principles",
             "biscuits": "/biscuits",
             "pep_talk_stream": "/pep-talk/stream",
+            "live_match_websocket": "ws://{host}/matches/live",
             "documentation": "/docs",
         },
-        "tip": "Try GET /quotes/random for some instant wisdom!",
+        "tip": "Try GET /quotes/random for some instant wisdom, or connect to /matches/live via WebSocket for a live match!",
     }
 
 
@@ -241,6 +256,7 @@ async def root(request: Request):
 @app.get(
     "/health",
     summary="Health Check",
+    dependencies=[Depends(verify_api_key)],
     description="Check if the API is running and healthy.",
     tags=["Root"],
     responses={
@@ -271,6 +287,7 @@ async def health_check():
 @app.get(
     "/version",
     summary="API Version Information",
+    dependencies=[Depends(verify_api_key)],
     description="Get detailed information about API versioning.",
     tags=["Root"],
 )

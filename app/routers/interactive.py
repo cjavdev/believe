@@ -4,6 +4,7 @@ import random
 from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import JSONResponse
 
+from app.auth import verify_api_key
 from app.data import COACHING_PRINCIPLES, BISCUITS
 from app.pagination import PaginationParams, PaginatedResponse, paginate
 from app.models.interactive import (
@@ -25,7 +26,10 @@ from app.services import (
     PressConferenceSimulator,
 )
 
-router = APIRouter(tags=["Interactive"])
+router = APIRouter(
+    tags=["Interactive"],
+    dependencies=[Depends(verify_api_key)],
+)
 
 
 # === Custom Error Responses ===

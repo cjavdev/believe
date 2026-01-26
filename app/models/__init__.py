@@ -45,6 +45,20 @@ from app.models.team_members import (
     CoachSpecialty,
     MedicalSpecialty,
 )
+from app.models.websocket import (
+    LiveMatchEvent,
+    LiveMatchEventType,
+    MatchConfig,
+    MatchScore,
+    MatchStats,
+    PlayerInfo,
+    TeamSide,
+    WebSocketMessage,
+    MatchStartMessage,
+    MatchEventMessage,
+    MatchEndMessage,
+    ErrorMessage,
+)
 
 __all__ = [
     "Character",
@@ -99,4 +113,17 @@ __all__ = [
     "Position",
     "CoachSpecialty",
     "MedicalSpecialty",
+    # WebSocket Models (Live Match Simulation)
+    "LiveMatchEvent",
+    "LiveMatchEventType",
+    "MatchConfig",
+    "MatchScore",
+    "MatchStats",
+    "PlayerInfo",
+    "TeamSide",
+    "WebSocketMessage",
+    "MatchStartMessage",
+    "MatchEventMessage",
+    "MatchEndMessage",
+    "ErrorMessage",
 ]

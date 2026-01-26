@@ -3,11 +3,16 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from typing import Optional
 
+from app.auth import verify_api_key
 from app.data import EPISODES
 from app.models.episodes import Episode, EpisodeCreate, EpisodeUpdate
 from app.pagination import PaginationParams, PaginatedResponse, paginate
 
-router = APIRouter(prefix="/episodes", tags=["Episodes"])
+router = APIRouter(
+    prefix="/episodes",
+    tags=["Episodes"],
+    dependencies=[Depends(verify_api_key)],
+)
 
 # In-memory storage (copy of seed data)
 _episodes_db: dict[str, dict] = dict(EPISODES)

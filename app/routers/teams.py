@@ -9,6 +9,7 @@ from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile
 from fastapi.responses import Response
 from pydantic import BaseModel
 
+from app.auth import verify_api_key
 from app.data import TEAMS
 from app.models.teams import Team, TeamCreate, TeamUpdate, League
 from app.pagination import PaginationParams, PaginatedResponse, paginate
@@ -24,7 +25,11 @@ class FileUploadResponse(BaseModel):
     checksum_sha256: str
     uploaded_at: datetime
 
-router = APIRouter(prefix="/teams", tags=["Teams"])
+router = APIRouter(
+    prefix="/teams",
+    tags=["Teams"],
+    dependencies=[Depends(verify_api_key)],
+)
 
 # In-memory storage (copy of seed data)
 _teams_db: dict[str, dict] = dict(TEAMS)

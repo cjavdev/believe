@@ -3,11 +3,16 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from typing import Optional
 
+from app.auth import verify_api_key
 from app.data import CHARACTERS
 from app.models.characters import Character, CharacterCreate, CharacterUpdate, CharacterRole
 from app.pagination import PaginationParams, PaginatedResponse, paginate
 
-router = APIRouter(prefix="/characters", tags=["Characters"])
+router = APIRouter(
+    prefix="/characters",
+    tags=["Characters"],
+    dependencies=[Depends(verify_api_key)],
+)
 
 # In-memory storage (copy of seed data)
 _characters_db: dict[str, dict] = dict(CHARACTERS)

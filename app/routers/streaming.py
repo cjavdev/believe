@@ -1,13 +1,17 @@
 """Streaming endpoints router for Ted Lasso API."""
 
 import json
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from sse_starlette.sse import EventSourceResponse
 
+from app.auth import verify_api_key
 from app.data import MATCHES
 from app.services import StreamingService
 
-router = APIRouter(tags=["Streaming"])
+router = APIRouter(
+    tags=["Streaming"],
+    dependencies=[Depends(verify_api_key)],
+)
 
 
 @router.get(

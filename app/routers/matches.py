@@ -4,11 +4,16 @@ from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, Query
 from typing import Optional
 
+from app.auth import verify_api_key
 from app.data import MATCHES
 from app.models.matches import Match, MatchCreate, MatchUpdate, MatchResult, MatchType
 from app.pagination import PaginationParams, PaginatedResponse, paginate
 
-router = APIRouter(prefix="/matches", tags=["Matches"])
+router = APIRouter(
+    prefix="/matches",
+    tags=["Matches"],
+    dependencies=[Depends(verify_api_key)],
+)
 
 # In-memory storage (copy of seed data)
 _matches_db: dict[str, dict] = dict(MATCHES)
