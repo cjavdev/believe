@@ -27,30 +27,19 @@ This design keeps the API simple and dependency-free, making it easy to run anyw
 ### Prerequisites
 
 - Python 3.10+
-- pip or uv
+- [uv](https://docs.astral.sh/uv/)
 
 ### Setup
 
 1. Clone the repository:
 ```bash
-git clone <repository-url>
-cd ted-api
+git clone git@github.com:cjavdev/believe.git
+cd believe
 ```
 
-2. Create a virtual environment:
+2. Install dependencies:
 ```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-```
-
-3. Install dependencies:
-```bash
-pip install -r requirements.txt
-```
-
-Or with development dependencies:
-```bash
-pip install -e ".[dev]"
+uv pip install -e ".[dev]"
 ```
 
 ## Running the API
@@ -58,7 +47,7 @@ pip install -e ".[dev]"
 Start the development server:
 
 ```bash
-uvicorn app.main:app --reload
+uv run uvicorn app.main:app --reload
 ```
 
 The API will be available at `http://localhost:8000`
@@ -230,29 +219,24 @@ The API includes some fun custom HTTP status codes:
 
 ## Running Tests
 
-Install test dependencies:
-```bash
-pip install -e ".[dev]"
-```
-
 Run all tests:
 ```bash
-pytest
+uv run pytest
 ```
 
 Run with coverage:
 ```bash
-pytest --cov=app
+uv run pytest --cov=app
 ```
 
 Run specific test file:
 ```bash
-pytest tests/test_characters.py
+uv run pytest tests/test_characters.py
 ```
 
 Run tests verbosely:
 ```bash
-pytest -v
+uv run pytest -v
 ```
 
 ## OpenAPI Specification
@@ -264,7 +248,7 @@ The API's OpenAPI specification is stored in `openapi.json` at the repository ro
 After making changes to the API (routes, models, etc.), regenerate the spec:
 
 ```bash
-python scripts/generate_openapi.py > openapi.json
+uv run python scripts/generate_openapi.py > openapi.json
 ```
 
 ### Checking if the Spec is Up to Date
@@ -298,16 +282,13 @@ This project uses [ruff](https://github.com/astral-sh/ruff) for linting and form
 
 ```bash
 # Check for issues
-ruff check .
+uv run ruff check .
 
 # Auto-fix issues
-ruff check --fix .
+uv run ruff check --fix .
 
-# Check formatting
-ruff format --check .
-
-# Apply formatting
-ruff format .
+# Format code
+uv run ruff format .
 ```
 
 ## Project Structure
