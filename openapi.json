@@ -2208,6 +2208,69 @@
         "title": "Match",
         "type": "object"
       },
+      "MatchCommentaryEvent": {
+        "description": "A single commentary event during a match stream.",
+        "properties": {
+          "commentary": {
+            "description": "Commentator's call",
+            "type": "string"
+          },
+          "crowd_reaction": {
+            "description": "How the crowd reacted",
+            "nullable": true,
+            "type": "string"
+          },
+          "description": {
+            "description": "What happened",
+            "type": "string"
+          },
+          "event_id": {
+            "description": "Event sequence number",
+            "type": "integer"
+          },
+          "event_type": {
+            "description": "Type of event",
+            "enum": [
+              "kickoff",
+              "goal",
+              "near_miss",
+              "save",
+              "foul",
+              "substitution",
+              "halftime",
+              "ted_reaction",
+              "crowd_moment",
+              "final_whistle"
+            ],
+            "type": "string"
+          },
+          "is_final": {
+            "default": false,
+            "description": "Is this the final event",
+            "type": "boolean"
+          },
+          "minute": {
+            "description": "Match minute",
+            "maximum": 120,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "ted_sideline_reaction": {
+            "description": "Ted's reaction on the sideline",
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "event_id",
+          "minute",
+          "event_type",
+          "description",
+          "commentary",
+          "is_final"
+        ],
+        "type": "object"
+      },
       "MatchCreate": {
         "description": "Model for creating a new match.",
         "properties": {
@@ -3425,6 +3488,35 @@
           "pages"
         ],
         "title": "PaginatedResponse[Union[MedicalStaff, EquipmentManager]]",
+        "type": "object"
+      },
+      "PepTalkChunk": {
+        "description": "A chunk of a streaming pep talk from Ted.",
+        "properties": {
+          "chunk_id": {
+            "description": "Chunk sequence number",
+            "type": "integer"
+          },
+          "emotional_beat": {
+            "description": "The emotional purpose of this chunk (e.g., greeting, acknowledgment, wisdom, affirmation, encouragement)",
+            "nullable": true,
+            "type": "string"
+          },
+          "is_final": {
+            "default": false,
+            "description": "Is this the final chunk",
+            "type": "boolean"
+          },
+          "text": {
+            "description": "The text of this chunk",
+            "type": "string"
+          }
+        },
+        "required": [
+          "chunk_id",
+          "text",
+          "is_final"
+        ],
         "type": "object"
       },
       "Player": {
@@ -4977,6 +5069,24 @@
           "team_motto"
         ],
         "title": "TeamValues",
+        "type": "object"
+      },
+      "TestStreamChunk": {
+        "description": "A test stream chunk for SSE connectivity testing.",
+        "properties": {
+          "message": {
+            "description": "The message content for this chunk",
+            "type": "string"
+          },
+          "sequence": {
+            "description": "The sequence number of this chunk (1-5)",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "sequence",
+          "message"
+        ],
         "type": "object"
       },
       "TurningPoint": {
@@ -7338,66 +7448,7 @@
               "text/event-stream": {
                 "example": "data: {\"event_id\": 0, \"minute\": 0, \"event_type\": \"kickoff\", \"description\": \"The match kicks off\", \"commentary\": \"And we're off!\", \"ted_sideline_reaction\": \"Ted claps enthusiastically\", \"crowd_reaction\": \"The crowd roars\", \"is_final\": false}\n\n",
                 "schema": {
-                  "properties": {
-                    "commentary": {
-                      "description": "Commentator's call",
-                      "type": "string"
-                    },
-                    "crowd_reaction": {
-                      "description": "How the crowd reacted",
-                      "nullable": true,
-                      "type": "string"
-                    },
-                    "description": {
-                      "description": "What happened",
-                      "type": "string"
-                    },
-                    "event_id": {
-                      "description": "Event sequence number",
-                      "type": "integer"
-                    },
-                    "event_type": {
-                      "description": "Type of event",
-                      "enum": [
-                        "kickoff",
-                        "goal",
-                        "near_miss",
-                        "save",
-                        "foul",
-                        "substitution",
-                        "halftime",
-                        "ted_reaction",
-                        "crowd_moment",
-                        "final_whistle"
-                      ],
-                      "type": "string"
-                    },
-                    "is_final": {
-                      "default": false,
-                      "description": "Is this the final event",
-                      "type": "boolean"
-                    },
-                    "minute": {
-                      "description": "Match minute",
-                      "maximum": 120,
-                      "minimum": 0,
-                      "type": "integer"
-                    },
-                    "ted_sideline_reaction": {
-                      "description": "Ted's reaction on the sideline",
-                      "nullable": true,
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "event_id",
-                    "minute",
-                    "event_type",
-                    "description",
-                    "commentary",
-                    "is_final"
-                  ],
-                  "type": "object"
+                  "$ref": "#/components/schemas/MatchCommentaryEvent"
                 }
               }
             },
@@ -7591,32 +7642,7 @@
               "text/event-stream": {
                 "example": "data: {\"chunk_id\": 0, \"text\": \"Hey there, friend. \", \"is_final\": false, \"emotional_beat\": \"greeting\"}\n\n",
                 "schema": {
-                  "properties": {
-                    "chunk_id": {
-                      "description": "Chunk sequence number",
-                      "type": "integer"
-                    },
-                    "emotional_beat": {
-                      "description": "The emotional purpose of this chunk (e.g., greeting, acknowledgment, wisdom, affirmation, encouragement)",
-                      "nullable": true,
-                      "type": "string"
-                    },
-                    "is_final": {
-                      "default": false,
-                      "description": "Is this the final chunk",
-                      "type": "boolean"
-                    },
-                    "text": {
-                      "description": "The text of this chunk",
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "chunk_id",
-                    "text",
-                    "is_final"
-                  ],
-                  "type": "object"
+                  "$ref": "#/components/schemas/PepTalkChunk"
                 }
               }
             },
@@ -8577,21 +8603,7 @@
               "text/event-stream": {
                 "example": "data: {\"sequence\": 1, \"message\": \"Testing... 1, 2, 3...\"}\n\ndata: {\"sequence\": 2, \"message\": \"Is this thing on?\"}\n\ndata: {\"sequence\": 3, \"message\": \"Believe!\"}\n\n",
                 "schema": {
-                  "properties": {
-                    "message": {
-                      "description": "The message content for this chunk",
-                      "type": "string"
-                    },
-                    "sequence": {
-                      "description": "The sequence number of this chunk (1-5)",
-                      "type": "integer"
-                    }
-                  },
-                  "required": [
-                    "sequence",
-                    "message"
-                  ],
-                  "type": "object"
+                  "$ref": "#/components/schemas/TestStreamChunk"
                 }
               }
             },

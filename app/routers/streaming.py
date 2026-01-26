@@ -25,30 +25,7 @@ router = APIRouter(
             "description": "SSE stream of pep talk chunks",
             "content": {
                 "text/event-stream": {
-                    "schema": {
-                        "type": "object",
-                        "properties": {
-                            "chunk_id": {
-                                "type": "integer",
-                                "description": "Chunk sequence number",
-                            },
-                            "text": {
-                                "type": "string",
-                                "description": "The text of this chunk",
-                            },
-                            "is_final": {
-                                "type": "boolean",
-                                "description": "Is this the final chunk",
-                                "default": False,
-                            },
-                            "emotional_beat": {
-                                "type": "string",
-                                "nullable": True,
-                                "description": "The emotional purpose of this chunk (e.g., greeting, acknowledgment, wisdom, affirmation, encouragement)",
-                            },
-                        },
-                        "required": ["chunk_id", "text", "is_final"],
-                    },
+                    "schema": {},  # Schema defined in generate_openapi.py as PepTalkChunk
                     "example": 'data: {"chunk_id": 0, "text": "Hey there, friend. ", "is_final": false, "emotional_beat": "greeting"}\n\n',
                 }
             },
@@ -78,68 +55,7 @@ async def stream_pep_talk():
             "description": "SSE stream of match commentary events",
             "content": {
                 "text/event-stream": {
-                    "schema": {
-                        "type": "object",
-                        "properties": {
-                            "event_id": {
-                                "type": "integer",
-                                "description": "Event sequence number",
-                            },
-                            "minute": {
-                                "type": "integer",
-                                "minimum": 0,
-                                "maximum": 120,
-                                "description": "Match minute",
-                            },
-                            "event_type": {
-                                "type": "string",
-                                "enum": [
-                                    "kickoff",
-                                    "goal",
-                                    "near_miss",
-                                    "save",
-                                    "foul",
-                                    "substitution",
-                                    "halftime",
-                                    "ted_reaction",
-                                    "crowd_moment",
-                                    "final_whistle",
-                                ],
-                                "description": "Type of event",
-                            },
-                            "description": {
-                                "type": "string",
-                                "description": "What happened",
-                            },
-                            "commentary": {
-                                "type": "string",
-                                "description": "Commentator's call",
-                            },
-                            "ted_sideline_reaction": {
-                                "type": "string",
-                                "nullable": True,
-                                "description": "Ted's reaction on the sideline",
-                            },
-                            "crowd_reaction": {
-                                "type": "string",
-                                "nullable": True,
-                                "description": "How the crowd reacted",
-                            },
-                            "is_final": {
-                                "type": "boolean",
-                                "description": "Is this the final event",
-                                "default": False,
-                            },
-                        },
-                        "required": [
-                            "event_id",
-                            "minute",
-                            "event_type",
-                            "description",
-                            "commentary",
-                            "is_final",
-                        ],
-                    },
+                    "schema": {},  # Schema defined in generate_openapi.py as MatchCommentaryEvent
                     "example": 'data: {"event_id": 0, "minute": 0, "event_type": "kickoff", "description": "The match kicks off", "commentary": "And we\'re off!", "ted_sideline_reaction": "Ted claps enthusiastically", "crowd_reaction": "The crowd roars", "is_final": false}\n\n',
                 }
             },
@@ -184,20 +100,7 @@ async def stream_match_commentary(match_id: str):
             "description": "SSE stream of test messages",
             "content": {
                 "text/event-stream": {
-                    "schema": {
-                        "type": "object",
-                        "properties": {
-                            "sequence": {
-                                "type": "integer",
-                                "description": "The sequence number of this chunk (1-5)",
-                            },
-                            "message": {
-                                "type": "string",
-                                "description": "The message content for this chunk",
-                            },
-                        },
-                        "required": ["sequence", "message"],
-                    },
+                    "schema": {},  # Schema defined in generate_openapi.py as TestStreamChunk
                     "example": 'data: {"sequence": 1, "message": "Testing... 1, 2, 3..."}\n\ndata: {"sequence": 2, "message": "Is this thing on?"}\n\ndata: {"sequence": 3, "message": "Believe!"}\n\n',
                 }
             },
