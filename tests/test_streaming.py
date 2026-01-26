@@ -85,8 +85,9 @@ async def test_stream_test_endpoint(client):
                 data = json.loads(line[5:].strip())
                 messages.append(data)
 
-        # Should have all 5 test messages
-        assert len(messages) == 5
+        # Should have all 6 test messages
+        assert len(messages) == 6
         assert messages[0]["sequence"] == 1
         assert "Believe!" in messages[2]["message"]
         assert messages[4]["message"] == "Stream complete. You're all set!"
+        assert messages[5]["message"] == "[done]"

@@ -118,6 +118,7 @@ async def test_stream():
             "Believe!",
             "Football is life!",
             "Stream complete. You're all set!",
+            "[done]",
         ]
 
         for i, msg in enumerate(messages):
