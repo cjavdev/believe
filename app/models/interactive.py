@@ -114,9 +114,7 @@ class ConflictResolution(BaseModel):
         description="Concrete steps to resolve the conflict"
     )
     potential_outcome: str = Field(description="What resolution could look like")
-    barbecue_sauce_wisdom: str = Field(
-        description="A folksy metaphor to remember"
-    )
+    barbecue_sauce_wisdom: str = Field(description="A folksy metaphor to remember")
 
 
 # === Reframe Models ===
@@ -130,9 +128,7 @@ class ReframeRequest(BaseModel):
         description="The negative thought to reframe",
         json_schema_extra={"example": "I'm not good enough for this job."},
     )
-    recurring: bool = Field(
-        default=False, description="Is this a recurring thought?"
-    )
+    recurring: bool = Field(default=False, description="Is this a recurring thought?")
 
 
 class ReframeResponse(BaseModel):

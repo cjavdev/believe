@@ -97,14 +97,11 @@ class APIVersionMiddleware(BaseHTTPMiddleware):
     5. Returns 406 for unsupported versions
     """
 
-    async def dispatch(
-        self, request: Request, call_next: Callable
-    ) -> Response:
+    async def dispatch(self, request: Request, call_next: Callable) -> Response:
         """Process the request and handle versioning."""
         # Extract version from headers (X-API-Version takes precedence)
-        requested_version = (
-            request.headers.get("X-API-Version")
-            or request.headers.get("API-Version")
+        requested_version = request.headers.get("X-API-Version") or request.headers.get(
+            "API-Version"
         )
 
         # Default to current version if no header provided

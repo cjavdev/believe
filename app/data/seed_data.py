@@ -1507,7 +1507,12 @@ EPISODES = {
         "main_theme": "Hope, resilience, and finding meaning beyond winning",
         "ted_wisdom": "I think that you might be so sure that you're one in a million, that sometimes you forget that out there you're just one of eleven.",
         "biscuits_with_boss_moment": "Rebecca confesses her sabotage plan to Ted.",
-        "character_focus": ["ted-lasso", "rebecca-welton", "jamie-tartt", "sam-obisanya"],
+        "character_focus": [
+            "ted-lasso",
+            "rebecca-welton",
+            "jamie-tartt",
+            "sam-obisanya",
+        ],
         "memorable_moments": [
             "Jamie passes to Sam",
             "Richmond relegated",
@@ -2392,7 +2397,10 @@ TEAM_MEMBERS = {
         "team_id": "afc-richmond",
         "years_with_team": 1,
         "specialty": "sports_psychologist",
-        "qualifications": ["PhD Clinical Psychology", "Sports Psychology Certification"],
+        "qualifications": [
+            "PhD Clinical Psychology",
+            "Sports Psychology Certification",
+        ],
         "license_number": "PSY-UK-78432",
     },
     # === EQUIPMENT MANAGERS ===

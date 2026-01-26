@@ -56,7 +56,8 @@ class MatchBase(BaseModel):
     home_score: int = Field(ge=0, default=0, description="Home team score")
     away_score: int = Field(ge=0, default=0, description="Away team score")
     result: MatchResult = Field(
-        default=MatchResult.PENDING, description="Match result from home team perspective"
+        default=MatchResult.PENDING,
+        description="Match result from home team perspective",
     )
     episode_id: str | None = Field(
         default=None,

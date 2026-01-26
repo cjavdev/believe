@@ -89,7 +89,8 @@ class LiveMatchEvent(BaseModel):
         default=None, description="Player involved in the event"
     )
     secondary_player: PlayerInfo | None = Field(
-        default=None, description="Second player involved (e.g., assist, replaced player)"
+        default=None,
+        description="Second player involved (e.g., assist, replaced player)",
     )
     description: str = Field(description="Human-readable event description")
     score: MatchScore = Field(description="Current score after this event")

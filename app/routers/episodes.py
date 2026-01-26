@@ -1,6 +1,5 @@
 """Episodes router for Ted Lasso API."""
 
-
 from fastapi import APIRouter, Depends, HTTPException, Query
 
 from app.auth import verify_api_key
@@ -48,7 +47,11 @@ def _generate_id(season: int, episode_number: int) -> str:
                                 "main_theme": "Taking chances and believing in yourself",
                                 "ted_wisdom": "Taking on a challenge is a lot like riding a horse. If you're comfortable while you're doing it, you're probably doing it wrong.",
                                 "biscuits_with_boss_moment": "Ted brings Rebecca homemade biscuits for the first time.",
-                                "character_focus": ["ted-lasso", "rebecca-welton", "coach-beard"],
+                                "character_focus": [
+                                    "ted-lasso",
+                                    "rebecca-welton",
+                                    "coach-beard",
+                                ],
                                 "memorable_moments": [
                                     "Ted's first press conference",
                                     "The BELIEVE sign goes up",
@@ -120,7 +123,11 @@ async def list_episodes(
                         "main_theme": "Taking chances and believing in yourself",
                         "ted_wisdom": "Taking on a challenge is a lot like riding a horse. If you're comfortable while you're doing it, you're probably doing it wrong.",
                         "biscuits_with_boss_moment": "Ted brings Rebecca homemade biscuits for the first time.",
-                        "character_focus": ["ted-lasso", "rebecca-welton", "coach-beard"],
+                        "character_focus": [
+                            "ted-lasso",
+                            "rebecca-welton",
+                            "coach-beard",
+                        ],
                         "memorable_moments": [
                             "Ted's first press conference",
                             "The BELIEVE sign goes up",
@@ -233,7 +240,11 @@ async def create_episode(episode: EpisodeCreate) -> Episode:
                         "main_theme": "Taking chances and believing in yourself",
                         "ted_wisdom": "Taking on a challenge is a lot like riding a horse. If you're comfortable while you're doing it, you're probably doing it wrong.",
                         "biscuits_with_boss_moment": "Ted brings Rebecca homemade biscuits for the first time, beginning their bonding ritual.",
-                        "character_focus": ["ted-lasso", "rebecca-welton", "coach-beard"],
+                        "character_focus": [
+                            "ted-lasso",
+                            "rebecca-welton",
+                            "coach-beard",
+                        ],
                         "memorable_moments": [
                             "Ted's first press conference",
                             "The BELIEVE sign goes up",
@@ -272,9 +283,7 @@ async def update_episode(episode_id: str, updates: EpisodeUpdate) -> Episode:
 
     # Regenerate ID if season or episode number changed
     if "season" in update_data or "episode_number" in update_data:
-        new_id = _generate_id(
-            episode_data["season"], episode_data["episode_number"]
-        )
+        new_id = _generate_id(episode_data["season"], episode_data["episode_number"])
         if new_id != episode_id:
             episode_data["id"] = new_id
             _episodes_db[new_id] = episode_data

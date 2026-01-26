@@ -70,7 +70,9 @@ class ConflictResolver:
         diagnosis = cls._generate_diagnosis(request)
 
         # Ted's approach
-        approaches = cls.TED_APPROACHES.get(conflict_type, cls.TED_APPROACHES["interpersonal"])
+        approaches = cls.TED_APPROACHES.get(
+            conflict_type, cls.TED_APPROACHES["interpersonal"]
+        )
         ted_approach = random.choice(approaches)
 
         # Diamond Dogs advice

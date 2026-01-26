@@ -54,7 +54,11 @@ class PressConferenceSimulator:
         deflection = None
         if request.hostile:
             deflection = random.choice(cls.HOSTILE_DEFLECTIONS)
-        elif "loss" in question_lower or "defeat" in question_lower or "fail" in question_lower:
+        elif (
+            "loss" in question_lower
+            or "defeat" in question_lower
+            or "fail" in question_lower
+        ):
             deflection = random.choice(cls.DEFLECTION_HUMOR)
 
         # Get wisdom

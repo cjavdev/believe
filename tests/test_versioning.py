@@ -256,7 +256,10 @@ class TestVersionConstants:
     def test_versions_are_date_format(self):
         """Test that all versions use YYYY-MM-DD format."""
         import re
+
         date_pattern = re.compile(r"^\d{4}-\d{2}-\d{2}$")
         for version in SUPPORTED_VERSIONS:
-            assert date_pattern.match(version), f"Version {version} is not in YYYY-MM-DD format"
+            assert date_pattern.match(version), (
+                f"Version {version} is not in YYYY-MM-DD format"
+            )
         assert date_pattern.match(DEFAULT_VERSION)

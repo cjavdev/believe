@@ -65,23 +65,31 @@ class BelieveEngine:
         situation_type = request.situation_type.value
 
         # Get appropriate Ted response
-        responses = BELIEVE_RESPONSES.get(situation_type, BELIEVE_RESPONSES["self_doubt"])
+        responses = BELIEVE_RESPONSES.get(
+            situation_type, BELIEVE_RESPONSES["self_doubt"]
+        )
         ted_response = random.choice(responses)
 
         # Adjust based on intensity
         if request.intensity >= 8:
-            ted_response = f"Now you listen here, friend. {ted_response} And that's the truth!"
+            ted_response = (
+                f"Now you listen here, friend. {ted_response} And that's the truth!"
+            )
         elif request.intensity <= 3:
             ted_response = f"Hey, I hear you. {ted_response}"
 
         # Get a relevant quote
         relevant_quotes = [
-            q for q in QUOTES.values() if q["is_inspirational"] and q["character_id"] == "ted-lasso"
+            q
+            for q in QUOTES.values()
+            if q["is_inspirational"] and q["character_id"] == "ted-lasso"
         ]
         relevant_quote = random.choice(relevant_quotes)["text"]
 
         # Get action suggestion
-        actions = cls.ACTION_SUGGESTIONS.get(situation_type, cls.ACTION_SUGGESTIONS["self_doubt"])
+        actions = cls.ACTION_SUGGESTIONS.get(
+            situation_type, cls.ACTION_SUGGESTIONS["self_doubt"]
+        )
         action_suggestion = random.choice(actions)
 
         # Get goldfish wisdom

@@ -154,7 +154,9 @@ class MedicalStaffBase(TeamMemberBase):
     qualifications: list[str] = Field(
         default_factory=list,
         description="Medical qualifications and degrees",
-        json_schema_extra={"example": ["PhD Clinical Psychology", "Sports Psychology Certification"]},
+        json_schema_extra={
+            "example": ["PhD Clinical Psychology", "Sports Psychology Certification"]
+        },
     )
     license_number: str | None = Field(
         default=None,
@@ -346,5 +348,7 @@ class EquipmentManagerUpdate(BaseModel):
 # Union for updates - also demonstrates oneOf
 TeamMemberUpdate = Annotated[
     PlayerUpdate | CoachUpdate | MedicalStaffUpdate | EquipmentManagerUpdate,
-    Field(description="Update data for a team member - type determines which fields are valid"),
+    Field(
+        description="Update data for a team member - type determines which fields are valid"
+    ),
 ]

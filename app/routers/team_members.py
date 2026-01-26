@@ -4,7 +4,6 @@ This router shows how discriminated unions work with FastAPI/Pydantic,
 generating proper oneOf schemas in the OpenAPI documentation.
 """
 
-
 from fastapi import APIRouter, Depends, HTTPException, Query
 
 from app.auth import verify_api_key
@@ -50,7 +49,10 @@ def _dict_to_model(data: dict) -> TeamMember:
         return Coach(**data)
     elif member_type == MemberType.MEDICAL_STAFF or member_type == "medical_staff":
         return MedicalStaff(**data)
-    elif member_type == MemberType.EQUIPMENT_MANAGER or member_type == "equipment_manager":
+    elif (
+        member_type == MemberType.EQUIPMENT_MANAGER
+        or member_type == "equipment_manager"
+    ):
         return EquipmentManager(**data)
     else:
         raise ValueError(f"Unknown member type: {member_type}")
@@ -303,7 +305,8 @@ async def list_staff(
 ) -> PaginatedResponse[MedicalStaff | EquipmentManager]:
     """List all staff (medical and equipment)."""
     staff = [
-        m for m in _members_db.values()
+        m
+        for m in _members_db.values()
         if m["member_type"] in ["medical_staff", "equipment_manager"]
     ]
 

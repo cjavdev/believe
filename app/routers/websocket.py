@@ -48,7 +48,9 @@ async def live_match_simulation(
     home_team: str = Query(default="AFC Richmond", description="Home team name"),
     away_team: str = Query(default="West Ham United", description="Away team name"),
     speed: float = Query(default=1.0, ge=0.1, le=10.0, description="Simulation speed"),
-    excitement_level: int = Query(default=5, ge=1, le=10, description="Match excitement"),
+    excitement_level: int = Query(
+        default=5, ge=1, le=10, description="Match excitement"
+    ),
 ):
     """
     WebSocket endpoint for live match simulation.
@@ -151,6 +153,7 @@ async def live_match_simulation(
     """
     # Generate a unique client ID
     import uuid
+
     client_id = str(uuid.uuid4())[:8]
 
     try:
@@ -188,10 +191,10 @@ async def live_match_simulation(
             try:
                 # Use receive with a very short timeout to check for messages
                 import asyncio
+
                 try:
                     data = await asyncio.wait_for(
-                        websocket.receive_text(),
-                        timeout=0.01
+                        websocket.receive_text(), timeout=0.01
                     )
                     # Handle client commands
                     try:
@@ -260,19 +263,23 @@ async def websocket_test(websocket: WebSocket):
     await websocket.accept()
 
     # Send welcome message
-    await websocket.send_json({
-        "type": "welcome",
-        "message": "Welcome to the Ted Lasso API WebSocket test! Send any message and I'll echo it back.",
-        "ted_says": "Hey there, friend! This WebSocket connection is working smoother than a fresh jar of peanut butter!",
-    })
+    await websocket.send_json(
+        {
+            "type": "welcome",
+            "message": "Welcome to the Ted Lasso API WebSocket test! Send any message and I'll echo it back.",
+            "ted_says": "Hey there, friend! This WebSocket connection is working smoother than a fresh jar of peanut butter!",
+        }
+    )
 
     try:
         while True:
             data = await websocket.receive_text()
-            await websocket.send_json({
-                "type": "echo",
-                "message": data,
-                "ted_says": "I heard you loud and clear, partner!",
-            })
+            await websocket.send_json(
+                {
+                    "type": "echo",
+                    "message": data,
+                    "ted_says": "I heard you loud and clear, partner!",
+                }
+            )
     except WebSocketDisconnect:
         pass

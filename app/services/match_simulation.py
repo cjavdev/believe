@@ -261,7 +261,9 @@ class MatchSimulationService:
     def _update_possession(self):
         """Randomly shift possession percentages."""
         shift = random.uniform(-5, 5)
-        self.stats.possession_home = max(30, min(70, self.stats.possession_home + shift))
+        self.stats.possession_home = max(
+            30, min(70, self.stats.possession_home + shift)
+        )
         self.stats.possession_away = 100 - self.stats.possession_home
 
     def _create_event(
@@ -366,7 +368,9 @@ class MatchSimulationService:
             while assister.name == scorer.name:
                 assister = self._get_player(team)
 
-        team_name = self.config.home_team if team == TeamSide.HOME else self.config.away_team
+        team_name = (
+            self.config.home_team if team == TeamSide.HOME else self.config.away_team
+        )
         description = f"GOAL! {scorer.name} scores for {team_name}!"
         if assister:
             description += f" Assisted by {assister.name}."
@@ -499,7 +503,9 @@ class MatchSimulationService:
         else:
             self.stats.corners_away += 1
 
-        team_name = self.config.home_team if team == TeamSide.HOME else self.config.away_team
+        team_name = (
+            self.config.home_team if team == TeamSide.HOME else self.config.away_team
+        )
         return self._create_event(
             LiveMatchEventType.CORNER,
             minute,

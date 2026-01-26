@@ -113,7 +113,9 @@ class StreamingService:
             await asyncio.sleep(delay)
 
     @classmethod
-    async def stream_match_commentary(cls, match_id: str) -> AsyncGenerator[MatchCommentaryEvent, None]:
+    async def stream_match_commentary(
+        cls, match_id: str
+    ) -> AsyncGenerator[MatchCommentaryEvent, None]:
         """Stream live match commentary events."""
         # Get match data if it exists
         match_data = MATCHES.get(match_id)
@@ -139,76 +141,100 @@ class StreamingService:
         events = []
 
         # Kickoff
-        events.append({
-            "minute": 0,
-            "event_type": CommentaryEventType.KICKOFF,
-            "description": "The match kicks off at Nelson Road",
-            "commentary": random.choice(cls.MATCH_COMMENTARY_TEMPLATES[CommentaryEventType.KICKOFF]),
-            "ted_sideline_reaction": None,
-            "crowd_reaction": "The home fans are in full voice!",
-        })
+        events.append(
+            {
+                "minute": 0,
+                "event_type": CommentaryEventType.KICKOFF,
+                "description": "The match kicks off at Nelson Road",
+                "commentary": random.choice(
+                    cls.MATCH_COMMENTARY_TEMPLATES[CommentaryEventType.KICKOFF]
+                ),
+                "ted_sideline_reaction": None,
+                "crowd_reaction": "The home fans are in full voice!",
+            }
+        )
 
         # First half events
         for minute in [12, 23, 34, 42]:
-            event_type = random.choice([
-                CommentaryEventType.NEAR_MISS,
-                CommentaryEventType.SAVE,
-                CommentaryEventType.FOUL,
-                CommentaryEventType.TED_REACTION,
-                CommentaryEventType.CROWD_MOMENT,
-            ])
+            event_type = random.choice(
+                [
+                    CommentaryEventType.NEAR_MISS,
+                    CommentaryEventType.SAVE,
+                    CommentaryEventType.FOUL,
+                    CommentaryEventType.TED_REACTION,
+                    CommentaryEventType.CROWD_MOMENT,
+                ]
+            )
             events.append(cls._create_event(minute, event_type))
 
         # First half goal
-        events.append({
-            "minute": 38,
-            "event_type": CommentaryEventType.GOAL,
-            "description": "Richmond takes the lead! A beautiful team move!",
-            "commentary": random.choice(cls.MATCH_COMMENTARY_TEMPLATES[CommentaryEventType.GOAL]),
-            "ted_sideline_reaction": random.choice(cls.TED_REACTIONS),
-            "crowd_reaction": random.choice(cls.CROWD_REACTIONS),
-        })
+        events.append(
+            {
+                "minute": 38,
+                "event_type": CommentaryEventType.GOAL,
+                "description": "Richmond takes the lead! A beautiful team move!",
+                "commentary": random.choice(
+                    cls.MATCH_COMMENTARY_TEMPLATES[CommentaryEventType.GOAL]
+                ),
+                "ted_sideline_reaction": random.choice(cls.TED_REACTIONS),
+                "crowd_reaction": random.choice(cls.CROWD_REACTIONS),
+            }
+        )
 
         # Halftime
-        events.append({
-            "minute": 45,
-            "event_type": CommentaryEventType.HALFTIME,
-            "description": "The referee signals for halftime",
-            "commentary": random.choice(cls.MATCH_COMMENTARY_TEMPLATES[CommentaryEventType.HALFTIME]),
-            "ted_sideline_reaction": "Ted gathers the team for his famous halftime wisdom",
-            "crowd_reaction": "Fans head for tea and biscuits",
-        })
+        events.append(
+            {
+                "minute": 45,
+                "event_type": CommentaryEventType.HALFTIME,
+                "description": "The referee signals for halftime",
+                "commentary": random.choice(
+                    cls.MATCH_COMMENTARY_TEMPLATES[CommentaryEventType.HALFTIME]
+                ),
+                "ted_sideline_reaction": "Ted gathers the team for his famous halftime wisdom",
+                "crowd_reaction": "Fans head for tea and biscuits",
+            }
+        )
 
         # Second half events
         for minute in [52, 63, 71, 78]:
-            event_type = random.choice([
-                CommentaryEventType.NEAR_MISS,
-                CommentaryEventType.SAVE,
-                CommentaryEventType.SUBSTITUTION,
-                CommentaryEventType.TED_REACTION,
-                CommentaryEventType.CROWD_MOMENT,
-            ])
+            event_type = random.choice(
+                [
+                    CommentaryEventType.NEAR_MISS,
+                    CommentaryEventType.SAVE,
+                    CommentaryEventType.SUBSTITUTION,
+                    CommentaryEventType.TED_REACTION,
+                    CommentaryEventType.CROWD_MOMENT,
+                ]
+            )
             events.append(cls._create_event(minute, event_type))
 
         # Late drama - another goal
-        events.append({
-            "minute": 85,
-            "event_type": CommentaryEventType.GOAL,
-            "description": "Equalizer! The visitors strike back!",
-            "commentary": random.choice(cls.MATCH_COMMENTARY_TEMPLATES[CommentaryEventType.GOAL]),
-            "ted_sideline_reaction": "Ted applauds - 'That's football, y'all!'",
-            "crowd_reaction": "A collective groan from the home fans",
-        })
+        events.append(
+            {
+                "minute": 85,
+                "event_type": CommentaryEventType.GOAL,
+                "description": "Equalizer! The visitors strike back!",
+                "commentary": random.choice(
+                    cls.MATCH_COMMENTARY_TEMPLATES[CommentaryEventType.GOAL]
+                ),
+                "ted_sideline_reaction": "Ted applauds - 'That's football, y'all!'",
+                "crowd_reaction": "A collective groan from the home fans",
+            }
+        )
 
         # Final whistle
-        events.append({
-            "minute": 90,
-            "event_type": CommentaryEventType.FINAL_WHISTLE,
-            "description": "Full time at Nelson Road",
-            "commentary": random.choice(cls.MATCH_COMMENTARY_TEMPLATES[CommentaryEventType.FINAL_WHISTLE]),
-            "ted_sideline_reaction": "Ted shakes hands with both teams, smiling warmly",
-            "crowd_reaction": "The fans applaud their team despite the result",
-        })
+        events.append(
+            {
+                "minute": 90,
+                "event_type": CommentaryEventType.FINAL_WHISTLE,
+                "description": "Full time at Nelson Road",
+                "commentary": random.choice(
+                    cls.MATCH_COMMENTARY_TEMPLATES[CommentaryEventType.FINAL_WHISTLE]
+                ),
+                "ted_sideline_reaction": "Ted shakes hands with both teams, smiling warmly",
+                "crowd_reaction": "The fans applaud their team despite the result",
+            }
+        )
 
         return events
 
@@ -229,6 +255,10 @@ class StreamingService:
             "event_type": event_type,
             "description": descriptions.get(event_type, "Action on the pitch"),
             "commentary": random.choice(cls.MATCH_COMMENTARY_TEMPLATES[event_type]),
-            "ted_sideline_reaction": random.choice(cls.TED_REACTIONS) if random.random() > 0.5 else None,
-            "crowd_reaction": random.choice(cls.CROWD_REACTIONS) if random.random() > 0.5 else None,
+            "ted_sideline_reaction": random.choice(cls.TED_REACTIONS)
+            if random.random() > 0.5
+            else None,
+            "crowd_reaction": random.choice(cls.CROWD_REACTIONS)
+            if random.random() > 0.5
+            else None,
         }

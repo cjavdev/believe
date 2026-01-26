@@ -31,7 +31,9 @@ async def test_stream_pep_talk(client):
 @pytest.mark.asyncio
 async def test_stream_match_commentary(client):
     """Test the match commentary SSE stream."""
-    async with client.stream("POST", "/matches/match-001/commentary/stream") as response:
+    async with client.stream(
+        "POST", "/matches/match-001/commentary/stream"
+    ) as response:
         assert response.status_code == 200
         assert "text/event-stream" in response.headers.get("content-type", "")
 
@@ -55,7 +57,9 @@ async def test_stream_match_commentary(client):
 @pytest.mark.asyncio
 async def test_stream_match_commentary_new_match(client):
     """Test streaming commentary for a new match ID."""
-    async with client.stream("POST", "/matches/match-new/commentary/stream") as response:
+    async with client.stream(
+        "POST", "/matches/match-new/commentary/stream"
+    ) as response:
         assert response.status_code == 200
 
         events = []

@@ -135,8 +135,18 @@ async def believe_engine(request: BelieveRequest) -> BelieveResponse:
         )
 
     # Check for too much negativity
-    negative_words = ["hate", "terrible", "awful", "worst", "never", "hopeless", "give up"]
-    negativity_count = sum(1 for word in negative_words if word in request.situation.lower())
+    negative_words = [
+        "hate",
+        "terrible",
+        "awful",
+        "worst",
+        "never",
+        "hopeless",
+        "give up",
+    ]
+    negativity_count = sum(
+        1 for word in negative_words if word in request.situation.lower()
+    )
     if negativity_count >= 4:
         raise TooMuchNegativityError()
 

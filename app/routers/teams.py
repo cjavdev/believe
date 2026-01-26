@@ -24,6 +24,7 @@ class FileUploadResponse(BaseModel):
     checksum_sha256: str
     uploaded_at: datetime
 
+
 router = APIRouter(
     prefix="/teams",
     tags=["Teams"],
@@ -34,7 +35,9 @@ router = APIRouter(
 _teams_db: dict[str, dict] = dict(TEAMS)
 
 # File storage for team logos
-_team_files: dict[str, dict[UUID, tuple[bytes, str, str]]] = {}  # team_id -> {file_id -> (content, filename, content_type)}
+_team_files: dict[
+    str, dict[UUID, tuple[bytes, str, str]]
+] = {}  # team_id -> {file_id -> (content, filename, content_type)}
 
 
 def _generate_id(name: str) -> str:
@@ -234,7 +237,12 @@ async def create_team(team: TeamCreate) -> Team:
                         "culture_score": 95,
                         "values": {
                             "primary_value": "Believe",
-                            "secondary_values": ["Family", "Resilience", "Joy", "Growth"],
+                            "secondary_values": [
+                                "Family",
+                                "Resilience",
+                                "Joy",
+                                "Growth",
+                            ],
                             "team_motto": "Football is life!",
                         },
                         "rival_teams": ["west-ham", "rupert-fc"],

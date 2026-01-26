@@ -1,6 +1,5 @@
 """Characters router for Ted Lasso API."""
 
-
 from fastapi import APIRouter, Depends, HTTPException, Query
 
 from app.auth import verify_api_key
@@ -46,7 +45,12 @@ def _generate_id(name: str) -> str:
                                 "role": "coach",
                                 "team_id": "afc-richmond",
                                 "background": "Former American football coach from Kansas who moved to London to coach AFC Richmond",
-                                "personality_traits": ["optimistic", "kind", "folksy", "persistent"],
+                                "personality_traits": [
+                                    "optimistic",
+                                    "kind",
+                                    "folksy",
+                                    "persistent",
+                                ],
                                 "emotional_stats": {
                                     "optimism": 95,
                                     "vulnerability": 80,
@@ -77,7 +81,9 @@ async def list_characters(
     pagination: PaginationParams = Depends(),
     role: CharacterRole | None = Query(None, description="Filter by role"),
     team_id: str | None = Query(None, description="Filter by team ID"),
-    min_optimism: int | None = Query(None, ge=0, le=100, description="Minimum optimism score"),
+    min_optimism: int | None = Query(
+        None, ge=0, le=100, description="Minimum optimism score"
+    ),
 ) -> PaginatedResponse[Character]:
     """List all characters with optional filters and pagination."""
     characters = list(_characters_db.values())
@@ -118,7 +124,12 @@ async def list_characters(
                         "role": "coach",
                         "team_id": "afc-richmond",
                         "background": "Former American football coach from Kansas who moved to London to coach AFC Richmond",
-                        "personality_traits": ["optimistic", "kind", "folksy", "persistent"],
+                        "personality_traits": [
+                            "optimistic",
+                            "kind",
+                            "folksy",
+                            "persistent",
+                        ],
                         "emotional_stats": {
                             "optimism": 95,
                             "vulnerability": 80,
@@ -182,7 +193,12 @@ async def get_character(character_id: str) -> Character:
                         "role": "other",
                         "team_id": None,
                         "background": "Owner of the Crown & Anchor pub near Nelson Road, unofficial heart of Richmond fandom",
-                        "personality_traits": ["welcoming", "wise", "supportive", "witty"],
+                        "personality_traits": [
+                            "welcoming",
+                            "wise",
+                            "supportive",
+                            "witty",
+                        ],
                         "emotional_stats": {
                             "optimism": 75,
                             "vulnerability": 60,
@@ -190,7 +206,9 @@ async def get_character(character_id: str) -> Character:
                             "resilience": 80,
                             "curiosity": 70,
                         },
-                        "signature_quotes": ["This is a pub. People come here to feel better."],
+                        "signature_quotes": [
+                            "This is a pub. People come here to feel better."
+                        ],
                         "growth_arcs": [],
                     }
                 }
@@ -240,7 +258,13 @@ async def create_character(character: CharacterCreate) -> Character:
                         "role": "coach",
                         "team_id": "afc-richmond",
                         "background": "Former American football coach from Kansas, now beloved manager of AFC Richmond",
-                        "personality_traits": ["optimistic", "kind", "folksy", "persistent", "wise"],
+                        "personality_traits": [
+                            "optimistic",
+                            "kind",
+                            "folksy",
+                            "persistent",
+                            "wise",
+                        ],
                         "emotional_stats": {
                             "optimism": 98,
                             "vulnerability": 85,
