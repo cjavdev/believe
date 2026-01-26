@@ -530,6 +530,8 @@
           "staff",
           "journalist",
           "family",
+          "friend",
+          "fan",
           "other"
         ],
         "title": "CharacterRole",

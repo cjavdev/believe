@@ -255,6 +255,61 @@ Run tests verbosely:
 pytest -v
 ```
 
+## OpenAPI Specification
+
+The API's OpenAPI specification is stored in `openapi.json` at the repository root. This file is used for SDK generation and must be kept in sync with the API.
+
+### Regenerating the OpenAPI Spec
+
+After making changes to the API (routes, models, etc.), regenerate the spec:
+
+```bash
+python scripts/generate_openapi.py > openapi.json
+```
+
+### Checking if the Spec is Up to Date
+
+To verify the spec matches the current API:
+
+```bash
+./scripts/check_openapi.sh
+```
+
+### Pre-commit Hook Setup
+
+To automatically check the OpenAPI spec before each commit, set up a git pre-commit hook:
+
+```bash
+# Create the hook
+cat > .git/hooks/pre-commit << 'EOF'
+#!/bin/bash
+./scripts/check_openapi.sh
+EOF
+
+# Make it executable
+chmod +x .git/hooks/pre-commit
+```
+
+Now git will prevent commits if the OpenAPI spec is out of date.
+
+## Linting
+
+This project uses [ruff](https://github.com/astral-sh/ruff) for linting and formatting.
+
+```bash
+# Check for issues
+ruff check .
+
+# Auto-fix issues
+ruff check --fix .
+
+# Check formatting
+ruff format --check .
+
+# Apply formatting
+ruff format .
+```
+
 ## Project Structure
 
 ```
