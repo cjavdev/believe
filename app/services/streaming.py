@@ -81,7 +81,9 @@ class StreamingService:
     ]
 
     @classmethod
-    def _get_emotional_beat(cls, segment: str, index: int, is_final: bool) -> str | None:
+    def _get_emotional_beat(
+        cls, segment: str, index: int, is_final: bool
+    ) -> str | None:
         """Determine the emotional beat for a pep talk segment."""
         if "tough" in segment.lower():
             return "acknowledgment"
