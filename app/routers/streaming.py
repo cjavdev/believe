@@ -2,11 +2,12 @@
 
 import json
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sse_starlette.sse import EventSourceResponse
 
 from app.auth import verify_api_key
 from app.data import MATCHES
+from app.models.interactive import PepTalkResponse
 from app.services import StreamingService
 
 router = APIRouter(
@@ -16,33 +17,46 @@ router = APIRouter(
 
 
 @router.get(
-    "/pep-talk/stream",
-    summary="Stream a Pep Talk",
-    description="Get a streaming motivational pep talk from Ted Lasso himself. "
-    "Uses Server-Sent Events (SSE) to stream the pep talk chunk by chunk.",
+    "/pep-talk",
+    summary="Get a Pep Talk",
+    description="Get a motivational pep talk from Ted Lasso himself. "
+    "By default returns the complete pep talk. Add `?stream=true` to get "
+    "Server-Sent Events (SSE) streaming the pep talk chunk by chunk.",
+    response_model=PepTalkResponse,
     responses={
         200: {
-            "description": "SSE stream of pep talk chunks",
+            "description": "Pep talk response (JSON or SSE stream)",
             "content": {
+                "application/json": {
+                    "schema": {"$ref": "#/components/schemas/PepTalkResponse"},
+                },
                 "text/event-stream": {
                     "schema": {},  # Schema defined in generate_openapi.py as PepTalkChunk
                     "example": 'data: {"chunk_id": 0, "text": "Hey there, friend. ", "is_final": false, "emotional_beat": "greeting"}\n\n',
-                }
+                },
             },
         }
     },
 )
-async def stream_pep_talk():
-    """Stream a motivational pep talk from Ted."""
+async def get_pep_talk(
+    stream: bool = Query(
+        default=False,
+        description="If true, returns SSE stream instead of full response",
+    ),
+):
+    """Get a motivational pep talk from Ted."""
+    if stream:
 
-    async def event_generator():
-        async for chunk in StreamingService.stream_pep_talk():
-            yield {
-                "event": "pep_talk",
-                "data": json.dumps(chunk.model_dump()),
-            }
+        async def event_generator():
+            async for chunk in StreamingService.stream_pep_talk():
+                yield {
+                    "event": "pep_talk",
+                    "data": json.dumps(chunk.model_dump()),
+                }
 
-    return EventSourceResponse(event_generator())
+        return EventSourceResponse(event_generator())
+
+    return StreamingService.get_pep_talk()
 
 
 @router.post(

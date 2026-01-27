@@ -119,7 +119,7 @@ SSE_SCHEMAS = {
 
 # Mapping of endpoint paths to their SSE schema refs
 SSE_ENDPOINT_SCHEMAS = {
-    "/pep-talk/stream": "PepTalkChunk",
+    "/pep-talk": "PepTalkChunk",
     "/matches/{match_id}/commentary/stream": "MatchCommentaryEvent",
     "/stream/test": "TestStreamChunk",
 }

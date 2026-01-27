@@ -66,7 +66,7 @@ Perfect for SDK demos showcasing various REST API features.
 
 ### Streaming (Server-Sent Events)
 
-- **GET /pep-talk/stream**: SSE streaming pep talk from Ted
+- **GET /pep-talk**: Pep talk from Ted (add `?stream=true` for SSE)
 - **POST /matches/{id}/commentary/stream**: Live match commentary
 
 ### WebSocket (Real-time)
@@ -210,7 +210,7 @@ app.include_router(team_members_router)
                             "press_conference": "/press",
                             "coaching_principles": "/coaching/principles",
                             "biscuits": "/biscuits",
-                            "pep_talk_stream": "/pep-talk/stream",
+                            "pep_talk": "/pep-talk",
                             "live_match_websocket": "ws://localhost:8000/matches/live",
                             "documentation": "/docs",
                         },
@@ -244,7 +244,7 @@ async def root(request: Request):
             "press_conference": "/press",
             "coaching_principles": "/coaching/principles",
             "biscuits": "/biscuits",
-            "pep_talk_stream": "/pep-talk/stream",
+            "pep_talk": "/pep-talk",
             "live_match_websocket": "ws://{host}/matches/live",
             "documentation": "/docs",
         },

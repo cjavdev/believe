@@ -6,9 +6,27 @@ import pytest
 
 
 @pytest.mark.asyncio
+async def test_get_pep_talk(client):
+    """Test the pep talk endpoint (non-streaming)."""
+    response = await client.get("/pep-talk")
+    assert response.status_code == 200
+
+    data = response.json()
+    assert "text" in data
+    assert "chunks" in data
+    assert len(data["chunks"]) > 0
+
+    # Check structure of first chunk
+    first_chunk = data["chunks"][0]
+    assert "chunk_id" in first_chunk
+    assert "text" in first_chunk
+    assert "is_final" in first_chunk
+
+
+@pytest.mark.asyncio
 async def test_stream_pep_talk(client):
     """Test the pep talk SSE stream."""
-    async with client.stream("GET", "/pep-talk/stream") as response:
+    async with client.stream("GET", "/pep-talk?stream=true") as response:
         assert response.status_code == 200
         assert "text/event-stream" in response.headers.get("content-type", "")
 
