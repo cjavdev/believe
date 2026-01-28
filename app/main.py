@@ -7,6 +7,10 @@ Perfect for SDK demos showcasing REST API features.
 from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from slowapi.middleware import SlowAPIMiddleware
+from slowapi.util import get_remote_address
 
 from app.auth import verify_api_key
 from app.middleware.versioning import (
@@ -157,6 +161,12 @@ If no version header is provided, the API defaults to the latest stable version.
         },
     ],
 )
+
+# Configure rate limiting (25 requests per second per IP)
+limiter = Limiter(key_func=get_remote_address, default_limits=["25/second"])
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+app.add_middleware(SlowAPIMiddleware)
 
 # Add CORS middleware
 app.add_middleware(
