@@ -20,13 +20,17 @@ Server-Sent Events provide unidirectional streaming from server to client over H
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/pep-talk/stream` | GET | Streams motivational pep talk chunks |
+| `/pep-talk` | GET | Returns full pep talk (add `?stream=true` for SSE) |
 | `/matches/{match_id}/commentary/stream` | POST | Streams live match commentary events |
 | `/stream/test` | GET | Test endpoint that streams 5 messages |
 
 **Example (curl):**
 ```bash
-curl -N -H "X-API-Key: your-key" http://localhost:8000/pep-talk/stream
+# Full response
+curl -H "X-API-Key: your-key" http://localhost:8000/pep-talk
+
+# Streaming
+curl -N -H "X-API-Key: your-key" http://localhost:8000/pep-talk?stream=true
 ```
 
 ### WebSocket Endpoints

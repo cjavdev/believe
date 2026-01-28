@@ -9,6 +9,7 @@ from app.models.interactive import (
     CommentaryEventType,
     MatchCommentaryEvent,
     PepTalkChunk,
+    PepTalkResponse,
 )
 
 
@@ -80,29 +81,50 @@ class StreamingService:
     ]
 
     @classmethod
+    def _get_emotional_beat(
+        cls, segment: str, index: int, is_final: bool
+    ) -> str | None:
+        """Determine the emotional beat for a pep talk segment."""
+        if "tough" in segment.lower():
+            return "acknowledgment"
+        elif "goldfish" in segment.lower():
+            return "wisdom"
+        elif "believe" in segment.lower():
+            return "affirmation"
+        elif index == 0:
+            return "greeting"
+        elif is_final:
+            return "encouragement"
+        return None
+
+    @classmethod
+    def get_pep_talk(cls) -> PepTalkResponse:
+        """Get a complete pep talk from Ted."""
+        chunks = []
+        for i, segment in enumerate(PEP_TALK_SEGMENTS):
+            is_final = i == len(PEP_TALK_SEGMENTS) - 1
+            chunk = PepTalkChunk(
+                chunk_id=i,
+                text=segment,
+                is_final=is_final,
+                emotional_beat=cls._get_emotional_beat(segment, i, is_final),
+            )
+            chunks.append(chunk)
+
+        full_text = " ".join(segment for segment in PEP_TALK_SEGMENTS)
+        return PepTalkResponse(text=full_text, chunks=chunks)
+
+    @classmethod
     async def stream_pep_talk(cls) -> AsyncGenerator[PepTalkChunk, None]:
         """Stream a motivational pep talk from Ted, chunk by chunk."""
         for i, segment in enumerate(PEP_TALK_SEGMENTS):
             is_final = i == len(PEP_TALK_SEGMENTS) - 1
 
-            # Determine emotional beat
-            emotional_beat = None
-            if "tough" in segment.lower():
-                emotional_beat = "acknowledgment"
-            elif "goldfish" in segment.lower():
-                emotional_beat = "wisdom"
-            elif "believe" in segment.lower():
-                emotional_beat = "affirmation"
-            elif i == 0:
-                emotional_beat = "greeting"
-            elif is_final:
-                emotional_beat = "encouragement"
-
             chunk = PepTalkChunk(
                 chunk_id=i,
                 text=segment,
                 is_final=is_final,
-                emotional_beat=emotional_beat,
+                emotional_beat=cls._get_emotional_beat(segment, i, is_final),
             )
 
             yield chunk

@@ -229,6 +229,13 @@ class PepTalkChunk(BaseModel):
     )
 
 
+class PepTalkResponse(BaseModel):
+    """A complete pep talk response."""
+
+    text: str = Field(description="The full pep talk text")
+    chunks: list[PepTalkChunk] = Field(description="Individual chunks of the pep talk")
+
+
 class CommentaryEventType(str, Enum):
     """Types of match commentary events."""
 
