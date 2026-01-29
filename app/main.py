@@ -28,6 +28,7 @@ from app.routers import (
     streaming_router,
     team_members_router,
     teams_router,
+    webhooks_router,
     websocket_router,
 )
 
@@ -159,6 +160,10 @@ If no version header is provided, the API defaults to the latest stable version.
             "name": "Team Members",
             "description": "Team members with union types (oneOf) - Players, Coaches, Medical Staff, Equipment Managers",
         },
+        {
+            "name": "Webhooks",
+            "description": "Register webhook endpoints and trigger events for testing",
+        },
     ],
 )
 
@@ -190,6 +195,7 @@ app.include_router(interactive_router)
 app.include_router(streaming_router)
 app.include_router(websocket_router)
 app.include_router(team_members_router)
+app.include_router(webhooks_router)
 
 
 # Root endpoint
