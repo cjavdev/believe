@@ -3,6 +3,12 @@
     "schemas": {
       "BelieveRequest": {
         "description": "Request for the Believe Engine.",
+        "example": {
+          "context": "I've always tried to be a team player and support my colleagues.",
+          "intensity": 7,
+          "situation": "I just got passed over for a promotion I've been working toward for two years.",
+          "situation_type": "work_challenge"
+        },
         "properties": {
           "context": {
             "anyOf": [
@@ -47,6 +53,13 @@
       },
       "BelieveResponse": {
         "description": "Response from the Believe Engine.",
+        "example": {
+          "action_suggestion": "Schedule a one-on-one with your manager to understand what growth areas they'd like to see, and ask them to be your partner in getting you ready for the next opportunity.",
+          "believe_score": 78,
+          "goldfish_wisdom": "Remember, a goldfish has a 10-second memory. Feel this disappointment, then let it swim on by. Tomorrow's a new tank, friend.",
+          "relevant_quote": "I believe in believe.",
+          "ted_response": "Well shoot, partner, I know that stings like a bee that just watched Field of Dreams. But here's the thing about getting passed over - it don't mean you're not good enough, it just means your moment ain't arrived yet. And let me tell you, when it does? It's gonna be sweeter than my Aunt Mildred's pecan pie."
+        },
         "properties": {
           "action_suggestion": {
             "description": "Suggested action to take",
@@ -88,6 +101,14 @@
       },
       "Biscuit": {
         "description": "A biscuit from Ted.",
+        "example": {
+          "id": "biscuit-001",
+          "message": "Sometimes the best thing you can do is just show up with something warm.",
+          "pairs_well_with": "A hot cup of tea and an honest conversation",
+          "ted_note": "Made these thinking about you. Hope your day is as sweet as these little fellas. - Ted",
+          "type": "shortbread",
+          "warmth_level": 9
+        },
         "properties": {
           "id": {
             "description": "Biscuit identifier",
@@ -362,6 +383,43 @@
       },
       "CharacterCreate": {
         "description": "Model for creating a new character.",
+        "example": {
+          "background": "Legendary midfielder for Chelsea and AFC Richmond, now assistant coach. Known for his gruff exterior hiding a heart of gold.",
+          "date_of_birth": "1977-03-15",
+          "email": "roy.kent@afcrichmond.com",
+          "emotional_stats": {
+            "curiosity": 40,
+            "empathy": 85,
+            "optimism": 45,
+            "resilience": 95,
+            "vulnerability": 60
+          },
+          "growth_arcs": [
+            {
+              "breakthrough": "Finding purpose beyond playing",
+              "challenge": "Accepting his body's limitations",
+              "ending_point": "Retired but lost",
+              "season": 1,
+              "starting_point": "Aging footballer facing retirement"
+            }
+          ],
+          "height_meters": 1.78,
+          "name": "Roy Kent",
+          "personality_traits": [
+            "intense",
+            "loyal",
+            "secretly caring",
+            "profane"
+          ],
+          "profile_image_url": "https://afcrichmond.com/images/roy-kent.jpg",
+          "role": "coach",
+          "salary_gbp": "175000.00",
+          "signature_quotes": [
+            "He's here, he's there, he's every-f***ing-where, Roy Kent!",
+            "Whistle!"
+          ],
+          "team_id": "afc-richmond"
+        },
         "properties": {
           "background": {
             "description": "Character background and history",
@@ -952,6 +1010,14 @@
       },
       "CoachingPrinciple": {
         "description": "A Ted Lasso coaching principle.",
+        "example": {
+          "application": "When someone frustrates you, ask questions before making assumptions. Seek to understand their perspective and motivations.",
+          "example_from_show": "Ted uses this principle during the dart game with Rupert, explaining how people underestimated him his whole life because they judged before being curious.",
+          "explanation": "Approach people and situations with genuine curiosity rather than preconceived judgments. Everyone has a story worth understanding.",
+          "id": "be-curious",
+          "principle": "Be curious, not judgmental",
+          "ted_quote": "Be curious, not judgmental. - Walt Whitman... I think."
+        },
         "properties": {
           "application": {
             "description": "How to apply this principle",
@@ -997,6 +1063,18 @@
       },
       "ConflictRequest": {
         "description": "Request for conflict resolution.",
+        "example": {
+          "attempts_made": [
+            "Mentioned it casually",
+            "Avoided them"
+          ],
+          "conflict_type": "interpersonal",
+          "description": "Alex keeps taking credit for my ideas in meetings and I'm getting resentful.",
+          "parties_involved": [
+            "Me",
+            "My teammate Alex"
+          ]
+        },
         "properties": {
           "attempts_made": {
             "anyOf": [
@@ -1053,6 +1131,20 @@
       },
       "ConflictResolution": {
         "description": "Conflict resolution response.",
+        "example": {
+          "barbecue_sauce_wisdom": "You know what they say - you catch more flies with honey than vinegar. But you also gotta speak up, 'cause a closed mouth don't get fed.",
+          "diagnosis": "This ain't really about credit, partner. It's about feeling seen and valued. When Alex takes credit, you feel invisible, and that's gonna build up like steam in a pressure cooker.",
+          "diamond_dogs_advice": "Roy says: 'Tell them to their face.' Higgins says: 'Perhaps document your contributions in emails beforehand.' Coach Beard just nodded mysteriously and quoted Sun Tzu.",
+          "potential_outcome": "Y'all might discover Alex didn't even realize they were doing it. Could turn a rival into an ally, like Roy and Jamie... eventually.",
+          "steps_to_resolution": [
+            "Request a private, casual conversation with Alex",
+            "Share how you've been feeling using 'I' statements",
+            "Ask if they're aware this has been happening",
+            "Propose a collaboration system where you both present together",
+            "Set up a weekly sync to align on contributions"
+          ],
+          "ted_approach": "I'd bring Alex a coffee, maybe a biscuit, and say 'Hey, can we chat?' No accusations, just curiosity. Ask them how they think the project's going and what they see as everyone's contributions."
+        },
         "properties": {
           "barbecue_sauce_wisdom": {
             "description": "A folksy metaphor to remember",
@@ -1351,6 +1443,32 @@
       },
       "EpisodeCreate": {
         "description": "Model for creating a new episode.",
+        "example": {
+          "air_date": "2020-10-02",
+          "biscuits_with_boss_moment": "Ted and Rebecca have an honest conversation about trust.",
+          "character_focus": [
+            "ted-lasso",
+            "coach-beard",
+            "higgins",
+            "nate"
+          ],
+          "director": "MJ Delaney",
+          "episode_number": 8,
+          "main_theme": "The power of vulnerability and male friendship",
+          "memorable_moments": [
+            "First Diamond Dogs meeting",
+            "The famous dart scene with Rupert",
+            "Be curious, not judgmental speech"
+          ],
+          "runtime_minutes": 29,
+          "season": 1,
+          "synopsis": "Ted creates a support group for the coaching staff while Rebecca faces a difficult decision about her future.",
+          "ted_wisdom": "There's two buttons I never like to hit: that's panic and snooze.",
+          "title": "The Diamond Dogs",
+          "us_viewers_millions": 1.42,
+          "viewer_rating": 9.1,
+          "writer": "Jason Sudeikis, Brendan Hunt, Joe Kelly"
+        },
         "properties": {
           "air_date": {
             "description": "Original air date",
@@ -2273,6 +2391,21 @@
       },
       "MatchCreate": {
         "description": "Model for creating a new match.",
+        "example": {
+          "attendance": 24500,
+          "away_score": 0,
+          "away_team_id": "tottenham",
+          "date": "2024-02-20T19:45:00Z",
+          "episode_id": "s02e05",
+          "home_score": 0,
+          "home_team_id": "afc-richmond",
+          "match_type": "cup",
+          "possession_percentage": 50.0,
+          "result": "pending",
+          "ticket_revenue_gbp": "735000.00",
+          "turning_points": [],
+          "weather_temp_celsius": 8.5
+        },
         "properties": {
           "attendance": {
             "anyOf": [
@@ -3521,6 +3654,41 @@
       },
       "PepTalkResponse": {
         "description": "A complete pep talk response.",
+        "example": {
+          "chunks": [
+            {
+              "chunk_id": 1,
+              "emotional_beat": "connection",
+              "is_final": false,
+              "text": "Hey there, friend. "
+            },
+            {
+              "chunk_id": 2,
+              "emotional_beat": "acknowledgment",
+              "is_final": false,
+              "text": "I know things feel tough right now. "
+            },
+            {
+              "chunk_id": 3,
+              "emotional_beat": "building_metaphor",
+              "is_final": false,
+              "text": "And that's the thing about hard times - they're like a good barbecue rub. "
+            },
+            {
+              "chunk_id": 4,
+              "emotional_beat": "wisdom",
+              "is_final": false,
+              "text": "They might sting at first, but they're what give you flavor. "
+            },
+            {
+              "chunk_id": 5,
+              "emotional_beat": "encouragement",
+              "is_final": true,
+              "text": "You got this."
+            }
+          ],
+          "text": "Hey there, friend. I know things feel tough right now. And that's the thing about hard times - they're like a good barbecue rub. They might sting at first, but they're what give you flavor. You got this."
+        },
         "properties": {
           "chunks": {
             "description": "Individual chunks of the pep talk",
@@ -3818,6 +3986,11 @@
       },
       "PressConferenceRequest": {
         "description": "Request for press conference response.",
+        "example": {
+          "hostile": true,
+          "question": "Ted, your team just lost 5-0. How do you explain this embarrassing defeat?",
+          "topic": "match_result"
+        },
         "properties": {
           "hostile": {
             "default": false,
@@ -3854,6 +4027,13 @@
       },
       "PressConferenceResponse": {
         "description": "Ted's press conference response.",
+        "example": {
+          "actual_wisdom": "Every loss is a lesson. We didn't play our best today, but I saw something in those players' eyes at the final whistle - hunger. And you can't teach hunger.",
+          "deflection_humor": "Speaking of combinations, did y'all know that the average person forgets their password 37 times a year? Unrelated, but I just think that's fascinating.",
+          "follow_up_dodge": "I'd love to answer that, but I promised Coach Beard I'd help him find his lucky whistle. Y'all have a good one!",
+          "reporter_reaction": "Confused chuckles turn to thoughtful nods as they realize Ted has somehow made them feel better about a 5-0 loss.",
+          "response": "Well, I'll tell you what, that score reminded me of my high school combination lock - 5-0 - except instead of opening my locker, it opened up a whole lot of learning opportunities for us today."
+        },
         "properties": {
           "actual_wisdom": {
             "description": "The actual wisdom beneath the humor",
@@ -4032,6 +4212,22 @@
       },
       "QuoteCreate": {
         "description": "Model for creating a new quote.",
+        "example": {
+          "character_id": "ted-lasso",
+          "context": "Ted's first team meeting, revealing his coaching philosophy",
+          "episode_id": "s01e01",
+          "is_funny": false,
+          "is_inspirational": true,
+          "moment_type": "locker_room",
+          "popularity_score": 98.5,
+          "secondary_themes": [
+            "leadership",
+            "teamwork"
+          ],
+          "text": "I believe in believe.",
+          "theme": "belief",
+          "times_shared": 250000
+        },
         "properties": {
           "character_id": {
             "description": "ID of the character who said it",
@@ -4326,6 +4522,10 @@
       },
       "ReframeRequest": {
         "description": "Request to reframe a negative thought.",
+        "example": {
+          "negative_thought": "I'm not good enough for this job.",
+          "recurring": true
+        },
         "properties": {
           "negative_thought": {
             "description": "The negative thought to reframe",
@@ -4349,6 +4549,13 @@
       },
       "ReframeResponse": {
         "description": "Reframed perspective response.",
+        "example": {
+          "daily_affirmation": "I am capable, I am learning, and I belong exactly where I am.",
+          "dr_sharon_insight": "This thought pattern often stems from comparing your internal experience to others' external presentations. Consider: what evidence do you have that contradicts this belief?",
+          "original_thought": "I'm not good enough for this job.",
+          "reframed_thought": "I'm still learning and growing in this role, and that's exactly where I should be.",
+          "ted_perspective": "You know what? Imposter syndrome is just your brain's way of telling you that you care. The folks who think they know everything? They're the ones you gotta worry about. You questioning yourself means you're paying attention."
+        },
         "properties": {
           "daily_affirmation": {
             "description": "A daily affirmation to practice",
@@ -4648,6 +4855,39 @@
       },
       "TeamCreate": {
         "description": "Model for creating a new team.",
+        "example": {
+          "annual_budget_gbp": "150000000.00",
+          "average_attendance": 59988.0,
+          "contact_email": "info@westhamunited.co.uk",
+          "culture_score": 70,
+          "founded_year": 1895,
+          "is_active": true,
+          "league": "Premier League",
+          "name": "West Ham United",
+          "nickname": "The Hammers",
+          "primary_color": "#7A263A",
+          "rival_teams": [
+            "afc-richmond",
+            "tottenham"
+          ],
+          "secondary_color": "#1BB1E7",
+          "stadium": "London Stadium",
+          "stadium_location": {
+            "latitude": 51.5387,
+            "longitude": -0.0166
+          },
+          "values": {
+            "primary_value": "Pride",
+            "secondary_values": [
+              "History",
+              "Community",
+              "Passion"
+            ],
+            "team_motto": "Forever Blowing Bubbles"
+          },
+          "website": "https://www.whufc.com",
+          "win_percentage": 52.3
+        },
         "properties": {
           "annual_budget_gbp": {
             "anyOf": [

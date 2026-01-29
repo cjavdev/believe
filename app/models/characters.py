@@ -141,7 +141,47 @@ class CharacterBase(BaseModel):
 class CharacterCreate(CharacterBase):
     """Model for creating a new character."""
 
-    pass
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "name": "Roy Kent",
+                "role": "coach",
+                "team_id": "afc-richmond",
+                "date_of_birth": "1977-03-15",
+                "email": "roy.kent@afcrichmond.com",
+                "profile_image_url": "https://afcrichmond.com/images/roy-kent.jpg",
+                "salary_gbp": "175000.00",
+                "height_meters": 1.78,
+                "background": "Legendary midfielder for Chelsea and AFC Richmond, now assistant coach. Known for his gruff exterior hiding a heart of gold.",
+                "personality_traits": [
+                    "intense",
+                    "loyal",
+                    "secretly caring",
+                    "profane",
+                ],
+                "emotional_stats": {
+                    "optimism": 45,
+                    "vulnerability": 60,
+                    "empathy": 85,
+                    "resilience": 95,
+                    "curiosity": 40,
+                },
+                "signature_quotes": [
+                    "He's here, he's there, he's every-f***ing-where, Roy Kent!",
+                    "Whistle!",
+                ],
+                "growth_arcs": [
+                    {
+                        "season": 1,
+                        "starting_point": "Aging footballer facing retirement",
+                        "challenge": "Accepting his body's limitations",
+                        "breakthrough": "Finding purpose beyond playing",
+                        "ending_point": "Retired but lost",
+                    }
+                ],
+            }
+        }
+    }
 
 
 class CharacterUpdate(BaseModel):

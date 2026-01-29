@@ -45,6 +45,8 @@ class MatchScore(BaseModel):
     home: int = Field(ge=0, description="Home team score")
     away: int = Field(ge=0, description="Away team score")
 
+    model_config = {"json_schema_extra": {"example": {"home": 2, "away": 1}}}
+
 
 class MatchStats(BaseModel):
     """Current match statistics."""
@@ -64,6 +66,27 @@ class MatchStats(BaseModel):
     red_cards_home: int = Field(ge=0, description="Home team red cards")
     red_cards_away: int = Field(ge=0, description="Away team red cards")
 
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "possession_home": 54.3,
+                "possession_away": 45.7,
+                "shots_home": 12,
+                "shots_away": 8,
+                "shots_on_target_home": 5,
+                "shots_on_target_away": 3,
+                "corners_home": 6,
+                "corners_away": 4,
+                "fouls_home": 9,
+                "fouls_away": 11,
+                "yellow_cards_home": 1,
+                "yellow_cards_away": 2,
+                "red_cards_home": 0,
+                "red_cards_away": 0,
+            }
+        }
+    }
+
 
 class PlayerInfo(BaseModel):
     """Information about a player involved in an event."""
@@ -71,6 +94,12 @@ class PlayerInfo(BaseModel):
     name: str = Field(description="Player name")
     number: int = Field(ge=1, le=99, description="Jersey number")
     position: str = Field(description="Player position")
+
+    model_config = {
+        "json_schema_extra": {
+            "example": {"name": "Jamie Tartt", "number": 9, "position": "Forward"}
+        }
+    }
 
 
 class LiveMatchEvent(BaseModel):
@@ -103,6 +132,45 @@ class LiveMatchEvent(BaseModel):
     )
     commentary: str = Field(description="Match commentary for this event")
 
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "event_id": 23,
+                "event_type": "goal",
+                "minute": 73,
+                "added_time": None,
+                "team": "home",
+                "player": {"name": "Jamie Tartt", "number": 9, "position": "Forward"},
+                "secondary_player": {
+                    "name": "Sam Obisanya",
+                    "number": 24,
+                    "position": "Midfielder",
+                },
+                "description": "Jamie Tartt scores! Assisted by Sam Obisanya with a beautiful cross.",
+                "score": {"home": 2, "away": 1},
+                "stats": {
+                    "possession_home": 54.3,
+                    "possession_away": 45.7,
+                    "shots_home": 12,
+                    "shots_away": 8,
+                    "shots_on_target_home": 5,
+                    "shots_on_target_away": 3,
+                    "corners_home": 6,
+                    "corners_away": 4,
+                    "fouls_home": 9,
+                    "fouls_away": 11,
+                    "yellow_cards_home": 1,
+                    "yellow_cards_away": 2,
+                    "red_cards_home": 0,
+                    "red_cards_away": 0,
+                },
+                "ted_reaction": "Ted pumps his fist and does a little shimmy on the sideline!",
+                "crowd_reaction": "Nelson Road is absolutely bouncing! The fans are singing Jamie's song!",
+                "commentary": "GOAL! Richmond take the lead! Jamie Tartt with a clinical finish from Sam's pinpoint cross!",
+            }
+        }
+    }
+
 
 class MatchConfig(BaseModel):
     """Configuration for starting a match simulation."""
@@ -130,6 +198,17 @@ class MatchConfig(BaseModel):
         description="How eventful the match should be (1=boring, 10=chaos)",
     )
 
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "home_team": "AFC Richmond",
+                "away_team": "Manchester City",
+                "speed": 2.0,
+                "excitement_level": 7,
+            }
+        }
+    }
+
 
 class WebSocketMessage(BaseModel):
     """Base model for WebSocket messages."""
@@ -146,12 +225,70 @@ class MatchStartMessage(WebSocketMessage):
     away_team: str = Field(description="Away team name")
     message: str = Field(description="Welcome message")
 
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "type": "match_start",
+                "match_id": "match-2024-01-15-richmond-city",
+                "home_team": "AFC Richmond",
+                "away_team": "Manchester City",
+                "message": "Welcome to Nelson Road! The Greyhounds take on Manchester City in what promises to be a thrilling Premier League encounter!",
+            }
+        }
+    }
+
 
 class MatchEventMessage(WebSocketMessage):
     """Message containing a match event."""
 
     type: Literal["match_event"] = "match_event"
     event: LiveMatchEvent = Field(description="The match event")
+
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "type": "match_event",
+                "event": {
+                    "event_id": 23,
+                    "event_type": "goal",
+                    "minute": 73,
+                    "added_time": None,
+                    "team": "home",
+                    "player": {
+                        "name": "Jamie Tartt",
+                        "number": 9,
+                        "position": "Forward",
+                    },
+                    "secondary_player": {
+                        "name": "Sam Obisanya",
+                        "number": 24,
+                        "position": "Midfielder",
+                    },
+                    "description": "Jamie Tartt scores! Assisted by Sam Obisanya.",
+                    "score": {"home": 2, "away": 1},
+                    "stats": {
+                        "possession_home": 54.3,
+                        "possession_away": 45.7,
+                        "shots_home": 12,
+                        "shots_away": 8,
+                        "shots_on_target_home": 5,
+                        "shots_on_target_away": 3,
+                        "corners_home": 6,
+                        "corners_away": 4,
+                        "fouls_home": 9,
+                        "fouls_away": 11,
+                        "yellow_cards_home": 1,
+                        "yellow_cards_away": 2,
+                        "red_cards_home": 0,
+                        "red_cards_away": 0,
+                    },
+                    "ted_reaction": "Ted pumps his fist on the sideline!",
+                    "crowd_reaction": "Nelson Road erupts!",
+                    "commentary": "GOAL! Jamie Tartt puts Richmond ahead!",
+                },
+            }
+        }
+    }
 
 
 class MatchEndMessage(WebSocketMessage):
@@ -164,6 +301,34 @@ class MatchEndMessage(WebSocketMessage):
     man_of_the_match: str = Field(description="Man of the match")
     ted_post_match: str = Field(description="Ted's post-match thoughts")
 
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "type": "match_end",
+                "match_id": "match-2024-01-15-richmond-city",
+                "final_score": {"home": 2, "away": 2},
+                "final_stats": {
+                    "possession_home": 48.5,
+                    "possession_away": 51.5,
+                    "shots_home": 14,
+                    "shots_away": 16,
+                    "shots_on_target_home": 6,
+                    "shots_on_target_away": 7,
+                    "corners_home": 7,
+                    "corners_away": 8,
+                    "fouls_home": 12,
+                    "fouls_away": 10,
+                    "yellow_cards_home": 2,
+                    "yellow_cards_away": 1,
+                    "red_cards_home": 0,
+                    "red_cards_away": 0,
+                },
+                "man_of_the_match": "Sam Obisanya",
+                "ted_post_match": "You know what? A draw against Manchester City at home? That's like finding a twenty-dollar bill in your winter coat. Sure, it ain't a hundred, but it sure beats a hole in your pocket!",
+            }
+        }
+    }
+
 
 class ErrorMessage(WebSocketMessage):
     """Error message for WebSocket communication."""
@@ -171,3 +336,13 @@ class ErrorMessage(WebSocketMessage):
     type: Literal["error"] = "error"
     code: str = Field(description="Error code")
     message: str = Field(description="Error description")
+
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "type": "error",
+                "code": "INVALID_CONFIG",
+                "message": "Invalid match configuration: excitement_level must be between 1 and 10",
+            }
+        }
+    }

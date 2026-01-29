@@ -578,7 +578,10 @@ Send JSON to control the simulation:
                                                 "value": {
                                                     "type": "match_end",
                                                     "match_id": "abc123",
-                                                    "final_score": {"home": 2, "away": 1},
+                                                    "final_score": {
+                                                        "home": 2,
+                                                        "away": 1,
+                                                    },
                                                     "final_stats": {
                                                         "possession_home": 52.0,
                                                         "possession_away": 48.0,

@@ -143,7 +143,33 @@ class TeamBase(BaseModel):
 class TeamCreate(TeamBase):
     """Model for creating a new team."""
 
-    pass
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "name": "West Ham United",
+                "nickname": "The Hammers",
+                "league": "Premier League",
+                "stadium": "London Stadium",
+                "stadium_location": {"latitude": 51.5387, "longitude": -0.0166},
+                "founded_year": 1895,
+                "website": "https://www.whufc.com",
+                "contact_email": "info@westhamunited.co.uk",
+                "annual_budget_gbp": "150000000.00",
+                "average_attendance": 59988.0,
+                "win_percentage": 52.3,
+                "culture_score": 70,
+                "is_active": True,
+                "values": {
+                    "primary_value": "Pride",
+                    "secondary_values": ["History", "Community", "Passion"],
+                    "team_motto": "Forever Blowing Bubbles",
+                },
+                "rival_teams": ["afc-richmond", "tottenham"],
+                "primary_color": "#7A263A",
+                "secondary_color": "#1BB1E7",
+            }
+        }
+    }
 
 
 class TeamUpdate(BaseModel):
