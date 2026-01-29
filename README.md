@@ -8,6 +8,7 @@ A comprehensive API celebrating the wisdom, humor, and heart of Ted Lasso. Perfe
 - Interactive endpoints: Believe Engine, Conflict Resolution, and more
 - SSE streaming for real-time pep talks and match commentary
 - WebSocket support for interactive match simulations
+- Webhooks with Standard Webhooks signature verification
 - OpenAPI documentation with Swagger UI and ReDoc
 
 ## Streaming Endpoints
@@ -118,6 +119,90 @@ ws.onmessage = (e) => console.log(JSON.parse(e.data));
 | **Client input** | Cannot send data mid-stream | Can send messages anytime |
 | **Reconnection** | Built-in browser auto-reconnect | Must implement manually |
 | **Best for** | Simple streaming (commentary, feeds) | Interactive features (live controls) |
+
+## Webhooks
+
+The API supports webhook notifications for key events. Register endpoints to receive real-time notifications when events occur.
+
+### Event Types
+
+| Event Type | Description |
+|------------|-------------|
+| `match.completed` | Fired when a football match ends with final score and Ted's wisdom |
+| `team_member.transferred` | Fired when a player/coach joins or departs a team |
+
+### Webhook Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/webhooks` | POST | Register a new webhook endpoint |
+| `/webhooks` | GET | List all registered webhooks |
+| `/webhooks/{id}` | GET | Get a specific webhook |
+| `/webhooks/{id}` | DELETE | Unregister a webhook |
+| `/webhooks/trigger` | POST | Trigger an event (for testing) |
+
+### Register a Webhook
+
+```bash
+curl -X POST http://localhost:8000/webhooks \
+  -H "X-API-Key: your-key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "url": "https://example.com/webhooks",
+    "event_types": ["match.completed", "team_member.transferred"],
+    "description": "My webhook"
+  }'
+```
+
+Response includes a `secret` for signature verification:
+```json
+{
+  "webhook": {
+    "id": "wh_abc123...",
+    "url": "https://example.com/webhooks",
+    "event_types": ["match.completed", "team_member.transferred"],
+    "secret": "whsec_..."
+  }
+}
+```
+
+### Trigger an Event (Testing)
+
+```bash
+curl -X POST http://localhost:8000/webhooks/trigger \
+  -H "X-API-Key: your-key" \
+  -H "Content-Type: application/json" \
+  -d '{"event_type": "match.completed"}'
+```
+
+### Webhook Signature Verification
+
+All webhook deliveries include [Standard Webhooks](https://www.standardwebhooks.com/) signature headers:
+
+| Header | Description |
+|--------|-------------|
+| `webhook-id` | Unique event identifier |
+| `webhook-timestamp` | Unix timestamp |
+| `webhook-signature` | HMAC-SHA256 signature (`v1,{base64}`) |
+
+**Verify signatures in your handler:**
+
+```python
+import base64
+import hashlib
+import hmac
+
+def verify_signature(payload: bytes, timestamp: str, signature: str, secret: str) -> bool:
+    # Remove whsec_ prefix from secret
+    secret_bytes = base64.b64decode(secret.removeprefix("whsec_"))
+
+    # Compute expected signature
+    signed_payload = f"{timestamp}.{payload.decode()}"
+    expected = hmac.new(secret_bytes, signed_payload.encode(), hashlib.sha256).digest()
+    expected_sig = f"v1,{base64.b64encode(expected).decode()}"
+
+    return hmac.compare_digest(signature, expected_sig)
+```
 
 ## Quick Start
 
