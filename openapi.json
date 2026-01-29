@@ -5860,19 +5860,70 @@
         "title": "ValidationError",
         "type": "object"
       },
+      "WebSocketClientGetStatusMessage": {
+        "description": "Request current match status.",
+        "properties": {
+          "action": {
+            "description": "Action to perform",
+            "enum": [
+              "get_status"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "action"
+        ],
+        "type": "object"
+      },
       "WebSocketClientMessage": {
-        "description": "Messages sent by the client during live match simulation.",
+        "description": "Messages sent by the client to control the match simulation.",
         "discriminator": {
+          "mapping": {
+            "get_status": "#/components/schemas/WebSocketClientGetStatusMessage",
+            "pause": "#/components/schemas/WebSocketClientPauseMessage",
+            "ping": "#/components/schemas/WebSocketClientPingMessage",
+            "resume": "#/components/schemas/WebSocketClientResumeMessage",
+            "set_speed": "#/components/schemas/WebSocketClientSetSpeedMessage"
+          },
           "propertyName": "action"
         },
         "oneOf": [
           {
             "$ref": "#/components/schemas/WebSocketClientPingMessage"
+          },
+          {
+            "$ref": "#/components/schemas/WebSocketClientPauseMessage"
+          },
+          {
+            "$ref": "#/components/schemas/WebSocketClientResumeMessage"
+          },
+          {
+            "$ref": "#/components/schemas/WebSocketClientSetSpeedMessage"
+          },
+          {
+            "$ref": "#/components/schemas/WebSocketClientGetStatusMessage"
           }
         ]
       },
+      "WebSocketClientPauseMessage": {
+        "description": "Pause the match simulation.",
+        "properties": {
+          "action": {
+            "description": "Action to perform",
+            "enum": [
+              "pause"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "action"
+        ],
+        "type": "object"
+      },
       "WebSocketClientPingMessage": {
-        "description": "Ping message from client.",
+        "description": "Ping message for keep-alive.",
         "properties": {
           "action": {
             "description": "Action to perform",
@@ -5884,6 +5935,45 @@
         },
         "required": [
           "action"
+        ],
+        "type": "object"
+      },
+      "WebSocketClientResumeMessage": {
+        "description": "Resume a paused match simulation.",
+        "properties": {
+          "action": {
+            "description": "Action to perform",
+            "enum": [
+              "resume"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "action"
+        ],
+        "type": "object"
+      },
+      "WebSocketClientSetSpeedMessage": {
+        "description": "Change the simulation playback speed.",
+        "properties": {
+          "action": {
+            "description": "Action to perform",
+            "enum": [
+              "set_speed"
+            ],
+            "type": "string"
+          },
+          "speed": {
+            "description": "Simulation speed multiplier (0.1 = slow motion, 10.0 = 10x faster)",
+            "maximum": 10.0,
+            "minimum": 0.1,
+            "type": "number"
+          }
+        },
+        "required": [
+          "action",
+          "speed"
         ],
         "type": "object"
       },
@@ -8564,10 +8654,35 @@
                   "content": {
                     "application/json": {
                       "examples": {
+                        "get_status": {
+                          "summary": "Get current status",
+                          "value": {
+                            "action": "get_status"
+                          }
+                        },
+                        "pause": {
+                          "summary": "Pause simulation",
+                          "value": {
+                            "action": "pause"
+                          }
+                        },
                         "ping": {
                           "summary": "Ping message",
                           "value": {
                             "action": "ping"
+                          }
+                        },
+                        "resume": {
+                          "summary": "Resume simulation",
+                          "value": {
+                            "action": "resume"
+                          }
+                        },
+                        "set_speed": {
+                          "summary": "Change playback speed",
+                          "value": {
+                            "action": "set_speed",
+                            "speed": 2.0
                           }
                         }
                       },
@@ -8693,7 +8808,7 @@
             }
           }
         },
-        "description": "WebSocket endpoint for real-time live match simulation.\n\nConnect to receive a stream of match events as they happen in a simulated football match.\n\n## Connection\n\nConnect via WebSocket with optional query parameters to customize the simulation.\n\n## Example WebSocket URL\n\n```\nws://localhost:8000/matches/live?home_team=AFC%20Richmond&away_team=Manchester%20City&speed=2.0&excitement_level=7\n```\n\n## Server Messages\n\nThe server sends JSON messages with these types:\n- `match_start` - When the match begins\n- `match_event` - For each match event (goals, fouls, cards, etc.)\n- `match_end` - When the match concludes\n- `error` - If an error occurs\n- `pong` - Response to client ping\n\n## Client Messages\n\nSend JSON to control the simulation:\n- `{\"action\": \"ping\"}` - Server responds with `{\"type\": \"pong\"}`\n",
+        "description": "WebSocket endpoint for real-time live match simulation.\n\nConnect to receive a stream of match events as they happen in a simulated football match.\n\n## Connection\n\nConnect via WebSocket with optional query parameters to customize the simulation.\n\n## Example WebSocket URL\n\n```\nws://localhost:8000/matches/live?home_team=AFC%20Richmond&away_team=Manchester%20City&speed=2.0&excitement_level=7\n```\n\n## Server Messages\n\nThe server sends JSON messages with these types:\n- `match_start` - When the match begins\n- `match_event` - For each match event (goals, fouls, cards, etc.)\n- `match_end` - When the match concludes\n- `error` - If an error occurs\n- `pong` - Response to client ping\n\n## Client Messages\n\nSend JSON to control the simulation:\n- `{\"action\": \"ping\"}` - Keep-alive, server responds with `{\"type\": \"pong\"}`\n- `{\"action\": \"pause\"}` - Pause the simulation\n- `{\"action\": \"resume\"}` - Resume a paused simulation\n- `{\"action\": \"set_speed\", \"speed\": 2.0}` - Change playback speed (0.1-10.0)\n- `{\"action\": \"get_status\"}` - Request current match status\n",
         "operationId": "live_match_websocket",
         "parameters": [
           {

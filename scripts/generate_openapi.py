@@ -356,7 +356,7 @@ WEBSOCKET_SCHEMAS = {
     },
     "WebSocketClientPingMessage": {
         "type": "object",
-        "description": "Ping message from client.",
+        "description": "Ping message for keep-alive.",
         "properties": {
             "action": {
                 "type": "string",
@@ -366,14 +366,79 @@ WEBSOCKET_SCHEMAS = {
         },
         "required": ["action"],
     },
+    "WebSocketClientPauseMessage": {
+        "type": "object",
+        "description": "Pause the match simulation.",
+        "properties": {
+            "action": {
+                "type": "string",
+                "enum": ["pause"],
+                "description": "Action to perform",
+            },
+        },
+        "required": ["action"],
+    },
+    "WebSocketClientResumeMessage": {
+        "type": "object",
+        "description": "Resume a paused match simulation.",
+        "properties": {
+            "action": {
+                "type": "string",
+                "enum": ["resume"],
+                "description": "Action to perform",
+            },
+        },
+        "required": ["action"],
+    },
+    "WebSocketClientSetSpeedMessage": {
+        "type": "object",
+        "description": "Change the simulation playback speed.",
+        "properties": {
+            "action": {
+                "type": "string",
+                "enum": ["set_speed"],
+                "description": "Action to perform",
+            },
+            "speed": {
+                "type": "number",
+                "minimum": 0.1,
+                "maximum": 10.0,
+                "description": "Simulation speed multiplier (0.1 = slow motion, 10.0 = 10x faster)",
+            },
+        },
+        "required": ["action", "speed"],
+    },
+    "WebSocketClientGetStatusMessage": {
+        "type": "object",
+        "description": "Request current match status.",
+        "properties": {
+            "action": {
+                "type": "string",
+                "enum": ["get_status"],
+                "description": "Action to perform",
+            },
+        },
+        "required": ["action"],
+    },
     "WebSocketClientMessage": {
         "oneOf": [
             {"$ref": "#/components/schemas/WebSocketClientPingMessage"},
+            {"$ref": "#/components/schemas/WebSocketClientPauseMessage"},
+            {"$ref": "#/components/schemas/WebSocketClientResumeMessage"},
+            {"$ref": "#/components/schemas/WebSocketClientSetSpeedMessage"},
+            {"$ref": "#/components/schemas/WebSocketClientGetStatusMessage"},
         ],
         "discriminator": {
             "propertyName": "action",
+            "mapping": {
+                "ping": "#/components/schemas/WebSocketClientPingMessage",
+                "pause": "#/components/schemas/WebSocketClientPauseMessage",
+                "resume": "#/components/schemas/WebSocketClientResumeMessage",
+                "set_speed": "#/components/schemas/WebSocketClientSetSpeedMessage",
+                "get_status": "#/components/schemas/WebSocketClientGetStatusMessage",
+            },
         },
-        "description": "Messages sent by the client during live match simulation.",
+        "description": "Messages sent by the client to control the match simulation.",
     },
     "WebSocketTestWelcomeMessage": {
         "type": "object",
@@ -471,7 +536,11 @@ The server sends JSON messages with these types:
 ## Client Messages
 
 Send JSON to control the simulation:
-- `{"action": "ping"}` - Server responds with `{"type": "pong"}`
+- `{"action": "ping"}` - Keep-alive, server responds with `{"type": "pong"}`
+- `{"action": "pause"}` - Pause the simulation
+- `{"action": "resume"}` - Resume a paused simulation
+- `{"action": "set_speed", "speed": 2.0}` - Change playback speed (0.1-10.0)
+- `{"action": "get_status"}` - Request current match status
 """,
             "operationId": "live_match_websocket",
             "tags": ["WebSocket"],
@@ -641,7 +710,26 @@ Send JSON to control the simulation:
                                             "ping": {
                                                 "summary": "Ping message",
                                                 "value": {"action": "ping"},
-                                            }
+                                            },
+                                            "pause": {
+                                                "summary": "Pause simulation",
+                                                "value": {"action": "pause"},
+                                            },
+                                            "resume": {
+                                                "summary": "Resume simulation",
+                                                "value": {"action": "resume"},
+                                            },
+                                            "set_speed": {
+                                                "summary": "Change playback speed",
+                                                "value": {
+                                                    "action": "set_speed",
+                                                    "speed": 2.0,
+                                                },
+                                            },
+                                            "get_status": {
+                                                "summary": "Get current status",
+                                                "value": {"action": "get_status"},
+                                            },
                                         },
                                     }
                                 },

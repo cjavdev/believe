@@ -346,3 +346,75 @@ class ErrorMessage(WebSocketMessage):
             }
         }
     }
+
+
+# Client -> Server Messages
+
+
+class ClientAction(str, Enum):
+    """Actions that clients can send to control the match simulation."""
+
+    PING = "ping"
+    PAUSE = "pause"
+    RESUME = "resume"
+    SET_SPEED = "set_speed"
+    GET_STATUS = "get_status"
+
+
+class BaseClientMessage(BaseModel):
+    """Base model for client messages."""
+
+    action: str = Field(description="Action to perform")
+
+
+class PingMessage(BaseClientMessage):
+    """Ping message for keep-alive."""
+
+    action: Literal["ping"] = "ping"
+
+    model_config = {"json_schema_extra": {"example": {"action": "ping"}}}
+
+
+class PauseMessage(BaseClientMessage):
+    """Pause the match simulation."""
+
+    action: Literal["pause"] = "pause"
+
+    model_config = {"json_schema_extra": {"example": {"action": "pause"}}}
+
+
+class ResumeMessage(BaseClientMessage):
+    """Resume a paused match simulation."""
+
+    action: Literal["resume"] = "resume"
+
+    model_config = {"json_schema_extra": {"example": {"action": "resume"}}}
+
+
+class SetSpeedMessage(BaseClientMessage):
+    """Change the simulation playback speed."""
+
+    action: Literal["set_speed"] = "set_speed"
+    speed: float = Field(
+        ge=0.1,
+        le=10.0,
+        description="Simulation speed multiplier (0.1 = slow motion, 10.0 = 10x faster)",
+    )
+
+    model_config = {
+        "json_schema_extra": {"example": {"action": "set_speed", "speed": 2.0}}
+    }
+
+
+class GetStatusMessage(BaseClientMessage):
+    """Request current match status."""
+
+    action: Literal["get_status"] = "get_status"
+
+    model_config = {"json_schema_extra": {"example": {"action": "get_status"}}}
+
+
+# Union type for all client messages
+WebSocketClientMessage = (
+    PingMessage | PauseMessage | ResumeMessage | SetSpeedMessage | GetStatusMessage
+)
