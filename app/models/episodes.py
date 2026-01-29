@@ -78,7 +78,31 @@ class EpisodeBase(BaseModel):
 class EpisodeCreate(EpisodeBase):
     """Model for creating a new episode."""
 
-    pass
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "season": 1,
+                "episode_number": 8,
+                "title": "The Diamond Dogs",
+                "director": "MJ Delaney",
+                "writer": "Jason Sudeikis, Brendan Hunt, Joe Kelly",
+                "air_date": "2020-10-02",
+                "runtime_minutes": 29,
+                "viewer_rating": 9.1,
+                "us_viewers_millions": 1.42,
+                "synopsis": "Ted creates a support group for the coaching staff while Rebecca faces a difficult decision about her future.",
+                "main_theme": "The power of vulnerability and male friendship",
+                "ted_wisdom": "There's two buttons I never like to hit: that's panic and snooze.",
+                "biscuits_with_boss_moment": "Ted and Rebecca have an honest conversation about trust.",
+                "character_focus": ["ted-lasso", "coach-beard", "higgins", "nate"],
+                "memorable_moments": [
+                    "First Diamond Dogs meeting",
+                    "The famous dart scene with Rupert",
+                    "Be curious, not judgmental speech",
+                ],
+            }
+        }
+    }
 
 
 class EpisodeUpdate(BaseModel):

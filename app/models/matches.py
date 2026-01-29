@@ -112,7 +112,27 @@ class MatchBase(BaseModel):
 class MatchCreate(MatchBase):
     """Model for creating a new match."""
 
-    pass
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "home_team_id": "afc-richmond",
+                "away_team_id": "tottenham",
+                "match_type": "cup",
+                "date": "2024-02-20T19:45:00Z",
+                "home_score": 0,
+                "away_score": 0,
+                "result": "pending",
+                "episode_id": "s02e05",
+                "turning_points": [],
+                "lesson_learned": None,
+                "ted_halftime_speech": None,
+                "attendance": 24500,
+                "ticket_revenue_gbp": "735000.00",
+                "possession_percentage": 50.0,
+                "weather_temp_celsius": 8.5,
+            }
+        }
+    }
 
 
 class MatchUpdate(BaseModel):

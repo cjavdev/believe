@@ -111,7 +111,23 @@ class QuoteBase(BaseModel):
 class QuoteCreate(QuoteBase):
     """Model for creating a new quote."""
 
-    pass
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "text": "I believe in believe.",
+                "character_id": "ted-lasso",
+                "episode_id": "s01e01",
+                "context": "Ted's first team meeting, revealing his coaching philosophy",
+                "theme": "belief",
+                "secondary_themes": ["leadership", "teamwork"],
+                "moment_type": "locker_room",
+                "is_inspirational": True,
+                "is_funny": False,
+                "popularity_score": 98.5,
+                "times_shared": 250000,
+            }
+        }
+    }
 
 
 class QuoteUpdate(BaseModel):
