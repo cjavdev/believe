@@ -5429,6 +5429,17 @@
         "title": "ValidationError",
         "type": "object"
       },
+      "WebSocketClientMessage": {
+        "description": "Messages sent by the client during live match simulation.",
+        "discriminator": {
+          "propertyName": "action"
+        },
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/WebSocketClientPingMessage"
+          }
+        ]
+      },
       "WebSocketClientPingMessage": {
         "description": "Ping message from client.",
         "properties": {
@@ -5824,6 +5835,9 @@
       },
       "WebSocketServerMessage": {
         "description": "Messages sent by the server during live match simulation.",
+        "discriminator": {
+          "propertyName": "type"
+        },
         "oneOf": [
           {
             "$ref": "#/components/schemas/WebSocketMatchStartMessage"
@@ -5870,6 +5884,9 @@
       },
       "WebSocketTestServerMessage": {
         "description": "Messages sent by the test WebSocket endpoint.",
+        "discriminator": {
+          "propertyName": "type"
+        },
         "oneOf": [
           {
             "$ref": "#/components/schemas/WebSocketTestWelcomeMessage"
@@ -7968,7 +7985,7 @@
                         }
                       },
                       "schema": {
-                        "$ref": "#/components/schemas/WebSocketClientPingMessage"
+                        "$ref": "#/components/schemas/WebSocketClientMessage"
                       }
                     }
                   },
