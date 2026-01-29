@@ -1054,9 +1054,7 @@ WEBHOOKS = {
                 "required": True,
                 "content": {
                     "application/json": {
-                        "schema": {
-                            "$ref": "#/components/schemas/MatchCompletedEvent"
-                        },
+                        "schema": {"$ref": "#/components/schemas/MatchCompletedEvent"},
                         "example": {
                             "event_type": "match.completed",
                             "event_id": "evt_abc123def456",

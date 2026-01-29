@@ -8,6 +8,7 @@ from app.routers.quotes import router as quotes_router
 from app.routers.streaming import router as streaming_router
 from app.routers.team_members import router as team_members_router
 from app.routers.teams import router as teams_router
+from app.routers.webhooks import router as webhooks_router
 from app.routers.websocket import router as websocket_router
 
 __all__ = [
@@ -20,4 +21,5 @@ __all__ = [
     "streaming_router",
     "team_members_router",
     "websocket_router",
+    "webhooks_router",
 ]

@@ -2499,6 +2499,27 @@
         ],
         "type": "object"
       },
+      "MatchCompletedPayload": {
+        "description": "Payload for match.completed event.",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/MatchCompletedData",
+            "description": "Event data"
+          },
+          "event_type": {
+            "const": "match.completed",
+            "default": "match.completed",
+            "description": "The type of webhook event",
+            "title": "Event Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "title": "MatchCompletedPayload",
+        "type": "object"
+      },
       "MatchCreate": {
         "description": "Model for creating a new match.",
         "example": {
@@ -4709,6 +4730,74 @@
         "title": "ReframeResponse",
         "type": "object"
       },
+      "RegisteredWebhook": {
+        "description": "A registered webhook endpoint.",
+        "properties": {
+          "created_at": {
+            "description": "When the webhook was registered",
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Optional description for this webhook",
+            "title": "Description"
+          },
+          "event_types": {
+            "description": "List of event types this webhook is subscribed to",
+            "items": {
+              "enum": [
+                "match.completed",
+                "team_member.transferred"
+              ],
+              "type": "string"
+            },
+            "title": "Event Types",
+            "type": "array"
+          },
+          "id": {
+            "description": "Unique webhook identifier",
+            "examples": [
+              "wh_abc123"
+            ],
+            "title": "Id",
+            "type": "string"
+          },
+          "secret": {
+            "description": "The secret key for verifying webhook signatures (base64 encoded)",
+            "examples": [
+              "whsec_abc123def456..."
+            ],
+            "title": "Secret",
+            "type": "string"
+          },
+          "url": {
+            "description": "The URL to send webhook events to",
+            "format": "uri",
+            "maxLength": 2083,
+            "minLength": 1,
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "url",
+          "event_types",
+          "created_at",
+          "secret"
+        ],
+        "title": "RegisteredWebhook",
+        "type": "object"
+      },
       "SituationType": {
         "description": "Types of situations the Believe Engine can handle.",
         "enum": [
@@ -5308,6 +5397,27 @@
         ],
         "type": "object"
       },
+      "TeamMemberTransferredPayload": {
+        "description": "Payload for team_member.transferred event.",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/TeamMemberTransferredData",
+            "description": "Event data"
+          },
+          "event_type": {
+            "const": "team_member.transferred",
+            "default": "team_member.transferred",
+            "description": "The type of webhook event",
+            "title": "Event Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "title": "TeamMemberTransferredPayload",
+        "type": "object"
+      },
       "TeamUpdate": {
         "description": "Model for updating a team (all fields optional).",
         "properties": {
@@ -5572,6 +5682,106 @@
           "sequence",
           "message"
         ],
+        "type": "object"
+      },
+      "TriggerEventRequest": {
+        "description": "Request to trigger a webhook event.",
+        "properties": {
+          "event_type": {
+            "description": "The type of event to trigger",
+            "enum": [
+              "match.completed",
+              "team_member.transferred"
+            ],
+            "examples": [
+              "match.completed"
+            ],
+            "title": "Event Type",
+            "type": "string"
+          },
+          "payload": {
+            "anyOf": [
+              {
+                "discriminator": {
+                  "mapping": {
+                    "match.completed": "#/components/schemas/MatchCompletedPayload",
+                    "team_member.transferred": "#/components/schemas/TeamMemberTransferredPayload"
+                  },
+                  "propertyName": "event_type"
+                },
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/MatchCompletedPayload"
+                  },
+                  {
+                    "$ref": "#/components/schemas/TeamMemberTransferredPayload"
+                  }
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Optional event payload. If not provided, a sample payload will be generated.",
+            "title": "Payload"
+          }
+        },
+        "required": [
+          "event_type"
+        ],
+        "title": "TriggerEventRequest",
+        "type": "object"
+      },
+      "TriggerEventResponse": {
+        "description": "Response after triggering webhook events.",
+        "properties": {
+          "deliveries": {
+            "description": "Results of webhook deliveries",
+            "items": {
+              "$ref": "#/components/schemas/WebhookDeliveryResult"
+            },
+            "title": "Deliveries",
+            "type": "array"
+          },
+          "event_id": {
+            "description": "Unique event identifier",
+            "title": "Event Id",
+            "type": "string"
+          },
+          "event_type": {
+            "description": "The type of event triggered",
+            "enum": [
+              "match.completed",
+              "team_member.transferred"
+            ],
+            "title": "Event Type",
+            "type": "string"
+          },
+          "successful_deliveries": {
+            "description": "Number of successful deliveries",
+            "title": "Successful Deliveries",
+            "type": "integer"
+          },
+          "ted_says": {
+            "description": "Ted's reaction",
+            "title": "Ted Says",
+            "type": "string"
+          },
+          "total_webhooks": {
+            "description": "Total number of webhooks that received this event",
+            "title": "Total Webhooks",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "event_id",
+          "event_type",
+          "deliveries",
+          "total_webhooks",
+          "successful_deliveries",
+          "ted_says"
+        ],
+        "title": "TriggerEventResponse",
         "type": "object"
       },
       "TurningPoint": {
@@ -6143,6 +6353,57 @@
         ],
         "type": "object"
       },
+      "WebhookDeliveryResult": {
+        "description": "Result of delivering a webhook to a single endpoint.",
+        "properties": {
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Error message if delivery failed",
+            "title": "Error"
+          },
+          "status_code": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "HTTP status code from the endpoint",
+            "title": "Status Code"
+          },
+          "success": {
+            "description": "Whether delivery was successful",
+            "title": "Success",
+            "type": "boolean"
+          },
+          "url": {
+            "description": "URL the webhook was sent to",
+            "title": "Url",
+            "type": "string"
+          },
+          "webhook_id": {
+            "description": "ID of the webhook",
+            "title": "Webhook Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "webhook_id",
+          "url",
+          "success"
+        ],
+        "title": "WebhookDeliveryResult",
+        "type": "object"
+      },
       "WebhookEvent": {
         "description": "Union type for all webhook events. Use the event_type field to determine the specific event type.",
         "discriminator": {
@@ -6160,6 +6421,93 @@
             "$ref": "#/components/schemas/TeamMemberTransferredEvent"
           }
         ]
+      },
+      "WebhookRegistrationRequest": {
+        "description": "Request to register a new webhook endpoint.",
+        "properties": {
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Optional description for this webhook",
+            "examples": [
+              "Production webhook for match notifications"
+            ],
+            "title": "Description"
+          },
+          "event_types": {
+            "anyOf": [
+              {
+                "items": {
+                  "enum": [
+                    "match.completed",
+                    "team_member.transferred"
+                  ],
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "List of event types to subscribe to. If not provided, subscribes to all events.",
+            "examples": [
+              [
+                "match.completed",
+                "team_member.transferred"
+              ]
+            ],
+            "title": "Event Types"
+          },
+          "url": {
+            "description": "The URL to send webhook events to",
+            "examples": [
+              "https://example.com/webhooks"
+            ],
+            "format": "uri",
+            "maxLength": 2083,
+            "minLength": 1,
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "url"
+        ],
+        "title": "WebhookRegistrationRequest",
+        "type": "object"
+      },
+      "WebhookRegistrationResponse": {
+        "description": "Response after registering a webhook.",
+        "properties": {
+          "message": {
+            "default": "Webhook registered successfully",
+            "description": "Status message",
+            "title": "Message",
+            "type": "string"
+          },
+          "ted_says": {
+            "default": "You know what? Staying connected is what it's all about. Welcome to the team!",
+            "description": "Ted's reaction",
+            "title": "Ted Says",
+            "type": "string"
+          },
+          "webhook": {
+            "$ref": "#/components/schemas/RegisteredWebhook",
+            "description": "The registered webhook details"
+          }
+        },
+        "required": [
+          "webhook"
+        ],
+        "title": "WebhookRegistrationResponse",
+        "type": "object"
       }
     },
     "securitySchemes": {
@@ -11428,6 +11776,272 @@
         ]
       }
     },
+    "/webhooks": {
+      "get": {
+        "description": "Get a list of all registered webhook endpoints.",
+        "operationId": "list_webhooks_webhooks_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/RegisteredWebhook"
+                  },
+                  "title": "Response List Webhooks Webhooks Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "List registered webhooks",
+        "tags": [
+          "Webhooks"
+        ]
+      },
+      "post": {
+        "description": "Register a new webhook endpoint to receive event notifications.\n\n## Event Types\n\nAvailable event types to subscribe to:\n- `match.completed` - Fired when a football match ends\n- `team_member.transferred` - Fired when a player/coach joins or leaves a team\n\nIf no event types are specified, the webhook will receive all event types.\n\n## Webhook Signatures\n\nAll webhook deliveries include Standard Webhooks signature headers:\n- `webhook-id` - Unique message identifier\n- `webhook-timestamp` - Unix timestamp of when the webhook was sent\n- `webhook-signature` - HMAC-SHA256 signature in format `v1,{base64_signature}`\n\nStore the returned `secret` securely - you'll need it to verify webhook signatures.",
+        "operationId": "register_webhook_webhooks_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebhookRegistrationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Webhook registered successfully",
+                  "ted_says": "You know what? Staying connected is what it's all about. Welcome to the team!",
+                  "webhook": {
+                    "created_at": "2024-01-15T10:00:00Z",
+                    "description": "Production webhook",
+                    "event_types": [
+                      "match.completed",
+                      "team_member.transferred"
+                    ],
+                    "id": "wh_abc123def456",
+                    "secret": "whsec_dGVzdHNlY3JldGtleQ==",
+                    "url": "https://example.com/webhooks"
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/WebhookRegistrationResponse"
+                }
+              }
+            },
+            "description": "Webhook registered successfully"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Register a webhook endpoint",
+        "tags": [
+          "Webhooks"
+        ]
+      }
+    },
+    "/webhooks/trigger": {
+      "post": {
+        "description": "Trigger a webhook event and deliver it to all subscribed endpoints.\n\nThis endpoint is useful for testing your webhook integration. It will:\n1. Generate an event with the specified type and payload\n2. Find all webhooks subscribed to that event type\n3. Send a POST request to each webhook URL with signature headers\n4. Return the delivery results\n\n## Event Payload\n\nYou can provide a custom payload, or leave it empty to use a sample payload.\n\n## Webhook Signature Headers\n\nEach webhook delivery includes:\n- `webhook-id` - Unique event identifier (e.g., `evt_abc123...`)\n- `webhook-timestamp` - Unix timestamp\n- `webhook-signature` - HMAC-SHA256 signature (`v1,{base64}`)\n\nTo verify signatures, compute:\n```\nsignature = HMAC-SHA256(\n    key = base64_decode(secret_without_prefix),\n    message = \"{timestamp}.{raw_json_payload}\"\n)\n```",
+        "operationId": "trigger_event_webhooks_trigger_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TriggerEventRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "deliveries": [
+                    {
+                      "status_code": 200,
+                      "success": true,
+                      "url": "https://example.com/webhooks",
+                      "webhook_id": "wh_xyz789"
+                    }
+                  ],
+                  "event_id": "evt_abc123def456789012345678",
+                  "event_type": "match.completed",
+                  "successful_deliveries": 1,
+                  "ted_says": "Message delivered! Communication is key, just like in any good relationship.",
+                  "total_webhooks": 1
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/TriggerEventResponse"
+                }
+              }
+            },
+            "description": "Event triggered successfully"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Trigger a webhook event",
+        "tags": [
+          "Webhooks"
+        ]
+      }
+    },
+    "/webhooks/{webhook_id}": {
+      "delete": {
+        "description": "Unregister a webhook endpoint. It will no longer receive events.",
+        "operationId": "delete_webhook_webhooks__webhook_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "webhook_id",
+            "required": true,
+            "schema": {
+              "title": "Webhook Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Webhook deleted successfully",
+                  "ted_says": "Goodbyes ain't easy, but sometimes we gotta make room for new hellos."
+                },
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Delete Webhook Webhooks  Webhook Id  Delete",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Webhook deleted successfully"
+          },
+          "404": {
+            "description": "Webhook not found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Delete a webhook",
+        "tags": [
+          "Webhooks"
+        ]
+      },
+      "get": {
+        "description": "Get details of a specific webhook endpoint.",
+        "operationId": "get_webhook_webhooks__webhook_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "webhook_id",
+            "required": true,
+            "schema": {
+              "title": "Webhook Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegisteredWebhook"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "detail": "Webhook not found. But hey, every ending is a new beginning!"
+                }
+              }
+            },
+            "description": "Webhook not found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get a webhook",
+        "tags": [
+          "Webhooks"
+        ]
+      }
+    },
     "/ws/test": {
       "get": {
         "callbacks": {
@@ -11529,6 +12143,10 @@
     {
       "description": "Team members with union types (oneOf) - Players, Coaches, Medical Staff, Equipment Managers",
       "name": "Team Members"
+    },
+    {
+      "description": "Register webhook endpoints and trigger events for testing",
+      "name": "Webhooks"
     }
   ],
   "webhooks": {
