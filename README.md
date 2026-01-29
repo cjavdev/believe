@@ -42,9 +42,71 @@ WebSockets provide bidirectional communication over a persistent connection.
 | `/matches/live` | Full interactive match simulation with real-time events |
 | `/ws/test` | Echo test endpoint for connectivity testing |
 
+#### Live Match Simulation (`/matches/live`)
+
+Streams a full 90-minute football match simulation with real-time events.
+
+**Query Parameters:**
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `home_team` | string | "AFC Richmond" | Home team name |
+| `away_team` | string | "West Ham United" | Away team name |
+| `speed` | float | 1.0 | Simulation speed (0.1-10.0) |
+| `excitement_level` | int | 5 | How eventful the match is (1-10) |
+
+**Server Message Types:**
+
+| Type | Description |
+|------|-------------|
+| `match_start` | Sent when match begins with team info |
+| `match_event` | Live events (goals, fouls, cards, etc.) |
+| `match_end` | Final score, stats, and man of the match |
+| `error` | Error information |
+| `pong` | Response to client ping |
+
+**Client Messages:**
+
+Send `{"action": "ping"}` to receive a `{"type": "pong"}` response.
+
+**Example (JavaScript):**
+```javascript
+const ws = new WebSocket('ws://localhost:8000/matches/live?speed=5&excitement_level=8');
+
+ws.onmessage = (event) => {
+  const msg = JSON.parse(event.data);
+  switch (msg.type) {
+    case 'match_start':
+      console.log(`${msg.home_team} vs ${msg.away_team}`);
+      break;
+    case 'match_event':
+      console.log(`[${msg.event.minute}'] ${msg.event.description}`);
+      break;
+    case 'match_end':
+      console.log(`Final: ${msg.final_score.home}-${msg.final_score.away}`);
+      break;
+  }
+};
+```
+
 **Example (websocat):**
 ```bash
-websocat "ws://localhost:8000/matches/live?home_team=AFC%20Richmond&away_team=Manchester%20City"
+websocat "ws://localhost:8000/matches/live?home_team=AFC%20Richmond&away_team=Manchester%20City&speed=3"
+```
+
+#### Test Endpoint (`/ws/test`)
+
+Simple echo endpoint for testing WebSocket connectivity.
+
+**Server Messages:**
+- `welcome` - Sent immediately on connection
+- `echo` - Echoes back any message you send
+
+**Example (JavaScript):**
+```javascript
+const ws = new WebSocket('ws://localhost:8000/ws/test');
+ws.onopen = () => ws.send('Hello Ted!');
+ws.onmessage = (e) => console.log(JSON.parse(e.data));
 ```
 
 ### SSE vs WebSocket: When to Use Which
