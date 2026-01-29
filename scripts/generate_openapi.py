@@ -834,6 +834,302 @@ SSE_ENDPOINT_SCHEMAS = {
     "/stream/test": "TestStreamChunk",
 }
 
+# Webhook event schemas
+WEBHOOK_SCHEMAS = {
+    "MatchCompletedEvent": {
+        "type": "object",
+        "description": "Webhook event sent when a match completes.",
+        "properties": {
+            "event_type": {
+                "type": "string",
+                "enum": ["match.completed"],
+                "description": "The type of webhook event",
+            },
+            "event_id": {
+                "type": "string",
+                "format": "uuid",
+                "description": "Unique identifier for this event",
+            },
+            "created_at": {
+                "type": "string",
+                "format": "date-time",
+                "description": "When the event was created",
+            },
+            "data": {
+                "$ref": "#/components/schemas/MatchCompletedData",
+            },
+        },
+        "required": ["event_type", "event_id", "created_at", "data"],
+    },
+    "MatchCompletedData": {
+        "type": "object",
+        "description": "Data payload for a match completed event.",
+        "properties": {
+            "match_id": {
+                "type": "string",
+                "description": "Unique match identifier",
+            },
+            "home_team_id": {
+                "type": "string",
+                "description": "Home team ID",
+            },
+            "away_team_id": {
+                "type": "string",
+                "description": "Away team ID",
+            },
+            "home_score": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "Final home team score",
+            },
+            "away_score": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "Final away team score",
+            },
+            "result": {
+                "type": "string",
+                "enum": ["home_win", "away_win", "draw"],
+                "description": "Match result from home team perspective",
+            },
+            "match_type": {
+                "type": "string",
+                "enum": ["league", "cup", "friendly", "playoff", "final"],
+                "description": "Type of match",
+            },
+            "completed_at": {
+                "type": "string",
+                "format": "date-time",
+                "description": "When the match completed",
+            },
+            "man_of_the_match": {
+                "type": "string",
+                "nullable": True,
+                "description": "Player of the match (if awarded)",
+            },
+            "lesson_learned": {
+                "type": "string",
+                "nullable": True,
+                "description": "Ted's lesson from the match",
+            },
+            "ted_post_match_quote": {
+                "type": "string",
+                "description": "Ted's post-match wisdom",
+            },
+        },
+        "required": [
+            "match_id",
+            "home_team_id",
+            "away_team_id",
+            "home_score",
+            "away_score",
+            "result",
+            "match_type",
+            "completed_at",
+            "ted_post_match_quote",
+        ],
+    },
+    "TeamMemberTransferredEvent": {
+        "type": "object",
+        "description": "Webhook event sent when a team member (player, coach, staff) transfers between teams.",
+        "properties": {
+            "event_type": {
+                "type": "string",
+                "enum": ["team_member.transferred"],
+                "description": "The type of webhook event",
+            },
+            "event_id": {
+                "type": "string",
+                "format": "uuid",
+                "description": "Unique identifier for this event",
+            },
+            "created_at": {
+                "type": "string",
+                "format": "date-time",
+                "description": "When the event was created",
+            },
+            "data": {
+                "$ref": "#/components/schemas/TeamMemberTransferredData",
+            },
+        },
+        "required": ["event_type", "event_id", "created_at", "data"],
+    },
+    "TeamMemberTransferredData": {
+        "type": "object",
+        "description": "Data payload for a team member transfer event.",
+        "properties": {
+            "team_member_id": {
+                "type": "string",
+                "description": "ID of the team member",
+            },
+            "character_id": {
+                "type": "string",
+                "description": "ID of the character (links to /characters)",
+            },
+            "character_name": {
+                "type": "string",
+                "description": "Name of the character",
+            },
+            "member_type": {
+                "type": "string",
+                "enum": ["player", "coach", "medical_staff", "equipment_manager"],
+                "description": "Type of team member",
+            },
+            "transfer_type": {
+                "type": "string",
+                "enum": ["joined", "departed"],
+                "description": "Whether the member joined or departed",
+            },
+            "team_id": {
+                "type": "string",
+                "description": "ID of the team involved",
+            },
+            "team_name": {
+                "type": "string",
+                "description": "Name of the team involved",
+            },
+            "previous_team_id": {
+                "type": "string",
+                "nullable": True,
+                "description": "Previous team ID (for joins from another team)",
+            },
+            "previous_team_name": {
+                "type": "string",
+                "nullable": True,
+                "description": "Previous team name (for joins from another team)",
+            },
+            "years_with_previous_team": {
+                "type": "integer",
+                "nullable": True,
+                "minimum": 0,
+                "description": "Years spent with previous team",
+            },
+            "transfer_fee_gbp": {
+                "type": "string",
+                "nullable": True,
+                "description": "Transfer fee in GBP (for players)",
+            },
+            "ted_reaction": {
+                "type": "string",
+                "description": "Ted's reaction to the transfer",
+            },
+        },
+        "required": [
+            "team_member_id",
+            "character_id",
+            "character_name",
+            "member_type",
+            "transfer_type",
+            "team_id",
+            "team_name",
+            "ted_reaction",
+        ],
+    },
+    "WebhookEvent": {
+        "oneOf": [
+            {"$ref": "#/components/schemas/MatchCompletedEvent"},
+            {"$ref": "#/components/schemas/TeamMemberTransferredEvent"},
+        ],
+        "discriminator": {
+            "propertyName": "event_type",
+            "mapping": {
+                "match.completed": "#/components/schemas/MatchCompletedEvent",
+                "team_member.transferred": "#/components/schemas/TeamMemberTransferredEvent",
+            },
+        },
+        "description": "Union type for all webhook events. Use the event_type field to determine the specific event type.",
+    },
+}
+
+# Webhook definitions for OpenAPI webhooks section
+WEBHOOKS = {
+    "matchCompleted": {
+        "post": {
+            "summary": "Match Completed",
+            "description": "Fired when a football match completes. Contains final score, result, and Ted's post-match wisdom.",
+            "operationId": "matchCompletedWebhook",
+            "tags": ["Webhooks"],
+            "requestBody": {
+                "description": "Match completed event payload",
+                "required": True,
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/MatchCompletedEvent"
+                        },
+                        "example": {
+                            "event_type": "match.completed",
+                            "event_id": "evt_abc123def456",
+                            "created_at": "2024-01-15T17:00:00Z",
+                            "data": {
+                                "match_id": "match-001",
+                                "home_team_id": "afc-richmond",
+                                "away_team_id": "manchester-city",
+                                "home_score": 2,
+                                "away_score": 1,
+                                "result": "home_win",
+                                "match_type": "league",
+                                "completed_at": "2024-01-15T16:52:00Z",
+                                "man_of_the_match": "Jamie Tartt",
+                                "lesson_learned": "Believing in each other is more powerful than any tactics board.",
+                                "ted_post_match_quote": "Win or lose, we did it together. And that's what makes us a team, not just a group of people wearing the same color shirts.",
+                            },
+                        },
+                    }
+                },
+            },
+            "responses": {
+                "200": {
+                    "description": "Webhook received successfully",
+                }
+            },
+        }
+    },
+    "teamMemberTransferred": {
+        "post": {
+            "summary": "Team Member Transferred",
+            "description": "Fired when a player, coach, or staff member joins or departs from a team. Transfer news is big in football!",
+            "operationId": "teamMemberTransferredWebhook",
+            "tags": ["Webhooks"],
+            "requestBody": {
+                "description": "Team member transfer event payload",
+                "required": True,
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/TeamMemberTransferredEvent"
+                        },
+                        "example": {
+                            "event_type": "team_member.transferred",
+                            "event_id": "evt_xyz789ghi012",
+                            "created_at": "2024-01-10T09:00:00Z",
+                            "data": {
+                                "team_member_id": "jamie-tartt-richmond",
+                                "character_id": "jamie-tartt",
+                                "character_name": "Jamie Tartt",
+                                "member_type": "player",
+                                "transfer_type": "joined",
+                                "team_id": "afc-richmond",
+                                "team_name": "AFC Richmond",
+                                "previous_team_id": "manchester-city",
+                                "previous_team_name": "Manchester City",
+                                "years_with_previous_team": 2,
+                                "transfer_fee_gbp": "15000000.00",
+                                "ted_reaction": "You know what? Sometimes people need to go away to realize where they belong. Welcome home, Jamie.",
+                            },
+                        },
+                    }
+                },
+            },
+            "responses": {
+                "200": {
+                    "description": "Webhook received successfully",
+                }
+            },
+        }
+    },
+}
+
 
 def generate_openapi_spec() -> dict:
     """Generate the OpenAPI specification from the FastAPI app."""
@@ -851,10 +1147,16 @@ def generate_openapi_spec() -> dict:
     # Add SSE schemas
     spec["components"]["schemas"].update(SSE_SCHEMAS)
 
+    # Add Webhook schemas
+    spec["components"]["schemas"].update(WEBHOOK_SCHEMAS)
+
     # Add WebSocket paths
     if "paths" not in spec:
         spec["paths"] = {}
     spec["paths"].update(WEBSOCKET_PATHS)
+
+    # Add webhooks section
+    spec["webhooks"] = WEBHOOKS
 
     # Update SSE endpoints to use $ref instead of inline schemas
     for path, schema_name in SSE_ENDPOINT_SCHEMAS.items():

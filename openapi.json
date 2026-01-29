@@ -2389,6 +2389,116 @@
         ],
         "type": "object"
       },
+      "MatchCompletedData": {
+        "description": "Data payload for a match completed event.",
+        "properties": {
+          "away_score": {
+            "description": "Final away team score",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "away_team_id": {
+            "description": "Away team ID",
+            "type": "string"
+          },
+          "completed_at": {
+            "description": "When the match completed",
+            "format": "date-time",
+            "type": "string"
+          },
+          "home_score": {
+            "description": "Final home team score",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "home_team_id": {
+            "description": "Home team ID",
+            "type": "string"
+          },
+          "lesson_learned": {
+            "description": "Ted's lesson from the match",
+            "nullable": true,
+            "type": "string"
+          },
+          "man_of_the_match": {
+            "description": "Player of the match (if awarded)",
+            "nullable": true,
+            "type": "string"
+          },
+          "match_id": {
+            "description": "Unique match identifier",
+            "type": "string"
+          },
+          "match_type": {
+            "description": "Type of match",
+            "enum": [
+              "league",
+              "cup",
+              "friendly",
+              "playoff",
+              "final"
+            ],
+            "type": "string"
+          },
+          "result": {
+            "description": "Match result from home team perspective",
+            "enum": [
+              "home_win",
+              "away_win",
+              "draw"
+            ],
+            "type": "string"
+          },
+          "ted_post_match_quote": {
+            "description": "Ted's post-match wisdom",
+            "type": "string"
+          }
+        },
+        "required": [
+          "match_id",
+          "home_team_id",
+          "away_team_id",
+          "home_score",
+          "away_score",
+          "result",
+          "match_type",
+          "completed_at",
+          "ted_post_match_quote"
+        ],
+        "type": "object"
+      },
+      "MatchCompletedEvent": {
+        "description": "Webhook event sent when a match completes.",
+        "properties": {
+          "created_at": {
+            "description": "When the event was created",
+            "format": "date-time",
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/MatchCompletedData"
+          },
+          "event_id": {
+            "description": "Unique identifier for this event",
+            "format": "uuid",
+            "type": "string"
+          },
+          "event_type": {
+            "description": "The type of webhook event",
+            "enum": [
+              "match.completed"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "event_type",
+          "event_id",
+          "created_at",
+          "data"
+        ],
+        "type": "object"
+      },
       "MatchCreate": {
         "description": "Model for creating a new match.",
         "example": {
@@ -5087,6 +5197,117 @@
         "title": "TeamCreate",
         "type": "object"
       },
+      "TeamMemberTransferredData": {
+        "description": "Data payload for a team member transfer event.",
+        "properties": {
+          "character_id": {
+            "description": "ID of the character (links to /characters)",
+            "type": "string"
+          },
+          "character_name": {
+            "description": "Name of the character",
+            "type": "string"
+          },
+          "member_type": {
+            "description": "Type of team member",
+            "enum": [
+              "player",
+              "coach",
+              "medical_staff",
+              "equipment_manager"
+            ],
+            "type": "string"
+          },
+          "previous_team_id": {
+            "description": "Previous team ID (for joins from another team)",
+            "nullable": true,
+            "type": "string"
+          },
+          "previous_team_name": {
+            "description": "Previous team name (for joins from another team)",
+            "nullable": true,
+            "type": "string"
+          },
+          "team_id": {
+            "description": "ID of the team involved",
+            "type": "string"
+          },
+          "team_member_id": {
+            "description": "ID of the team member",
+            "type": "string"
+          },
+          "team_name": {
+            "description": "Name of the team involved",
+            "type": "string"
+          },
+          "ted_reaction": {
+            "description": "Ted's reaction to the transfer",
+            "type": "string"
+          },
+          "transfer_fee_gbp": {
+            "description": "Transfer fee in GBP (for players)",
+            "nullable": true,
+            "type": "string"
+          },
+          "transfer_type": {
+            "description": "Whether the member joined or departed",
+            "enum": [
+              "joined",
+              "departed"
+            ],
+            "type": "string"
+          },
+          "years_with_previous_team": {
+            "description": "Years spent with previous team",
+            "minimum": 0,
+            "nullable": true,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "team_member_id",
+          "character_id",
+          "character_name",
+          "member_type",
+          "transfer_type",
+          "team_id",
+          "team_name",
+          "ted_reaction"
+        ],
+        "type": "object"
+      },
+      "TeamMemberTransferredEvent": {
+        "description": "Webhook event sent when a team member (player, coach, staff) transfers between teams.",
+        "properties": {
+          "created_at": {
+            "description": "When the event was created",
+            "format": "date-time",
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/TeamMemberTransferredData"
+          },
+          "event_id": {
+            "description": "Unique identifier for this event",
+            "format": "uuid",
+            "type": "string"
+          },
+          "event_type": {
+            "description": "The type of webhook event",
+            "enum": [
+              "team_member.transferred"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "event_type",
+          "event_id",
+          "created_at",
+          "data"
+        ],
+        "type": "object"
+      },
       "TeamUpdate": {
         "description": "Model for updating a team (all fields optional).",
         "properties": {
@@ -5921,6 +6142,24 @@
           "ted_says"
         ],
         "type": "object"
+      },
+      "WebhookEvent": {
+        "description": "Union type for all webhook events. Use the event_type field to determine the specific event type.",
+        "discriminator": {
+          "mapping": {
+            "match.completed": "#/components/schemas/MatchCompletedEvent",
+            "team_member.transferred": "#/components/schemas/TeamMemberTransferredEvent"
+          },
+          "propertyName": "event_type"
+        },
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/MatchCompletedEvent"
+          },
+          {
+            "$ref": "#/components/schemas/TeamMemberTransferredEvent"
+          }
+        ]
       }
     },
     "securitySchemes": {
@@ -11291,5 +11530,96 @@
       "description": "Team members with union types (oneOf) - Players, Coaches, Medical Staff, Equipment Managers",
       "name": "Team Members"
     }
-  ]
+  ],
+  "webhooks": {
+    "matchCompleted": {
+      "post": {
+        "description": "Fired when a football match completes. Contains final score, result, and Ted's post-match wisdom.",
+        "operationId": "matchCompletedWebhook",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "example": {
+                "created_at": "2024-01-15T17:00:00Z",
+                "data": {
+                  "away_score": 1,
+                  "away_team_id": "manchester-city",
+                  "completed_at": "2024-01-15T16:52:00Z",
+                  "home_score": 2,
+                  "home_team_id": "afc-richmond",
+                  "lesson_learned": "Believing in each other is more powerful than any tactics board.",
+                  "man_of_the_match": "Jamie Tartt",
+                  "match_id": "match-001",
+                  "match_type": "league",
+                  "result": "home_win",
+                  "ted_post_match_quote": "Win or lose, we did it together. And that's what makes us a team, not just a group of people wearing the same color shirts."
+                },
+                "event_id": "evt_abc123def456",
+                "event_type": "match.completed"
+              },
+              "schema": {
+                "$ref": "#/components/schemas/MatchCompletedEvent"
+              }
+            }
+          },
+          "description": "Match completed event payload",
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Webhook received successfully"
+          }
+        },
+        "summary": "Match Completed",
+        "tags": [
+          "Webhooks"
+        ]
+      }
+    },
+    "teamMemberTransferred": {
+      "post": {
+        "description": "Fired when a player, coach, or staff member joins or departs from a team. Transfer news is big in football!",
+        "operationId": "teamMemberTransferredWebhook",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "example": {
+                "created_at": "2024-01-10T09:00:00Z",
+                "data": {
+                  "character_id": "jamie-tartt",
+                  "character_name": "Jamie Tartt",
+                  "member_type": "player",
+                  "previous_team_id": "manchester-city",
+                  "previous_team_name": "Manchester City",
+                  "team_id": "afc-richmond",
+                  "team_member_id": "jamie-tartt-richmond",
+                  "team_name": "AFC Richmond",
+                  "ted_reaction": "You know what? Sometimes people need to go away to realize where they belong. Welcome home, Jamie.",
+                  "transfer_fee_gbp": "15000000.00",
+                  "transfer_type": "joined",
+                  "years_with_previous_team": 2
+                },
+                "event_id": "evt_xyz789ghi012",
+                "event_type": "team_member.transferred"
+              },
+              "schema": {
+                "$ref": "#/components/schemas/TeamMemberTransferredEvent"
+              }
+            }
+          },
+          "description": "Team member transfer event payload",
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Webhook received successfully"
+          }
+        },
+        "summary": "Team Member Transferred",
+        "tags": [
+          "Webhooks"
+        ]
+      }
+    }
+  }
 }
