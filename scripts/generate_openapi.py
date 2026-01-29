@@ -366,6 +366,15 @@ WEBSOCKET_SCHEMAS = {
         },
         "required": ["action"],
     },
+    "WebSocketClientMessage": {
+        "oneOf": [
+            {"$ref": "#/components/schemas/WebSocketClientPingMessage"},
+        ],
+        "discriminator": {
+            "propertyName": "action",
+        },
+        "description": "Messages sent by the client during live match simulation.",
+    },
     "WebSocketTestWelcomeMessage": {
         "type": "object",
         "description": "Welcome message sent when connecting to the test WebSocket.",
@@ -414,6 +423,9 @@ WEBSOCKET_SCHEMAS = {
             {"$ref": "#/components/schemas/WebSocketErrorMessage"},
             {"$ref": "#/components/schemas/WebSocketPongMessage"},
         ],
+        "discriminator": {
+            "propertyName": "type",
+        },
         "description": "Messages sent by the server during live match simulation.",
     },
     "WebSocketTestServerMessage": {
@@ -421,6 +433,9 @@ WEBSOCKET_SCHEMAS = {
             {"$ref": "#/components/schemas/WebSocketTestWelcomeMessage"},
             {"$ref": "#/components/schemas/WebSocketTestEchoMessage"},
         ],
+        "discriminator": {
+            "propertyName": "type",
+        },
         "description": "Messages sent by the test WebSocket endpoint.",
     },
 }
@@ -620,7 +635,7 @@ Send JSON to control the simulation:
                                 "content": {
                                     "application/json": {
                                         "schema": {
-                                            "$ref": "#/components/schemas/WebSocketClientPingMessage"
+                                            "$ref": "#/components/schemas/WebSocketClientMessage"
                                         },
                                         "examples": {
                                             "ping": {
