@@ -5188,6 +5188,482 @@
         ],
         "title": "ValidationError",
         "type": "object"
+      },
+      "WebSocketClientPingMessage": {
+        "description": "Ping message from client.",
+        "properties": {
+          "action": {
+            "description": "Action to perform",
+            "enum": [
+              "ping"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "action"
+        ],
+        "type": "object"
+      },
+      "WebSocketErrorMessage": {
+        "description": "Error message for WebSocket communication.",
+        "properties": {
+          "code": {
+            "description": "Error code",
+            "type": "string"
+          },
+          "message": {
+            "description": "Error description",
+            "type": "string"
+          },
+          "type": {
+            "description": "Message type",
+            "enum": [
+              "error"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "code",
+          "message"
+        ],
+        "type": "object"
+      },
+      "WebSocketLiveMatchEvent": {
+        "description": "A live match event with full details.",
+        "properties": {
+          "added_time": {
+            "description": "Added/injury time minutes",
+            "maximum": 15,
+            "minimum": 0,
+            "nullable": true,
+            "type": "integer"
+          },
+          "commentary": {
+            "description": "Match commentary for this event",
+            "type": "string"
+          },
+          "crowd_reaction": {
+            "description": "Crowd reaction to the event",
+            "nullable": true,
+            "type": "string"
+          },
+          "description": {
+            "description": "Human-readable event description",
+            "type": "string"
+          },
+          "event_id": {
+            "description": "Unique event sequence number",
+            "type": "integer"
+          },
+          "event_type": {
+            "description": "Type of match event",
+            "enum": [
+              "match_start",
+              "goal",
+              "possession_change",
+              "foul",
+              "yellow_card",
+              "red_card",
+              "penalty_awarded",
+              "penalty_scored",
+              "penalty_missed",
+              "substitution",
+              "injury",
+              "offside",
+              "corner",
+              "free_kick",
+              "shot_on_target",
+              "shot_off_target",
+              "save",
+              "halftime",
+              "second_half_start",
+              "added_time",
+              "match_end"
+            ],
+            "type": "string"
+          },
+          "minute": {
+            "description": "Match minute",
+            "maximum": 120,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "player": {
+            "$ref": "#/components/schemas/WebSocketPlayerInfo",
+            "nullable": true
+          },
+          "score": {
+            "$ref": "#/components/schemas/WebSocketMatchScore"
+          },
+          "secondary_player": {
+            "$ref": "#/components/schemas/WebSocketPlayerInfo",
+            "description": "Second player involved (e.g., assist, replaced player)",
+            "nullable": true
+          },
+          "stats": {
+            "$ref": "#/components/schemas/WebSocketMatchStats"
+          },
+          "team": {
+            "description": "Which team the event relates to",
+            "enum": [
+              "home",
+              "away"
+            ],
+            "nullable": true,
+            "type": "string"
+          },
+          "ted_reaction": {
+            "description": "Ted Lasso's sideline reaction",
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "event_id",
+          "event_type",
+          "minute",
+          "description",
+          "score",
+          "stats",
+          "commentary"
+        ],
+        "type": "object"
+      },
+      "WebSocketMatchEndMessage": {
+        "description": "Message sent when a match simulation ends.",
+        "properties": {
+          "final_score": {
+            "$ref": "#/components/schemas/WebSocketMatchScore"
+          },
+          "final_stats": {
+            "$ref": "#/components/schemas/WebSocketMatchStats"
+          },
+          "man_of_the_match": {
+            "description": "Man of the match",
+            "type": "string"
+          },
+          "match_id": {
+            "description": "Match identifier",
+            "type": "string"
+          },
+          "ted_post_match": {
+            "description": "Ted's post-match thoughts",
+            "type": "string"
+          },
+          "type": {
+            "description": "Message type",
+            "enum": [
+              "match_end"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "match_id",
+          "final_score",
+          "final_stats",
+          "man_of_the_match",
+          "ted_post_match"
+        ],
+        "type": "object"
+      },
+      "WebSocketMatchEventMessage": {
+        "description": "Message containing a live match event.",
+        "properties": {
+          "event": {
+            "$ref": "#/components/schemas/WebSocketLiveMatchEvent"
+          },
+          "type": {
+            "description": "Message type",
+            "enum": [
+              "match_event"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "event"
+        ],
+        "type": "object"
+      },
+      "WebSocketMatchScore": {
+        "description": "Current match score.",
+        "properties": {
+          "away": {
+            "description": "Away team score",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "home": {
+            "description": "Home team score",
+            "minimum": 0,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "home",
+          "away"
+        ],
+        "type": "object"
+      },
+      "WebSocketMatchStartMessage": {
+        "description": "Message sent when a match simulation starts.",
+        "properties": {
+          "away_team": {
+            "description": "Away team name",
+            "type": "string"
+          },
+          "home_team": {
+            "description": "Home team name",
+            "type": "string"
+          },
+          "match_id": {
+            "description": "Unique match identifier",
+            "type": "string"
+          },
+          "message": {
+            "description": "Welcome message",
+            "type": "string"
+          },
+          "type": {
+            "description": "Message type",
+            "enum": [
+              "match_start"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "match_id",
+          "home_team",
+          "away_team",
+          "message"
+        ],
+        "type": "object"
+      },
+      "WebSocketMatchStats": {
+        "description": "Current match statistics.",
+        "properties": {
+          "corners_away": {
+            "description": "Away team corners",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "corners_home": {
+            "description": "Home team corners",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "fouls_away": {
+            "description": "Away team fouls",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "fouls_home": {
+            "description": "Home team fouls",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "possession_away": {
+            "description": "Away team possession %",
+            "maximum": 100,
+            "minimum": 0,
+            "type": "number"
+          },
+          "possession_home": {
+            "description": "Home team possession %",
+            "maximum": 100,
+            "minimum": 0,
+            "type": "number"
+          },
+          "red_cards_away": {
+            "description": "Away team red cards",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "red_cards_home": {
+            "description": "Home team red cards",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "shots_away": {
+            "description": "Away team total shots",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "shots_home": {
+            "description": "Home team total shots",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "shots_on_target_away": {
+            "description": "Away team shots on target",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "shots_on_target_home": {
+            "description": "Home team shots on target",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "yellow_cards_away": {
+            "description": "Away team yellow cards",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "yellow_cards_home": {
+            "description": "Home team yellow cards",
+            "minimum": 0,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "possession_home",
+          "possession_away",
+          "shots_home",
+          "shots_away",
+          "shots_on_target_home",
+          "shots_on_target_away",
+          "corners_home",
+          "corners_away",
+          "fouls_home",
+          "fouls_away",
+          "yellow_cards_home",
+          "yellow_cards_away",
+          "red_cards_home",
+          "red_cards_away"
+        ],
+        "type": "object"
+      },
+      "WebSocketPlayerInfo": {
+        "description": "Information about a player involved in an event.",
+        "properties": {
+          "name": {
+            "description": "Player name",
+            "type": "string"
+          },
+          "number": {
+            "description": "Jersey number",
+            "maximum": 99,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "position": {
+            "description": "Player position",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "number",
+          "position"
+        ],
+        "type": "object"
+      },
+      "WebSocketPongMessage": {
+        "description": "Pong response to client ping.",
+        "properties": {
+          "type": {
+            "description": "Message type",
+            "enum": [
+              "pong"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "type": "object"
+      },
+      "WebSocketServerMessage": {
+        "description": "Messages sent by the server during live match simulation.",
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/WebSocketMatchStartMessage"
+          },
+          {
+            "$ref": "#/components/schemas/WebSocketMatchEventMessage"
+          },
+          {
+            "$ref": "#/components/schemas/WebSocketMatchEndMessage"
+          },
+          {
+            "$ref": "#/components/schemas/WebSocketErrorMessage"
+          },
+          {
+            "$ref": "#/components/schemas/WebSocketPongMessage"
+          }
+        ]
+      },
+      "WebSocketTestEchoMessage": {
+        "description": "Echo response from the test WebSocket.",
+        "properties": {
+          "message": {
+            "description": "The echoed message",
+            "type": "string"
+          },
+          "ted_says": {
+            "description": "Ted's response",
+            "type": "string"
+          },
+          "type": {
+            "description": "Message type",
+            "enum": [
+              "echo"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "message",
+          "ted_says"
+        ],
+        "type": "object"
+      },
+      "WebSocketTestServerMessage": {
+        "description": "Messages sent by the test WebSocket endpoint.",
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/WebSocketTestWelcomeMessage"
+          },
+          {
+            "$ref": "#/components/schemas/WebSocketTestEchoMessage"
+          }
+        ]
+      },
+      "WebSocketTestWelcomeMessage": {
+        "description": "Welcome message sent when connecting to the test WebSocket.",
+        "properties": {
+          "message": {
+            "description": "Welcome message",
+            "type": "string"
+          },
+          "ted_says": {
+            "description": "Ted's greeting",
+            "type": "string"
+          },
+          "type": {
+            "description": "Message type",
+            "enum": [
+              "welcome"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "message",
+          "ted_says"
+        ],
+        "type": "object"
       }
     },
     "securitySchemes": {
@@ -7230,6 +7706,205 @@
         "summary": "Create a new match",
         "tags": [
           "Matches"
+        ]
+      }
+    },
+    "/matches/live": {
+      "get": {
+        "callbacks": {
+          "onClientMessage": {
+            "{$request.query.callback}": {
+              "post": {
+                "description": "Client can send control messages over the WebSocket",
+                "requestBody": {
+                  "content": {
+                    "application/json": {
+                      "examples": {
+                        "ping": {
+                          "summary": "Ping message",
+                          "value": {
+                            "action": "ping"
+                          }
+                        }
+                      },
+                      "schema": {
+                        "$ref": "#/components/schemas/WebSocketClientPingMessage"
+                      }
+                    }
+                  },
+                  "description": "Control message from client"
+                },
+                "responses": {
+                  "200": {
+                    "description": "Message sent"
+                  }
+                },
+                "summary": "Client message"
+              }
+            }
+          },
+          "onMatchEvent": {
+            "{$request.query.callback}": {
+              "post": {
+                "description": "Server sends match events over the WebSocket connection",
+                "requestBody": {
+                  "content": {
+                    "application/json": {
+                      "examples": {
+                        "goal_event": {
+                          "summary": "Goal scored event",
+                          "value": {
+                            "event": {
+                              "commentary": "What a strike from Jamie Tartt! He's done it again!",
+                              "crowd_reaction": "The crowd at Nelson Road erupts!",
+                              "description": "GOAL! Jamie Tartt scores with a brilliant strike!",
+                              "event_id": 15,
+                              "event_type": "goal",
+                              "minute": 23,
+                              "player": {
+                                "name": "Jamie Tartt",
+                                "number": 9,
+                                "position": "Forward"
+                              },
+                              "score": {
+                                "away": 0,
+                                "home": 1
+                              },
+                              "stats": {
+                                "corners_away": 1,
+                                "corners_home": 2,
+                                "fouls_away": 4,
+                                "fouls_home": 3,
+                                "possession_away": 45.0,
+                                "possession_home": 55.0,
+                                "red_cards_away": 0,
+                                "red_cards_home": 0,
+                                "shots_away": 3,
+                                "shots_home": 5,
+                                "shots_on_target_away": 1,
+                                "shots_on_target_home": 2,
+                                "yellow_cards_away": 1,
+                                "yellow_cards_home": 0
+                              },
+                              "team": "home",
+                              "ted_reaction": "Football is life!"
+                            },
+                            "type": "match_event"
+                          }
+                        },
+                        "match_end": {
+                          "summary": "Match end message",
+                          "value": {
+                            "final_score": {
+                              "away": 1,
+                              "home": 2
+                            },
+                            "final_stats": {
+                              "corners_away": 4,
+                              "corners_home": 6,
+                              "fouls_away": 12,
+                              "fouls_home": 10,
+                              "possession_away": 48.0,
+                              "possession_home": 52.0,
+                              "red_cards_away": 0,
+                              "red_cards_home": 0,
+                              "shots_away": 9,
+                              "shots_home": 12,
+                              "shots_on_target_away": 3,
+                              "shots_on_target_home": 5,
+                              "yellow_cards_away": 2,
+                              "yellow_cards_home": 1
+                            },
+                            "man_of_the_match": "Jamie Tartt",
+                            "match_id": "abc123",
+                            "ted_post_match": "Win, lose, or draw - I'm proud of every single one of you. Now who wants to grab some barbecue?",
+                            "type": "match_end"
+                          }
+                        },
+                        "match_start": {
+                          "summary": "Match start message",
+                          "value": {
+                            "away_team": "West Ham United",
+                            "home_team": "AFC Richmond",
+                            "match_id": "abc123",
+                            "message": "Welcome to Nelson Road! AFC Richmond vs West Ham United is about to begin. BELIEVE!",
+                            "type": "match_start"
+                          }
+                        }
+                      },
+                      "schema": {
+                        "$ref": "#/components/schemas/WebSocketServerMessage"
+                      }
+                    }
+                  },
+                  "description": "Match event message from server"
+                },
+                "responses": {
+                  "200": {
+                    "description": "Message received"
+                  }
+                },
+                "summary": "Match event callback"
+              }
+            }
+          }
+        },
+        "description": "WebSocket endpoint for real-time live match simulation.\n\nConnect to receive a stream of match events as they happen in a simulated football match.\n\n## Connection\n\nConnect via WebSocket with optional query parameters to customize the simulation.\n\n## Example WebSocket URL\n\n```\nws://localhost:8000/matches/live?home_team=AFC%20Richmond&away_team=Manchester%20City&speed=2.0&excitement_level=7\n```\n\n## Server Messages\n\nThe server sends JSON messages with these types:\n- `match_start` - When the match begins\n- `match_event` - For each match event (goals, fouls, cards, etc.)\n- `match_end` - When the match concludes\n- `error` - If an error occurs\n- `pong` - Response to client ping\n\n## Client Messages\n\nSend JSON to control the simulation:\n- `{\"action\": \"ping\"}` - Server responds with `{\"type\": \"pong\"}`\n",
+        "operationId": "live_match_websocket",
+        "parameters": [
+          {
+            "description": "Home team name",
+            "in": "query",
+            "name": "home_team",
+            "required": false,
+            "schema": {
+              "default": "AFC Richmond",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Away team name",
+            "in": "query",
+            "name": "away_team",
+            "required": false,
+            "schema": {
+              "default": "West Ham United",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Simulation speed multiplier (1.0 = real-time)",
+            "in": "query",
+            "name": "speed",
+            "required": false,
+            "schema": {
+              "default": 1.0,
+              "maximum": 10.0,
+              "minimum": 0.1,
+              "type": "number"
+            }
+          },
+          {
+            "description": "How eventful the match should be (1=boring, 10=chaos)",
+            "in": "query",
+            "name": "excitement_level",
+            "required": false,
+            "schema": {
+              "default": 5,
+              "maximum": 10,
+              "minimum": 1,
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "101": {
+            "description": "Switching Protocols - WebSocket connection established"
+          }
+        },
+        "summary": "Live Match Simulation WebSocket",
+        "tags": [
+          "WebSocket"
         ]
       }
     },
@@ -10254,6 +10929,64 @@
         "summary": "API Version Information",
         "tags": [
           "Root"
+        ]
+      }
+    },
+    "/ws/test": {
+      "get": {
+        "callbacks": {
+          "onMessage": {
+            "{$request.query.callback}": {
+              "post": {
+                "description": "Messages sent by the test WebSocket",
+                "requestBody": {
+                  "content": {
+                    "application/json": {
+                      "examples": {
+                        "echo": {
+                          "summary": "Echo response",
+                          "value": {
+                            "message": "Hello!",
+                            "ted_says": "I heard you loud and clear, partner!",
+                            "type": "echo"
+                          }
+                        },
+                        "welcome": {
+                          "summary": "Welcome message on connect",
+                          "value": {
+                            "message": "Welcome to the Ted Lasso API WebSocket test! Send any message and I'll echo it back.",
+                            "ted_says": "Hey there, friend! This WebSocket connection is working smoother than a fresh jar of peanut butter!",
+                            "type": "welcome"
+                          }
+                        }
+                      },
+                      "schema": {
+                        "$ref": "#/components/schemas/WebSocketTestServerMessage"
+                      }
+                    }
+                  },
+                  "description": "Message from server"
+                },
+                "responses": {
+                  "200": {
+                    "description": "Message received"
+                  }
+                },
+                "summary": "Server message"
+              }
+            }
+          }
+        },
+        "description": "Simple WebSocket test endpoint for connectivity testing.\n\nConnect to test WebSocket functionality. The server will:\n1. Send a welcome message on connection\n2. Echo back any message you send\n\n## Example\n\n```javascript\nconst ws = new WebSocket('ws://localhost:8000/ws/test');\nws.onmessage = (event) => console.log(event.data);\nws.send('Hello!');  // Server responds with echo\n```\n",
+        "operationId": "websocket_test",
+        "responses": {
+          "101": {
+            "description": "Switching Protocols - WebSocket connection established"
+          }
+        },
+        "summary": "WebSocket Test Endpoint",
+        "tags": [
+          "WebSocket"
         ]
       }
     }
